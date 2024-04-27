@@ -23,7 +23,7 @@ export const Form: React.FC = () => {
   };
 
   return (
-    <div className='flex justify-center h-[100vh]  items-center' >
+    <div className='bg-white h-10' >
       <form onSubmit={handleSubmit}>
         <label htmlFor="name">Name:
           <input type="text" id="name" name="name" required/><br />
@@ -33,6 +33,8 @@ export const Form: React.FC = () => {
         </label><br />
         <button type="submit">Enviar</button>
       </form>
+
     </div>
+  
   );
 };
