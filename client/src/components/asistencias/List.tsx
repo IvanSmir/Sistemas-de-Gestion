@@ -41,7 +41,7 @@ export const List: React.FC = () => {
                 <th className="w-1/6 border border-gray-300 py-1 px-2">Cargo</th>
                 <th className="w-1/6 border border-gray-300 py-1 px-2">Asistencia</th>
                 <th className="w-1/6 border border-gray-300 py-1 px-2">Fecha</th>
-                <th className="w-1/6 border border-gray-300 py-1 px-2">Hora</th> 
+                <th className="w-1/6 border border-gray-300 py-1 px-2">Hora Entrada</th> 
                 <th className="w-1/6 border border-gray-300 py-1 px-2">Acciones</th> 
               </tr>
             </thead>
