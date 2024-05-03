@@ -1,5 +1,6 @@
 import React, { FormEvent, useState } from "react";
 import { useRouter } from 'next/router';
+
 interface FormValues {
   ruc: string;
   fechaEntrada: string;
@@ -8,7 +9,6 @@ interface FormValues {
 }
 
 export const Form: React.FC = () => {
-
   const router = useRouter();
 
   const [formData, setFormData] = useState<FormValues>({
@@ -20,10 +20,14 @@ export const Form: React.FC = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { ruc, fechaEntrada, horaEntrada, observaciones } =
-      formData;
-    console.log(formData);
-    router.push('/listarAsistencias');
+    const asistencias = JSON.parse(localStorage.getItem('asistencias') || '[]');
+    const newAsistencia = {
+      id: asistencias.length + 1,
+      ...formData,
+      asistencia: "Presente", 
+    };
+    localStorage.setItem('asistencias', JSON.stringify([...asistencias, newAsistencia]));
+    router.push('/listarAsistencias'); // Redirigir a la página de listarAsistencias
   };
 
   const handleChange = (
@@ -116,6 +120,9 @@ export const Form: React.FC = () => {
     </div>
   );
 };
+
+
+
 
 
 
