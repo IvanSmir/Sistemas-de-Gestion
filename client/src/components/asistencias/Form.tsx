@@ -1,7 +1,6 @@
 import React, { FormEvent, useState } from "react";
 
 interface FormValues {
-  nombre: string;
   ruc: string;
   fechaEntrada: string;
   horaEntrada: string;
@@ -10,7 +9,6 @@ interface FormValues {
 
 export const Form: React.FC = () => {
   const [formData, setFormData] = useState<FormValues>({
-    nombre: "",
     ruc: "",
     fechaEntrada: "",
     horaEntrada: "",
@@ -19,7 +17,7 @@ export const Form: React.FC = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { nombre, ruc, fechaEntrada, horaEntrada, observaciones } =
+    const { ruc, fechaEntrada, horaEntrada, observaciones } =
       formData;
     console.log(formData);
   };
