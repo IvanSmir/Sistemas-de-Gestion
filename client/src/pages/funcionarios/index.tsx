@@ -5,8 +5,6 @@ import Layout from '../../app/layout'
 const index = () => {
   return (
     <Layout>
-
-
     <div>
         <Form/>
     </div>
