@@ -37,6 +37,10 @@ export const Form: React.FC = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleCancel = () => {
+    router.push('/listarAsistencias'); 
+  };
+
   return (
     <div className="flex justify-center h-screen items-center bg-gray-200">
       <form
@@ -105,10 +109,7 @@ export const Form: React.FC = () => {
         <div className="flex justify-end">
           <button
             type="button"
-            className="bg-red-500 text-white p-2 rounded hover:bg-red-600 mr-2"
-          >
-            Cancelar
-          </button>
+            className="bg-red-500 text-white p-2 rounded hover:bg-red-600 mr-2" onClick={handleCancel}>Cancelar</button>
           <button
             type="submit"
             className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
