@@ -22,6 +22,9 @@ export const NavBar = () => {
             <NavItem href="/funcionarios">
               Funcionarios
             </NavItem>
+            <NavItem href="/asistencias">
+              Asistencias
+            </NavItem>
             
           </nav>
         </div>
