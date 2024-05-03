@@ -1,5 +1,5 @@
 import React, { FormEvent, useState } from "react";
-
+import { useRouter } from 'next/router';
 interface FormValues {
   ruc: string;
   fechaEntrada: string;
@@ -8,6 +8,9 @@ interface FormValues {
 }
 
 export const Form: React.FC = () => {
+
+  const router = useRouter();
+
   const [formData, setFormData] = useState<FormValues>({
     ruc: "",
     fechaEntrada: "",
@@ -20,6 +23,7 @@ export const Form: React.FC = () => {
     const { ruc, fechaEntrada, horaEntrada, observaciones } =
       formData;
     console.log(formData);
+    router.push('/listarAsistencias');
   };
 
   const handleChange = (
