@@ -1,88 +1,161 @@
-import React, { FormEvent, useState } from "react";
+import React, { ChangeEvent, FormEvent, useState } from "react";
 
 interface FormValues {
   name: string;
   email: string;
-  
+  image: string;
+  gender: string;
+  direction: string;
+  ruc: string;
+  joinDate: Date;
+  birthday: Date;
+  phone: string;
+
+
 }
 
 export const Form: React.FC = () => {
-  const [formData, setFormData] = useState<FormValues>({ name: "", email: ""});
+  const [formData, setFormData] = useState<FormValues>(
+    {
+      name: "",
+      email: "",
+      image: "",
+      gender: "",
+      direction: "",
+      phone: " ",
+      ruc: "",
+      joinDate: new Date(),
+      birthday: new Date()
+    }
+  );
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const target = e.target;
 
+    setFormData({ ...formData, [target.name]: target.value });
+  };
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { name, email } = e.currentTarget;
-    if (name && email) {
-      const formData: FormValues = {
-        name: name.value,
-        email: email.value,
+    const { name, email, image, gender, direction, ruc, phone, joinDate, birthday } = e.currentTarget;
+    setFormData(formData);
+    console.log(formData);
 
-
-      };
-      setFormData(formData);
-      console.log(formData);
-    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+    <form className="flex flex-col items-center justify-center min-h-screen" onSubmit={handleSubmit}>
       <div className="w-full max-w-3xl p-8 bg-white shadow-md rounded-lg">
         <div className="grid grid-cols-2 gap-6">
           <div>
-          <label htmlFor="image" className="block text-sm font-medium text-gray-700">
-           Imagen:
-
-           <input type="file" id="image" name="image" required className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
-
+            <label className="block text-xl font-medium text-gray-700" htmlFor="image">
+              Imagen:
+              <input
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                type="text"
+                id="image"
+                name="image"
+                value={formData.image}
+                onChange={handleChange}
+                required
+              />
             </label>
-            <label htmlFor="name" className="block text-sm font-medium min text-gray-700">
+
+            <label className="block text-xl font-medium text-gray-700" htmlFor="name">
               Nombre:
-              <input type="text" id="name" name="name" required className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
+              <input
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                type="text"
+                id="name"
+                name="name"
+                required
+              />
             </label>
-            <label htmlFor="gender" className="block text-sm font-medium text-gray-700">
+
+            <label className="block text-xl font-medium text-gray-700" htmlFor="gender">
               Sexo:
-              <select id="gender" name="gender" className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500">
-              <option className="" value="">Seleccione el sexo</option>
+              <select
+                className="mt-1 block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-xl outline-2 placeholder:text-gray-500"
+                id="gender"
+                name="gender"
+              >
+                <option value="">Seleccione el sexo</option>
                 <option value="hombre">Hombre</option>
                 <option value="mujer">Mujer</option>
               </select>
             </label>
-            <label htmlFor="direction" className="block text-sm font-medium text-gray-700">
+
+            <label className="block text-xl font-medium text-gray-700" htmlFor="direction">
               Dirección:
-              <input type="text" id="direction" name="direction" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
+              <input
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                type="text"
+                id="direction"
+                name="direction"
+              />
             </label>
-            <label htmlFor="ruc" className="block text-sm font-medium text-gray-700">
+
+            <label className="block text-xl font-medium text-gray-700" htmlFor="ruc">
               RUC:
-              <input type="text" id="ruc" name="ruc" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
+              <input
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                type="text"
+                id="ruc"
+                name="ruc"
+              />
             </label>
           </div>
+
           <div>
-          <label htmlFor="ingreso" className="block text-sm font-medium text-gray-700">
-              Fecha de ingreso:
-              <input type="date" id="ingreso" name="ingreso" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
+            <label className="block text-xl font-medium text-gray-700" htmlFor="joinDate">
+              Fecha de Incorporación:
+              <input
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                type="date"
+                id="joinDate"
+                name="joinDate"
+              />
             </label>
-            <label htmlFor="birthday" className="block text-sm font-medium text-gray-700">
+
+            <label className="block text-xl font-medium text-gray-700" htmlFor="birthday">
               Fecha de Nacimiento:
-              <input type="date" id="birthday" name="birthday" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
+              <input
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                type="date"
+                id="birthday"
+                name="birthday"
+              />
             </label>
-            <label htmlFor="text" className="block text-sm font-medium text-gray-700">
+
+            <label className="block text-xl font-medium text-gray-700" htmlFor="phone">
               Teléfono:
-              <input type="text" id="text" name="text" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
+              <input
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                type="text"
+                id="phone"
+                name="phone"
+              />
             </label>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+
+            <label className="block text-xl font-medium text-gray-700" htmlFor="email">
               Correo:
-              <input type="email" id="email" name="email" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
+              <input
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                type="email"
+                id="email"
+                name="email"
+              />
             </label>
-           
           </div>
         </div>
+
         <div className="flex justify-center mt-6">
-          <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full">
+          <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full" type="submit">
             Enviar
           </button>
         </div>
       </div>
     </form>
+
+
   );
-  
+
 };

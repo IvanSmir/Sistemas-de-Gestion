@@ -7,9 +7,7 @@ const index = () => {
     <Layout>
 
 
-    <div>
         <Form/>
-    </div>
     </Layout>
   )
 }
