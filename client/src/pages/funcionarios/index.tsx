@@ -1,8 +1,9 @@
 import { Form } from '@/components/funcionarios/Form';
 import React, { useState } from 'react';
-import { btnEdit } from '@/components/funcionarios/btnEdit';
-import { btnDelete } from '@/components/funcionarios/btnDelete';
-import { btnAdd} from '@/components/funcionarios/btnAdd';
+import { BtnAdd} from '@/components/funcionarios/BtnAdd';
+import { BtnEdit} from '@/components/funcionarios/BtnEdit';
+import { BtnDelete} from '@/components/funcionarios/BtnDelete';
+
 import '../../app/globals.css'
 import Layout from '../../app/layout'
 const index = () => {
@@ -39,23 +40,31 @@ const index = () => {
       cargo: "Gerente",
       fechaNac: '20/01/2000',
     },]
+
 const [mostrarFormulario, setMostrarFormulario] = useState(false);
+const [rucFuncionarioEditado,setRucFuncionarioEditado] = useState(null);
 
 const abrirFormulario = () => {
   setMostrarFormulario(true);
 };
+
+const editarFuncionario=(ruc: React.SetStateAction<null>)=>{
+  setRucFuncionarioEditado(ruc);
+  setMostrarFormulario(true);
+}
+
   return (
     <Layout>
-      
-      <div className="flex justify-center">
-        <btnAdd onClick={abrirFormulario}/>
-      </div>
-      {mostrarFormulario && (
-        <div>
-           <Form/>
-        </div>
-      )}
+     
 
+      <div className="flex justify-between items-center">
+        <BtnAdd onClick={abrirFormulario}/>
+      </div>
+
+      <div className="flex justify-center">
+        {mostrarFormulario && <Form />}
+      </div>
+      
       <div className="flex justify-center">
       <table className='table-auto w-full'>
         <thead>
@@ -76,14 +85,16 @@ const abrirFormulario = () => {
                 <td className='border px-4 py-2'>{funcionario.cargo}</td>
                 <td className='border px-4 py-2'>{funcionario.fechaNac}</td>
                 <td className='border px-4 py-2'>
-                  {/*<btnEdit id={Element.ruc}/>*/}
-                 
+                  <div>
+                    <BtnEdit />
+                    <BtnDelete/>
+                  </div>
                 </td>
               </tr>
           );})}
           </tbody>
         </table>
-    </div>
+      </div>
     </Layout>
     
   )
