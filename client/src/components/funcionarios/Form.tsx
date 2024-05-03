@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { ChangeEvent, FormEvent, useState } from "react";
 
 interface FormValues {
@@ -8,7 +9,7 @@ interface FormValues {
   direction: string;
   ruc: string;
   joinDate: Date;
-  birthday: Date;
+  birthdate: Date;
   phone: string;
 
 
@@ -25,19 +26,24 @@ export const Form: React.FC = () => {
       phone: " ",
       ruc: "",
       joinDate: new Date(),
-      birthday: new Date()
+      birthdate: new Date()
     }
   );
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const target = e.target;
-
-    setFormData({ ...formData, [target.name]: target.value });
+    let value = target.value;
+    setFormData({ ...formData, [target.name]: value });
   };
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { name, email, image, gender, direction, ruc, phone, joinDate, birthday } = e.currentTarget;
     setFormData(formData);
     console.log(formData);
+    try {
+      const response = await axios.post("http://localhost:3002/employees", formData);
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    }
 
   };
 
@@ -66,6 +72,8 @@ export const Form: React.FC = () => {
                 type="text"
                 id="name"
                 name="name"
+                onChange={handleChange}
+                value={formData.name}
                 required
               />
             </label>
@@ -76,6 +84,8 @@ export const Form: React.FC = () => {
                 className="mt-1 block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-xl outline-2 placeholder:text-gray-500"
                 id="gender"
                 name="gender"
+                value={formData.gender}
+                onChange={handleChange}
               >
                 <option value="">Seleccione el sexo</option>
                 <option value="hombre">Hombre</option>
@@ -89,6 +99,9 @@ export const Form: React.FC = () => {
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                 type="text"
                 id="direction"
+                onChange={handleChange}
+
+                value={formData.direction}
                 name="direction"
               />
             </label>
@@ -99,6 +112,9 @@ export const Form: React.FC = () => {
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                 type="text"
                 id="ruc"
+                onChange={handleChange}
+
+                value={formData.ruc}
                 name="ruc"
               />
             </label>
@@ -111,17 +127,22 @@ export const Form: React.FC = () => {
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                 type="date"
                 id="joinDate"
+                onChange={handleChange}
+                value={formData.joinDate.toString()}
                 name="joinDate"
               />
             </label>
 
-            <label className="block text-xl font-medium text-gray-700" htmlFor="birthday">
+            <label className="block text-xl font-medium text-gray-700" htmlFor="birthdate">
               Fecha de Nacimiento:
               <input
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                 type="date"
-                id="birthday"
-                name="birthday"
+                id="birthdate"
+                onChange={handleChange}
+
+                value={formData.birthdate.toString()}
+                name="birthdate"
               />
             </label>
 
@@ -131,6 +152,9 @@ export const Form: React.FC = () => {
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                 type="text"
                 id="phone"
+                onChange={handleChange}
+
+                value={formData.phone}
                 name="phone"
               />
             </label>
@@ -141,6 +165,9 @@ export const Form: React.FC = () => {
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                 type="email"
                 id="email"
+                onChange={handleChange}
+
+                value={formData.email}
                 name="email"
               />
             </label>

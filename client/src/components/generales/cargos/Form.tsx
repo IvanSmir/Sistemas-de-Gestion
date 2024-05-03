@@ -1,17 +1,22 @@
+import axios from "axios";
 import React, { ChangeEvent, FormEvent, useState } from "react";
+import { useRouter } from 'next/navigation'
+
 
 interface FormValues {
     name: string;
     description: string;
-    vacant: number;
+    vacancies: number;
 }
 
 export const Form: React.FC = () => {
+    const router = useRouter()
+
     const [formData, setFormData] = useState<FormValues>(
         {
             name: "",
             description: "",
-            vacant: 0,
+            vacancies: 0,
         }
     );
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -19,12 +24,18 @@ export const Form: React.FC = () => {
 
         setFormData({ ...formData, [target.name]: target.value });
     };
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const { name, description, vacant } = e.currentTarget;
         setFormData(formData);
-        console.log(formData);
+        try {
+            const response = await axios.post("http://localhost:3002/cargos", { ...formData, vacancies: +formData.vacancies });
+            console.log(+formData.vacancies);
+            console.log(response);
+            router.push('/generales/cargos')
 
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (
@@ -41,6 +52,7 @@ export const Form: React.FC = () => {
                                 type="text"
                                 id="name"
                                 name="name"
+                                onChange={handleChange}
                                 required
                             />
                         </label>
@@ -52,6 +64,7 @@ export const Form: React.FC = () => {
                                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                                 type="text"
                                 id="description"
+                                onChange={handleChange}
                                 name="description"
                             />
                         </label>
@@ -61,8 +74,9 @@ export const Form: React.FC = () => {
                             <input
                                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                                 type="number"
-                                id="vacant"
-                                name="vacant"
+                                id="vacancies"
+                                onChange={handleChange}
+                                name="vacancies"
                             />
                         </label>
 

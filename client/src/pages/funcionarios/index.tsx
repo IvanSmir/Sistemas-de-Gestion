@@ -1,47 +1,62 @@
 'use client'
 import { Form } from '@/components/funcionarios/Form';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BtnAdd } from '@/components/funcionarios/BtnAdd';
 import { BtnEdit } from '@/components/funcionarios/BtnEdit';
 import { BtnDelete } from '@/components/funcionarios/BtnDelete';
 
 import '../../app/globals.css'
 import Layout from '../../app/layout'
+import Link from 'next/link';
+import axios from 'axios';
 const Index = () => {
-    const funcionarios = [
-        {
-            ruc: "1045555-3",
-            nombre: 'Adrian Grahl',
-            cargo: "Gerente",
-            fechaNac: '20/01/2000',
-        },
-        {
-            ruc: "1045555-3",
-            nombre: 'Adrian Grahl',
-            cargo: "Gerente",
-            fechaNac: '20/01/2000',
+    // const funcionarios = [
+    //     {
+    //         ruc: "1045555-3",
+    //         nombre: 'Adrian Grahl',
+    //         cargo: "Gerente",
+    //         fechaNac: '20/01/2000',
+    //     },
+    //     {
+    //         ruc: "1045555-3",
+    //         nombre: 'Adrian Grahl',
+    //         cargo: "Gerente",
+    //         fechaNac: '20/01/2000',
 
 
-        },
-        {
-            ruc: "1045555-3",
-            nombre: 'Adrian Grahl',
-            cargo: "Gerente",
-            fechaNac: '20/01/2000',
-        },
-        {
-            ruc: "1045555-3",
-            nombre: 'Adrian Grahl',
-            cargo: "Gerente",
-            fechaNac: '20/01/2000',
-        },
-        {
-            ruc: "1045555-3",
-            nombre: 'Adrian Grahl',
-            cargo: "Gerente",
-            fechaNac: '20/01/2000',
-        },]
+    //     },
+    //     {
+    //         ruc: "1045555-3",
+    //         nombre: 'Adrian Grahl',
+    //         cargo: "Gerente",
+    //         fechaNac: '20/01/2000',
+    //     },
+    //     {
+    //         ruc: "1045555-3",
+    //         nombre: 'Adrian Grahl',
+    //         cargo: "Gerente",
+    //         fechaNac: '20/01/2000',
+    //     },
+    //     {
+    //         ruc: "1045555-3",
+    //         nombre: 'Adrian Grahl',
+    //         cargo: "Gerente",
+    //         fechaNac: '20/01/2000',
+    //     },]
 
+    const [funcionarios, setFuncionarios] = useState([]);
+    useEffect(() => {
+        try {
+            const fetchData = async () => {
+                const response = await axios.get('http://localhost:3002/employees')
+                setFuncionarios(response.data)
+            }
+            fetchData()
+            console.log(funcionarios)
+        } catch (error) {
+            console.log(error)
+        }
+    }, [])
     const [mostrarFormulario, setMostrarFormulario] = useState(false);
     const [rucFuncionarioEditado, setRucFuncionarioEditado] = useState(null);
 
@@ -56,10 +71,14 @@ const Index = () => {
 
     return (
         <Layout>
+            <h1 className='text-6xl'>
+                Funcionarios
+            </h1>
 
 
             <div className="flex justify-between items-center">
-                <BtnAdd onClick={abrirFormulario} />
+                <Link href={'/funcionarios/add'}><button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>Crear Cargo</button></Link>
+
             </div>
 
             <div className="flex justify-center">
@@ -72,24 +91,20 @@ const Index = () => {
                         <tr>
                             <th className='px-4 py-2'>Ruc</th>
                             <th className='px-4 py-2'>Nombre</th>
-                            <th className='px-4 py-2'>Cargo</th>
-                            <th className='px-4 py-2'>Fecha Nacimiento</th>
-                            <th className='px-4 py-2'>Acciones</th>
+                            <th className='px-4 py-2'>Email</th>
+                            <th className='px-4 py-2'>Numero de telefono</th>
+                            <th className='px-4 py-2'>Direccion</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {funcionarios.map((funcionario) => {
+                        {funcionarios.map((funcionario: any) => {
                             return (
-                                <tr key={funcionario.ruc}>
+                                <tr key={funcionario.id}>
                                     <td className='border px-4 py-2'>{funcionario.ruc}</td>
-                                    <td className='border px-4 py-2'>{funcionario.nombre}</td>
-                                    <td className='border px-4 py-2'>{funcionario.cargo}</td>
-                                    <td className='border px-4 py-2'>{funcionario.fechaNac}</td>
-                                    <td className='border px-4 py-2'>
-                                        <div>
-
-                                        </div>
-                                    </td>
+                                    <td className='border px-4 py-2'>{funcionario.name}</td>
+                                    <td className='border px-4 py-2'>{funcionario.email}</td>
+                                    <td className='border px-4 py-2'>{funcionario.phone}</td>
+                                    <td className='border px-4 py-2'>{funcionario.direction}</td>
                                 </tr>
                             );
                         })}
