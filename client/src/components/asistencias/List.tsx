@@ -29,40 +29,42 @@ export const List: React.FC = () => {
   };
   const handleEdit = (id:number) => {
   };
-
-  return (
-    <div>
-      <h2 className="text-xl font-bold">Lista de Asistencias</h2>
-      <table className="w-full table-fixed">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="w-1/5 border border-gray-300 py-2 px-4">RUC</th>
-            <th className="w-1/5 border border-gray-300 py-2 px-4">Nombre</th>
-            <th className="w-1/5 border border-gray-300 py-2 px-4">Cargo</th>
-            <th className="w-1/5 border border-gray-300 py-2 px-4">Asistencia</th>
-            <th className="w-1/5 border border-gray-300 py-2 px-4">Fecha</th>
-            <th className="w-1/5 border border-gray-300 py-2 px-4">Hora</th> 
-            <th className="w-1/5 border border-gray-300 py-2 px-4">Acciones</th> 
-          </tr>
-        </thead>
-        <tbody>
-          {asistencias.map((asistencia: Asistencia) => (
-            <tr key={asistencia.id} className="hover:bg-gray-100">
-              <td className="border border-gray-300 py-2 px-4">{asistencia.ruc}</td>
-              <td className="border border-gray-300 py-2 px-4">{asistencia.nombre}</td>
-              <td className="border border-gray-300 py-2 px-4">{asistencia.cargo}</td>
-              <td className="border border-gray-300 py-2 px-4">{asistencia.asistencia}</td>
-              <td className="border border-gray-300 py-2 px-4">{asistencia.fechaEntrada}</td>
-              <td className="border border-gray-300 py-2 px-4">{asistencia.horaEntrada}</td> 
-              <td className="border border-gray-300 py-2 px-4">
-                <button onClick={() => handleEdit(asistencia.id)}>Editar</button> 
-                <button onClick={() => handleDelete(asistencia.id)}>Eliminar</button> 
-              </td> 
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+    return (
+      <div className="flex justify-center">
+        <div>
+          <h2 className="text-xl font-bold mb-4">Lista de Asistencias</h2>
+          <table className="w-full table-fixed">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="w-1/6 border border-gray-300 py-1 px-2">RUC</th>
+                <th className="w-1/6 border border-gray-300 py-1 px-2">Nombre</th>
+                <th className="w-1/6 border border-gray-300 py-1 px-2">Cargo</th>
+                <th className="w-1/6 border border-gray-300 py-1 px-2">Asistencia</th>
+                <th className="w-1/6 border border-gray-300 py-1 px-2">Fecha</th>
+                <th className="w-1/6 border border-gray-300 py-1 px-2">Hora</th> 
+                <th className="w-1/6 border border-gray-300 py-1 px-2">Acciones</th> 
+              </tr>
+            </thead>
+            <tbody>
+              {asistencias.map((asistencia: Asistencia) => (
+                <tr key={asistencia.id} className="hover:bg-gray-100">
+                  <td className="border border-gray-300 py-1 px-2">{asistencia.ruc}</td>
+                  <td className="border border-gray-300 py-1 px-2">{asistencia.nombre}</td>
+                  <td className="border border-gray-300 py-1 px-2">{asistencia.cargo}</td>
+                  <td className="border border-gray-300 py-1 px-2">{asistencia.asistencia}</td>
+                  <td className="border border-gray-300 py-1 px-2">{asistencia.fechaEntrada}</td>
+                  <td className="border border-gray-300 py-1 px-2">{asistencia.horaEntrada}</td> 
+                  <td className="border border-gray-300 py-1 px-2 flex space-x-2">
+                    <button onClick={() => handleEdit(asistencia.id)} className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Editar</button>
+                    <button onClick={() => handleDelete(asistencia.id)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Eliminar</button>
+                  </td> 
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+    
 };
 
