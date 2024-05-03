@@ -1,38 +1,161 @@
-import React, { FormEvent, useState } from 'react';
-
+import React, { ChangeEvent, FormEvent, useState } from "react";
 
 interface FormValues {
   name: string;
   email: string;
+  image: string;
+  gender: string;
+  direction: string;
+  ruc: string;
+  joinDate: Date;
+  birthday: Date;
+  phone: string;
+
+
 }
 
 export const Form: React.FC = () => {
-  const [formData, setFormData] = useState<FormValues>({ name: '', email: '' });
+  const [formData, setFormData] = useState<FormValues>(
+    {
+      name: "",
+      email: "",
+      image: "",
+      gender: "",
+      direction: "",
+      phone: " ",
+      ruc: "",
+      joinDate: new Date(),
+      birthday: new Date()
+    }
+  );
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const target = e.target;
 
+    setFormData({ ...formData, [target.name]: target.value });
+  };
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { name, email } = e.currentTarget;
-    if (name && email) {
-      const formData: FormValues = {
-        name: name.value,
-        email: email.value,
-      };
-      setFormData(formData);
-      console.log(formData);
-    }
+    const { name, email, image, gender, direction, ruc, phone, joinDate, birthday } = e.currentTarget;
+    setFormData(formData);
+    console.log(formData);
+
   };
 
   return (
-    <div className='flex justify-center h-[100vh]  items-center' >
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="name">Name:
-          <input type="text" id="name" name="name" required/><br />
-        </label><br />
-        <label htmlFor="email">Email:
-          <input type="email" id="email" name="email"/><br />
-        </label><br />
-        <button type="submit">Enviar</button>
-      </form>
-    </div>
+    <form className="flex flex-col items-center justify-center min-h-screen" onSubmit={handleSubmit}>
+      <div className="w-full max-w-3xl p-8 bg-white shadow-md rounded-lg">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <label className="block text-xl font-medium text-gray-700" htmlFor="image">
+              Imagen:
+              <input
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                type="text"
+                id="image"
+                name="image"
+                value={formData.image}
+                onChange={handleChange}
+                required
+              />
+            </label>
+
+            <label className="block text-xl font-medium text-gray-700" htmlFor="name">
+              Nombre:
+              <input
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                type="text"
+                id="name"
+                name="name"
+                required
+              />
+            </label>
+
+            <label className="block text-xl font-medium text-gray-700" htmlFor="gender">
+              Sexo:
+              <select
+                className="mt-1 block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-xl outline-2 placeholder:text-gray-500"
+                id="gender"
+                name="gender"
+              >
+                <option value="">Seleccione el sexo</option>
+                <option value="hombre">Hombre</option>
+                <option value="mujer">Mujer</option>
+              </select>
+            </label>
+
+            <label className="block text-xl font-medium text-gray-700" htmlFor="direction">
+              Dirección:
+              <input
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                type="text"
+                id="direction"
+                name="direction"
+              />
+            </label>
+
+            <label className="block text-xl font-medium text-gray-700" htmlFor="ruc">
+              RUC:
+              <input
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                type="text"
+                id="ruc"
+                name="ruc"
+              />
+            </label>
+          </div>
+
+          <div>
+            <label className="block text-xl font-medium text-gray-700" htmlFor="joinDate">
+              Fecha de Incorporación:
+              <input
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                type="date"
+                id="joinDate"
+                name="joinDate"
+              />
+            </label>
+
+            <label className="block text-xl font-medium text-gray-700" htmlFor="birthday">
+              Fecha de Nacimiento:
+              <input
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                type="date"
+                id="birthday"
+                name="birthday"
+              />
+            </label>
+
+            <label className="block text-xl font-medium text-gray-700" htmlFor="phone">
+              Teléfono:
+              <input
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                type="text"
+                id="phone"
+                name="phone"
+              />
+            </label>
+
+            <label className="block text-xl font-medium text-gray-700" htmlFor="email">
+              Correo:
+              <input
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                type="email"
+                id="email"
+                name="email"
+              />
+            </label>
+          </div>
+        </div>
+
+        <div className="flex justify-center mt-6">
+          <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full" type="submit">
+            Enviar
+          </button>
+        </div>
+      </div>
+    </form>
+
+
   );
+
 };
