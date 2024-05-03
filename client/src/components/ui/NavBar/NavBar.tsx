@@ -16,13 +16,16 @@ export const NavBar = () => {
         </div>
         <div className="flex-1 overflow-auto py-2">
           <nav className="grid items-start px-4 text-sm font-medium">
-            <NavItem href="/generales">
+            <NavItem href="/generales/cargos  ">
               Datos Generales
             </NavItem>
             <NavItem href="/funcionarios">
               Funcionarios
             </NavItem>
-            
+            <NavItem href="/asistencias">
+              Asistencias
+            </NavItem>
+
           </nav>
         </div>
       </div>

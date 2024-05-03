@@ -42,7 +42,7 @@ export const Form: React.FC = () => {
     };
 
     return (
-        <div className="flex justify-center h-screen items-center bg-gray-200">
+        <div className="flex justify-center h-screen items-center text-black bg-gray-200">
             <form
                 onSubmit={handleSubmit}
                 className="bg-white p-6 rounded-lg shadow-md w-full max-w-md"

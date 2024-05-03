@@ -29,11 +29,11 @@ export class Employee {
   @IsString()
   ruc: string;
 
-  @IsDateString()
-  joinDate: Date;
+  @IsString()
+  joinDate: string;
 
-  @IsDateString()
-  birthdate: Date;
+  @IsString()
+  birthdate: string;
 
   @IsPhoneNumber(null) // Acepta un código de país como primer parámetro, `null` permite cualquier formato.
   phone: string;

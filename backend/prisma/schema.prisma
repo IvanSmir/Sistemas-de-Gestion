@@ -21,14 +21,14 @@ model Cargos {
 }
 
 model Employees {
-  id        String   @id @default(uuid())
+  id        String @id @default(uuid())
   name      String
-  email     String   @unique
+  email     String @unique
   image     String
   gender    String
   direction String
   ruc       String
-  joinDate  DateTime
-  birthdate DateTime
+  joinDate  String
+  birthdate String
   phone     String
 }
