@@ -57,7 +57,7 @@ export const List: React.FC = () => {
               <td className="border border-gray-300 py-2 px-4">
                 <button onClick={() => handleEdit(asistencia.id)}>Editar</button> 
                 <button onClick={() => handleDelete(asistencia.id)}>Eliminar</button> 
-              </td> {/* Mostrar las acciones */}
+              </td> 
             </tr>
           ))}
         </tbody>
