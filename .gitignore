@@ -14,6 +14,7 @@ migrations/
 # Package lock files
 **/package-lock.json
 
+
 # Coverage and test reports
 /coverage
 /.nyc_output
