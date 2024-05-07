@@ -1,5 +1,4 @@
-import { BtnDelete } from '@/components/funcionarios/BtnDelete'
-import { BtnEdit } from '@/components/funcionarios/BtnEdit'
+'use client'
 import axios from 'axios'
 import Link from 'next/link'
 import { use, useEffect, useState } from 'react'

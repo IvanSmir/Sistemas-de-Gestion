@@ -11,6 +11,8 @@ export function NavItem({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  console.log(pathname, 'pathname', href, 'href')
+  console.log(href)
 
   return (
     <Link

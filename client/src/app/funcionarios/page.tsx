@@ -1,12 +1,6 @@
 'use client'
 import { Form } from '@/components/funcionarios/Form';
 import React, { useEffect, useState } from 'react';
-import { BtnAdd } from '@/components/funcionarios/BtnAdd';
-import { BtnEdit } from '@/components/funcionarios/BtnEdit';
-import { BtnDelete } from '@/components/funcionarios/BtnDelete';
-
-import '../../app/globals.css'
-import Layout from '../../app/layout'
 import Link from 'next/link';
 import axios from 'axios';
 const Index = () => {
@@ -70,7 +64,7 @@ const Index = () => {
     }
 
     return (
-        <Layout>
+        <>
             <h1 className='text-6xl'>
                 Funcionarios
             </h1>
@@ -111,8 +105,7 @@ const Index = () => {
                     </tbody>
                 </table>
             </div>
-        </Layout>
-
+        </>
     )
 }
 export default Index;

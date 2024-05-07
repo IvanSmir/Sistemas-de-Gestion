@@ -11,12 +11,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
-      <NavBar />
-      <div className="flex flex-col">
-        <Header />
-        {children}
-      </div>
-    </div>
+    <html lang="es">
+      <body>
+        <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
+          <NavBar />
+          <div className="flex flex-col">
+            <Header />
+            {children}
+          </div>
+        </div>
+
+      </body>
+    </html>
+
   );
 }
