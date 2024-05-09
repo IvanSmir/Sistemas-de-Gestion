@@ -1,10 +1,11 @@
 import Link from 'next/link'
 import React from 'react'
 import { NavItem } from './NavItem'
+import { Button, ButtonGroup } from '@chakra-ui/react'
 
 export const NavBar = () => {
   return (
-    <div className="hidden border-r bg-gray-100/40 lg:block dark:bg-gray-800/40">
+    <div className="hidden border-r bg-[#AA546D] lg:block bg-[#AA546D]">
       <div className="flex h-full max-h-screen flex-col gap-2">
         <div className="flex h-[60px] items-center border-b px-5">
           <Link
