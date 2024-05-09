@@ -1,55 +1,95 @@
-import React from 'react'
 
-const ListaCargo = () => {
+import React from 'react'
+import {  IconButton} from '@chakra-ui/react'
+import { DeleteIcon, EditIcon} from '@chakra-ui/icons'
+import {
+    Table,
+    Thead,
+    Tbody,
+    Tfoot,
+    Tr,
+    Th,
+    Td,
+    TableCaption,
+    TableContainer,
+  } from '@chakra-ui/react'
+
+ export const ListaCargo = () => {
 
     const cargos = [
         {
             _id: 1,
+            
             nombre: "un nombre",
-            descripcion: "un cargo con un nombre",
-            vacantes: 1
+            cargo: "Gerente General",
+            lugar: "Casa Matriz",
 
         },
         {
             _id: 2,
+            
             nombre: "dos nombres",
-            descripcion: "un cargo con dos nombres",
-            vacantes: 2
+            cargo: "Empleado",
+            lugar: "Sucursal",
 
         },
         {
             _id: 3,
+            
             nombre: "tres nombres",
-            descripcion: "un cargo con tres nombres",
-            vacantes: 3
+            cargo: "Cajero",
+            lugar: "Casa Matriz",
+
+        }, 
+        {
+            _id: 4,
+            
+            nombre: "tres nombres",
+            cargo: "Empleado",
+            lugar: "Casa Matriz",
 
         }
     ]
 
-    return <div>
-        <h1 className='flex flex-col p-10'>Lista de Cargos</h1>
-        <table className='table-auto w-full'>
-            <thead>
-                <tr>
-                    <th className='px-4 py-2'>Nombre</th>
-                    <th className='px-4 py-2'>Descripcion</th>
-                    <th className='px-4 py-2'>Vacantes</th>
-                    <th className='px-4 py-2'>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
+    return(
+        <TableContainer>
+        <h1 className='flex flex-col p-10'>Cargos</h1>
+        <Table className='table-auto w-full' variant='simple' colorScheme='teal'>
+            
+            <Thead>
+                <Tr>
+                    
+                    <Th className='px-4 py-2'>Nombre</Th>
+                    <Th className='px-4 py-2'>Cargo</Th>
+                    <Th className='px-4 py-2'>Lugar</Th>
+                    <Th className='px-4 py-2'>Acciones</Th>
+                </Tr>
+            </Thead>
+            <Tbody>
                 {
                     cargos.map(cargo => (
-                        <tr key={cargo._id}>
-                            <td className='border px-4 py-2'>{cargo.nombre}</td>
-                            <td className='border px-4 py-2'>{cargo.descripcion}</td>
-                            <td className='border px-4 py-2'>{cargo.vacantes}</td>
-                            <td className='border px-4 py-2'> Button y FontAwesomeIcon </td>
-                        </tr>)
+                        <Tr key={cargo._id}>
+                        
+                            <Td className='border px-4 py-2'>{cargo.nombre}</Td>
+                            <Td className='border px-4 py-2'>{cargo.cargo}</Td>
+                            <Td className='border px-4 py-2'>{cargo.lugar}</Td>
+                            <Td className='border px-4 py-2'> 
+                            <IconButton aria-label='Editar'colorScheme='teal' m={2} icon={<EditIcon />} /> 
+                            <IconButton aria-label='borrar'colorScheme='red' m={2} icon={<DeleteIcon />} />   
+                          
+                            
+                             </Td>
+                        </Tr>)
                     )
                 }
-            </tbody>
-        </table>
-    </div>
-}
-export default ListaCargo
+            </Tbody>
+        </Table>
+        </TableContainer>
+    
+
+
+);    
+};
+
+
+
