@@ -1,11 +1,23 @@
 import { Form } from '@/components/funcionarios/Form';
 import React, { useState } from 'react';
-import { BtnAdd} from '@/components/funcionarios/BtnAdd';
-import { BtnEdit} from '@/components/funcionarios/BtnEdit';
-import { BtnDelete} from '@/components/funcionarios/BtnDelete';
-
+import { BtnAdd} from '@/components/funcionarios/btnAdd';
+import { BtnEdit} from '@/components/funcionarios/btnEdit';
+import { BtnDelete} from '@/components/funcionarios/btnDelete';
 import '../../app/globals.css'
 import Layout from '../../app/layout'
+
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
+  TableContainer,
+} from '@chakra-ui/react'
+
 const index = () => {
   const funcionarios= [
     {
@@ -55,9 +67,43 @@ const editarFuncionario=(ruc: React.SetStateAction<null>)=>{
 
   return (
     <Layout>
-     
-
-      <div className="flex justify-between items-center">
+      <TableContainer>
+  <Table variant='simple'>
+    <TableCaption>Imperial to metric conversion factors</TableCaption>
+    <Thead>
+      <Tr>
+        <Th>To convert</Th>
+        <Th>into</Th>
+        <Th isNumeric>multiply by</Th>
+      </Tr>
+    </Thead>
+    <Tbody>
+      <Tr>
+        <Td>inches</Td>
+        <Td>millimetres (mm)</Td>
+        <Td isNumeric>25.4</Td>
+      </Tr>
+      <Tr>
+        <Td>feet</Td>
+        <Td>centimetres (cm)</Td>
+        <Td isNumeric>30.48</Td>
+      </Tr>
+      <Tr>
+        <Td>yards</Td>
+        <Td>metres (m)</Td>
+        <Td isNumeric>0.91444</Td>
+      </Tr>
+    </Tbody>
+    <Tfoot>
+      <Tr>
+        <Th>To convert</Th>
+        <Th>into</Th>
+        <Th isNumeric>multiply by</Th>
+      </Tr>
+    </Tfoot>
+  </Table>
+</TableContainer>
+      <div className="flex  flex-row-reverse mr-8 ">
         <BtnAdd onClick={abrirFormulario}/>
       </div>
 
@@ -66,7 +112,7 @@ const editarFuncionario=(ruc: React.SetStateAction<null>)=>{
       </div>
       
       <div className="flex justify-center">
-      <table className='table-auto w-full'>
+      <table className='table-auto w-full m-8'>
         <thead>
           <tr>
             <th className='px-4 py-2'>Ruc</th>
@@ -86,8 +132,7 @@ const editarFuncionario=(ruc: React.SetStateAction<null>)=>{
                 <td className='border px-4 py-2'>{funcionario.fechaNac}</td>
                 <td className='border px-4 py-2'>
                   <div>
-                    <BtnEdit />
-                    <BtnDelete/>
+                    
                   </div>
                 </td>
               </tr>

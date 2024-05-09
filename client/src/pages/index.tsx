@@ -1,11 +1,14 @@
 import React from 'react'
 import Layout from '../app/layout'
+import {Flex} from '@chakra-ui/react'
+import { SiberBar } from '@/components/ui/NavBar/SiberBar'
 
 const index = () => {
   return (
    <Layout>
-    <h1>Welcome to our website
-        </h1>
+      <Flex>
+        <SiberBar/>
+      </Flex>
    </Layout>
   )
 }
