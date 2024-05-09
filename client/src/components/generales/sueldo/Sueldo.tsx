@@ -1,6 +1,6 @@
 
 import React from 'react'
-import {  Button, IconButton, Input,Heading,  InputGroup, Box, InputLeftElement } from '@chakra-ui/react'
+import {  Button, IconButton, Input,Heading,  InputGroup, Box, InputLeftElement,Stack } from '@chakra-ui/react'
 import { DeleteIcon, EditIcon, SearchIcon} from '@chakra-ui/icons'
 import {Table, Thead,Tbody,Tfoot, Tr,Th,Td,TableContainer,} from '@chakra-ui/react'
 import { Tag,TagLabel,TagLeftIcon,TagRightIcon} from '@chakra-ui/react'
@@ -23,20 +23,26 @@ import { text } from 'stream/consumers'
     return(
         <>
         <div>
-           <Button m={5} p={2} fontSize={12} borderRadius='full'colorScheme='cyan'>Prestamo</Button>
-           <Button m={5}  fontSize={12} borderRadius='full'colorScheme='cyan'>Sueldo</Button>
-           <Button m={5}  fontSize={12} borderRadius='full'colorScheme='cyan'>Aguinaldo</Button>
-            <Input placeholder='Select Date and Time' width={200}  size='md' type='datetime-local' />
+            <div className="flex justify-between px-5 items-center mt-3">
+                <div className="flex gap-2 text-[#ffffff]">
+                    <Button fontSize={12} borderRadius='full' textColor='white' background='pink.300'>Prestamo</Button>
+                    <Button fontSize={12} borderRadius='full' textColor='white' background='pink.300'>Sueldo</Button>
+                    <Button fontSize={12} borderRadius='full' textColor='white' background='pink.300'>Aguinaldo</Button>
+                </div>
+
+                <Stack spacing={4}>
+                    <InputGroup textAlign="right">
+                        <InputLeftElement pointerEvents='none'>
+                            <SearchIcon color='gray.500' />
+                        </InputLeftElement>
+                        <Input type='search' width={300} placeholder='buscar' />
+                    </InputGroup>
+                </Stack>
+            </div>
            <Heading className='flex flex-col p-3' >Sueldo</Heading>
+           <Input placeholder='Select Date and Time' width={200}  size='md' type='datetime-local' />
         </div>
-          
-        <InputGroup textAlign="right">
-            <InputLeftElement pointerEvents='none'>
-            <SearchIcon color='gray' />
-            </InputLeftElement>
-            <IconButton aria-label='Search database' icon={<SearchIcon />} />   
-            <Input type='search'   width={200} placeholder='buscar' />
-        </InputGroup>
+        
          <div>
           <Tag as='b'color='pink'  size='lg' m={5} colorScheme='white' borderRadius='full'> 
           <TagLabel>Nombre</TagLabel>
@@ -85,7 +91,7 @@ import { text } from 'stream/consumers'
         </>
 
 
-);    
+    );    
 };
 
 
