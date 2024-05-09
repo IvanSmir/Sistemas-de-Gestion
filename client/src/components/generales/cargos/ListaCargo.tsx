@@ -2,10 +2,29 @@
 import axios from 'axios'
 import Link from 'next/link'
 import { use, useEffect, useState } from 'react'
+import { IconButton } from '@chakra-ui/react'
+import { DeleteIcon, EditIcon } from '@chakra-ui/icons'
+import {
+    Table,
+    Thead,
+    Tbody,
+    Tfoot,
+    Tr,
+    Th,
+    Td,
+    TableCaption,
+    TableContainer,
+} from '@chakra-ui/react'
 
 const ListaCargo = () => {
 
-    const [cargos, setCargos] = useState([])
+    const [cargos, setCargos] = useState([
+        {
+            _id: 1,
+            nombre: "Gerente General",
+            lugar: "Casa Matriz",
+        }
+    ])
     useEffect(() => {
         try {
             const fetchData = async () => {
@@ -44,31 +63,44 @@ const ListaCargo = () => {
     //     }
     // ]
 
-    return <div>
-        <h1 className='flex flex-col p-10'>Lista de Cargos</h1>
-        <Link href={'/generales/cargos/add'}><button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>Crear Cargo</button></Link>
-        <table className='table-auto w-full'>
-            <thead>
-                <tr>
-                    <th className='px-4 py-2'>Nombre</th>
-                    <th className='px-4 py-2'>Descripcion</th>
-                    <th className='px-4 py-2'>Vacantes</th>
-                    <th className='px-4 py-2'>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {
-                    cargos.map((cargo: any) => (
-                        <tr key={cargo.id}>
-                            <td className='border px-4 py-2'>{cargo.name}</td>
-                            <td className='border px-4 py-2'>{cargo.description}</td>
-                            <td className='border px-4 py-2'>{cargo.vacancies}</td>
-                            <td className='border px-4 py-2'><button>edit</button><button>delete</button></td>
-                        </tr>)
-                    )
-                }
-            </tbody>
-        </table>
-    </div>
-}
+    return (
+        <div>
+            <h1 className='flex flex-col p-10'>Lista de Cargos</h1>
+            <Link href={'/generales/cargos/add'}><button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>Crear Cargo</button></Link>
+            <TableContainer>
+                <h1 className='flex flex-col p-10'>Cargos</h1>
+                <Table className='table-auto w-full' variant='simple' colorScheme='teal'>
+
+                    <Thead>
+                        <Tr>
+
+                            <Th className='px-4 py-2'>Nombre</Th>
+                            <Th className='px-4 py-2'>Lugar</Th>
+                            <Th className='px-4 py-2'>Acciones</Th>
+                        </Tr>
+                    </Thead>
+                    <Tbody>
+                        {
+                            cargos.map(cargo => (
+                                <Tr key={cargo._id}>
+
+                                    <Td className='border px-4 py-2'>{cargo.nombre}</Td>
+                                    <Td className='border px-4 py-2'>{cargo.lugar}</Td>
+                                    <Td className='border px-4 py-2'>
+                                        <IconButton aria-label='Editar' colorScheme='teal' m={2} icon={<EditIcon />} />
+                                        <IconButton aria-label='borrar' colorScheme='red' m={2} icon={<DeleteIcon />} />
+
+
+                                    </Td>
+                                </Tr>)
+                            )
+                        }
+                    </Tbody>
+                </Table>
+            </TableContainer>
+
+
+        </div>
+    );
+};
 export default ListaCargo

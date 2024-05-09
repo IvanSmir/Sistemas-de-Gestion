@@ -1,6 +1,8 @@
 'use client';
 import axios from "axios";
 import React, { ChangeEvent, FormEvent, useState } from "react";
+import { Text, FormControl, Input, FormLabel, Select, Button } from '@chakra-ui/react'
+
 
 interface FormValues {
   name: string;
@@ -49,141 +51,167 @@ export const Form: React.FC = () => {
   };
 
   return (
-    <form className="flex flex-col items-center justify-center min-h-screen" onSubmit={handleSubmit}>
-      <div className="w-full max-w-3xl p-8 bg-white shadow-md rounded-lg">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <label className="block text-xl font-medium text-gray-700" htmlFor="image">
-              Imagen:
-              <input
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                type="text"
-                id="image"
-                name="image"
-                value={formData.image}
-                onChange={handleChange}
-                required
-              />
-            </label>
+    <form onSubmit={handleSubmit}>
+      <Text
+        fontSize='3xl'
+        marginLeft='3vw'
+        marginBottom='3vh'
+      >
+        Agregar funcionario</Text>
 
-            <label className="block text-xl font-medium text-gray-700" htmlFor="name">
-              Nombre:
-              <input
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                type="text"
-                id="name"
-                name="name"
-                onChange={handleChange}
-                value={formData.name}
-                required
-              />
-            </label>
+      <FormControl className="flex justify-center items-center">
+        <div className="Container">
 
-            <label className="block text-xl font-medium text-gray-700" htmlFor="gender">
-              Sexo:
-              <select
-                className="mt-1 block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-xl outline-2 placeholder:text-gray-500"
-                id="gender"
-                name="gender"
-                value={formData.gender}
-                onChange={handleChange}
-              >
-                <option value="">Seleccione el sexo</option>
-                <option value="hombre">Hombre</option>
-                <option value="mujer">Mujer</option>
-              </select>
-            </label>
+          <div className=" divMitad gap-14 flex flex-row">
+            <div>
 
-            <label className="block text-xl font-medium text-gray-700" htmlFor="direction">
-              Dirección:
-              <input
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                type="text"
-                id="direction"
-                onChange={handleChange}
+              <div className="grid grid-cols-2 gap-6">
+                <FormLabel htmlFor="name" >Nombre:
 
-                value={formData.direction}
-                name="direction"
-              />
-            </label>
+                  <Input
+                    type="text"
+                    id="name"
+                    name="name"
+                    onChange={handleChange}
+                    value={formData.name}
+                  />
+                </FormLabel>
+                <FormLabel htmlFor="email">
+                  Correo:
+                  <Input
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                    type="email"
+                    id="email"
+                    onChange={handleChange}
 
-            <label className="block text-xl font-medium text-gray-700" htmlFor="ruc">
-              RUC:
-              <input
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                type="text"
-                id="ruc"
-                onChange={handleChange}
+                    value={formData.email}
+                    name="email"
+                  />
+                </FormLabel>
+              </div>
 
-                value={formData.ruc}
-                name="ruc"
-              />
-            </label>
+              <FormLabel htmlFor="direction">Dirección:
+                <input
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                  type="text"
+                  id="direction"
+                  onChange={handleChange}
+
+                  value={formData.direction}
+                  name="direction"
+                />
+              </FormLabel>
+              <div className="grid grid-cols-2 gap-6">
+                <FormLabel htmlFor="gender">Sexo:
+
+                  <Select
+                    id="gender"
+                    name="gender"
+                    value={formData.gender}
+                    placeholder='Seleccione el sexo'
+                    onChange={handleChange}
+                  >
+                    <option value="hombre">Hombre</option>
+                    <option value="mujer">Mujer</option>
+                  </Select>
+                </FormLabel>
+
+                <FormLabel htmlFor="ruc">
+                  RUC:
+
+                  <Input
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                    type="text"
+                    id="ruc"
+                    onChange={handleChange}
+
+                    value={formData.ruc}
+                    name="ruc"
+                  />
+
+                </FormLabel>
+              </div>
+              <div className="grid grid-cols-2 gap-6">
+
+                <FormLabel htmlFor="joinDate">
+                  Fecha de Incorporación:
+
+                  <Input
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                    type="date"
+                    id="joinDate"
+                    onChange={handleChange}
+                    value={formData.joinDate.toString()}
+                    name="joinDate"
+                  />
+                </FormLabel>
+                <FormLabel htmlFor="birthdate">
+                  Fecha de Nacimiento:
+
+                  <Input
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                    type="date"
+                    id="birthdate"
+                    onChange={handleChange}
+
+                    value={formData.birthdate.toString()}
+                    name="birthdate"
+                  />
+                </FormLabel>
+              </div>
+              <FormLabel htmlFor="phone">
+                Teléfono:
+                <Input
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                  type="text"
+                  id="phone"
+                  onChange={handleChange}
+
+                  value={formData.phone}
+                  name="phone"
+                />
+              </FormLabel>
+            </div>
+
+
+            <div className="flex flex-col items-center">
+              <FormLabel htmlFor='image'>Foto de Perfil: </FormLabel>
+              <div className="flex flex-col h-56 justify-center">
+                <Input
+                  bgImage={'/image.png'}
+                  bgSize='cover'
+                  bgRepeat='no-repeat'
+                  h="23vh"
+                  w="13vw"
+                  type="text"
+                  id="image"
+                  name="image"
+                  value={formData.image}
+                  onChange={handleChange}
+                />
+                <Button
+                  mt={4}
+                  colorScheme='gray'
+                >Subir Imagen</Button>
+
+              </div>
+
+            </div>
+
           </div>
 
-          <div>
-            <label className="block text-xl font-medium text-gray-700" htmlFor="joinDate">
-              Fecha de Incorporación:
-              <input
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                type="date"
-                id="joinDate"
-                onChange={handleChange}
-                value={formData.joinDate.toString()}
-                name="joinDate"
-              />
-            </label>
 
-            <label className="block text-xl font-medium text-gray-700" htmlFor="birthdate">
-              Fecha de Nacimiento:
-              <input
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                type="date"
-                id="birthdate"
-                onChange={handleChange}
 
-                value={formData.birthdate.toString()}
-                name="birthdate"
-              />
-            </label>
-
-            <label className="block text-xl font-medium text-gray-700" htmlFor="phone">
-              Teléfono:
-              <input
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                type="text"
-                id="phone"
-                onChange={handleChange}
-
-                value={formData.phone}
-                name="phone"
-              />
-            </label>
-
-            <label className="block text-xl font-medium text-gray-700" htmlFor="email">
-              Correo:
-              <input
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                type="email"
-                id="email"
-                onChange={handleChange}
-
-                value={formData.email}
-                name="email"
-              />
-            </label>
-          </div>
+          <Button
+            mt={4}
+            colorScheme='gray'
+            type='submit'
+          >Enviar</Button>
         </div>
 
-        <div className="flex justify-center mt-6">
-          <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full" type="submit">
-            Enviar
-          </button>
-        </div>
-      </div>
-    </form>
+      </FormControl>
+    </form >
 
 
   );
-
 };

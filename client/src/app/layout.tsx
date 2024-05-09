@@ -2,6 +2,8 @@ import "./globals.css"
 import React from "react";
 import { NavBar } from "@/components/ui/NavBar/NavBar";
 import { Header } from "@/components/ui/header/Header";
+import { Providers } from './providers'
+import { SideBar } from "@/components/ui/NavBar/SideBar";
 
 
 
@@ -13,13 +15,17 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
-        <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
-          <NavBar />
-          <div className="flex flex-col">
-            <Header />
-            {children}
+        <Providers>
+          <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
+            <SideBar />
+
+            <div className="flex flex-col">
+              <Header />
+              {children}
+            </div>
           </div>
-        </div>
+
+        </Providers>
 
       </body>
     </html>
