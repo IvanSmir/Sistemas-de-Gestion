@@ -11,7 +11,7 @@ interface FormValues {
     sueldoBase: number;
 }
 
-export const Form: React.FC = () => {
+export const FormCargo: React.FC = () => {
     const router = useRouter()
 
     const [formData, setFormData] = useState<FormValues>(
@@ -43,6 +43,7 @@ export const Form: React.FC = () => {
         
       
     return (
+
         
         <form className="bg-[#F3F3F3] h-full relative" onSubmit={handleSubmit}>
             <div>
@@ -84,13 +85,6 @@ export const Form: React.FC = () => {
                             </InputGroup>
                             
                         </label>
-
-                        <div  >
-                            
-                            <Button position='relative' h='100px' background='#D18F9D' _hovertext-white font-bold py={2} px={4} mt={5} rounded-full type="submit">
-                                Cargar
-                            </Button>
-                        </div>
                     </div>
                 </div>
             </div>
