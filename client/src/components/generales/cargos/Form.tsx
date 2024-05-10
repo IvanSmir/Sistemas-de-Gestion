@@ -2,6 +2,7 @@
 import axios from "axios";
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import { useRouter } from 'next/navigation'
+import { Button } from "@chakra-ui/react";
 
 
 interface FormValues {
@@ -10,7 +11,7 @@ interface FormValues {
     vacancies: number;
 }
 
-export const Form: React.FC = () => {
+export const FormCargo: React.FC = () => {
     const router = useRouter()
 
     const [formData, setFormData] = useState<FormValues>(
@@ -40,7 +41,7 @@ export const Form: React.FC = () => {
     };
 
     return (
-        <form className="flex flex-col items-center justify-center min-h-screen " onSubmit={handleSubmit}>
+        <form>
             <div className="flext justify-center w-full max-w-3xl p-8 bg-white shadow-md rounded-lg">
 
                 <div className="grid grid-cols-2 gap-6">
@@ -81,11 +82,7 @@ export const Form: React.FC = () => {
                             />
                         </label>
 
-                        <div className="flex justify-center mt-6">
-                            <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full" type="submit">
-                                Enviar
-                            </button>
-                        </div>
+
                     </div>
                 </div>
             </div>

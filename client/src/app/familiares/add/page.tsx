@@ -1,9 +1,9 @@
-import { List } from '@/components/familiares/List';
+import { Form } from '@/components/familiares/add/Form';
 import React from 'react'
 const index = () => {
     return (
         
-        <List />
+        <Form />
     )
 }
 export default index;
