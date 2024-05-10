@@ -2,7 +2,9 @@
 import axios from "axios";
 import React, { ChangeEvent, FormEvent, useState, useEffect } from "react";
 import { useRouter } from 'next/navigation'
-import Pagination from "./Pagination"; 
+import { InputGroup, InputLeftElement, Input, Button} from "@chakra-ui/react";
+import { PhoneIcon } from "@chakra-ui/icons";
+
 interface FormValues {
     name: string;
     description: string;
@@ -42,51 +44,52 @@ export const Form: React.FC = () => {
       
     return (
         
-        <form className="flex flex-col items-center justify-center min-h-screen " onSubmit={handleSubmit}>
-            <div className="flext justify-center w-full max-w-3xl p-8 bg-white shadow-md rounded-lg">
-            <Pagination/>
-                <div className="grid grid-cols-2 gap-6">
+        <form className="bg-[#F3F3F3] h-full relative" onSubmit={handleSubmit}>
+            <div>
+                <div className="absolute h-auto min-h-[80vh] max-h-[80vh] rounded-md bg-white w-[70%] p-5 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                     <div>
-
-                        <label className="block text-xl font-medium text-gray-700" htmlFor="name">
+                    <h1 className='text-4xl' >Cargos</h1>
+                        <label className="block text-xl font-medium pt-5 text-gray-700" htmlFor="name">
                             Nombre:
-                            <input
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                                type="text"
-                                id="name"
-                                name="name"
-                                onChange={handleChange}
-                                required
-                            />
+                            <InputGroup>
+                            
+                                <Input type='text' placeholder='Nombre' onChange={handleChange} />
+                            </InputGroup>
                         </label>
 
 
-                        <label className="block text-xl font-medium text-gray-700" htmlFor="description">
+                        <label className="block text-xl pt-5 Si font-medium text-gray-700" htmlFor="description">
                             Descripción:
-                            <input
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                                type="text"
+                            <InputGroup>
+                                
+                                <Input className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                                type='text' 
+                                placeholder='Nombre' 
                                 id="description"
-                                onChange={handleChange}
+                                onChange={handleChange} 
                                 name="description"
-                            />
+                                />
+                            </InputGroup>
+                            
                         </label>
 
-                        <label className="block text-xl font-medium text-gray-700" htmlFor="vacant">
+                        <label className="block text-xl pt-5 font-medium text-gray-700" htmlFor="vacant">
                             Sueldo Base:
-                            <input
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                                type="number"
-                                id="vacancies"
-                                onChange={handleChange}
-                                name="vacancies"
-                            />
+                            <InputGroup>
+                                <Input type='text' 
+                                id="sueldoBase"
+                                onChange={handleChange} 
+                                name="sueldoBase"
+                                />
+                            </InputGroup>
+                            
                         </label>
 
-                        <div className="flex justify-center mt-6">
-                            <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full" type="submit">
-                                Enviar
-                            </button>
+                        <div  >
+                            
+                            <Button position='relative' h='100px' background='#D18F9D' _hovertext-white font-bold py={2} px={4} mt={5} rounded-full type="submit">
+                                Cargar
+                            </Button>
                         </div>
                     </div>
                 </div>

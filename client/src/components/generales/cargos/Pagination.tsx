@@ -18,7 +18,7 @@ export const Pagination = () => {
 
     const getClassNameBySelected = useCallback((selected = false)=>{
         if(selected) return "w-[3%] flex text-center items-center justify-center aspect-square rounded-lg text-white bg-[#AA546D]"
-         else return "cursor-pointer transition-all duration-300 w-[3%] flex text-center items-center justify-center aspect-square bg-gray-400 rounded-lg text-black hover:text-white hover:bg-[#AA546D]"
+         else return "cursor-pointer transition-all duration-300 w-[3%] flex text-center items-center justify-center aspect-square bg-[#D8D9DB] rounded-lg text-black hover:text-white hover:bg-[#AA546D]"
     }, [])
 
     return (
