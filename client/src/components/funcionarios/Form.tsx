@@ -1,8 +1,8 @@
 'use client';
 import axios from "axios";
 import React, { ChangeEvent, FormEvent, useState } from "react";
-import { Text, FormControl, Input, FormLabel, Select, Button } from '@chakra-ui/react'
-
+import { Text, FormControl, Input, FormLabel, Select, Button, Stepper } from '@chakra-ui/react'
+import { useRouter } from 'next/navigation'
 
 interface FormValues {
   name: string;
@@ -18,7 +18,9 @@ interface FormValues {
 
 }
 
-export const Form: React.FC = () => {
+export const FormFuncionario: React.FC = () => {
+  const router = useRouter()
+
   const [formData, setFormData] = useState<FormValues>(
     {
       name: "",
@@ -37,6 +39,7 @@ export const Form: React.FC = () => {
     let value = target.value;
     setFormData({ ...formData, [target.name]: value });
   };
+  /*
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormData(formData);
@@ -44,174 +47,174 @@ export const Form: React.FC = () => {
     try {
       const response = await axios.post("http://localhost:3002/employees", formData);
       console.log(response);
+      router.push('/generales/cargos/add')
     } catch (error) {
       console.error(error);
     }
 
   };
-
+*/
   return (
-    <form onSubmit={handleSubmit}>
-      <Text
-        fontSize='3xl'
-        marginLeft='3vw'
-        marginBottom='3vh'
-      >
-        Agregar funcionario</Text>
+    <>
 
-      <FormControl className="flex justify-center items-center">
-        <div className="Container">
+      <form>
+        <Text
+          fontSize='3xl'
+          marginLeft='3vw'
+          marginBottom='3vh'
+        >
+          Agregar funcionario</Text>
 
-          <div className=" divMitad gap-14 flex flex-row">
-            <div>
+        <FormControl className="flex justify-center items-center">
+          <div className="Container">
 
-              <div className="grid grid-cols-2 gap-6">
-                <FormLabel htmlFor="name" >Nombre:
+            <div className=" divMitad gap-14 flex flex-row">
+              <div>
 
-                  <Input
-                    type="text"
-                    id="name"
-                    name="name"
-                    onChange={handleChange}
-                    value={formData.name}
-                  />
-                </FormLabel>
-                <FormLabel htmlFor="email">
-                  Correo:
-                  <Input
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                    type="email"
-                    id="email"
-                    onChange={handleChange}
+                <div className="grid grid-cols-2 gap-6">
+                  <FormLabel htmlFor="name" >Nombre:
 
-                    value={formData.email}
-                    name="email"
-                  />
-                </FormLabel>
-              </div>
+                    <Input
+                      type="text"
+                      id="name"
+                      name="name"
+                      onChange={handleChange}
+                      value={formData.name}
+                    />
+                  </FormLabel>
+                  <FormLabel htmlFor="email">
+                    Correo:
+                    <Input
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      type="email"
+                      id="email"
+                      onChange={handleChange}
 
-              <FormLabel htmlFor="direction">Dirección:
-                <input
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                  type="text"
-                  id="direction"
-                  onChange={handleChange}
+                      value={formData.email}
+                      name="email"
+                    />
+                  </FormLabel>
+                </div>
 
-                  value={formData.direction}
-                  name="direction"
-                />
-              </FormLabel>
-              <div className="grid grid-cols-2 gap-6">
-                <FormLabel htmlFor="gender">Sexo:
-
-                  <Select
-                    id="gender"
-                    name="gender"
-                    value={formData.gender}
-                    placeholder='Seleccione el sexo'
-                    onChange={handleChange}
-                  >
-                    <option value="hombre">Hombre</option>
-                    <option value="mujer">Mujer</option>
-                  </Select>
-                </FormLabel>
-
-                <FormLabel htmlFor="ruc">
-                  RUC:
-
-                  <Input
+                <FormLabel htmlFor="direction">Dirección:
+                  <input
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                     type="text"
-                    id="ruc"
+                    id="direction"
                     onChange={handleChange}
 
-                    value={formData.ruc}
-                    name="ruc"
+                    value={formData.direction}
+                    name="direction"
                   />
-
                 </FormLabel>
-              </div>
-              <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 gap-6">
+                  <FormLabel htmlFor="gender">Sexo:
 
-                <FormLabel htmlFor="joinDate">
-                  Fecha de Incorporación:
+                    <Select
+                      id="gender"
+                      name="gender"
+                      value={formData.gender}
+                      placeholder='Seleccione el sexo'
+                      onChange={handleChange}
+                    >
+                      <option value="hombre">Hombre</option>
+                      <option value="mujer">Mujer</option>
+                    </Select>
+                  </FormLabel>
 
+                  <FormLabel htmlFor="ruc">
+                    RUC:
+
+                    <Input
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      type="text"
+                      id="ruc"
+                      onChange={handleChange}
+
+                      value={formData.ruc}
+                      name="ruc"
+                    />
+
+                  </FormLabel>
+                </div>
+                <div className="grid grid-cols-2 gap-6">
+
+                  <FormLabel htmlFor="joinDate">
+                    Fecha de Incorporación:
+
+                    <Input
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      type="date"
+                      id="joinDate"
+                      onChange={handleChange}
+                      value={formData.joinDate.toString()}
+                      name="joinDate"
+                    />
+                  </FormLabel>
+                  <FormLabel htmlFor="birthdate">
+                    Fecha de Nacimiento:
+
+                    <Input
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      type="date"
+                      id="birthdate"
+                      onChange={handleChange}
+
+                      value={formData.birthdate.toString()}
+                      name="birthdate"
+                    />
+                  </FormLabel>
+                </div>
+                <FormLabel htmlFor="phone">
+                  Teléfono:
                   <Input
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                    type="date"
-                    id="joinDate"
-                    onChange={handleChange}
-                    value={formData.joinDate.toString()}
-                    name="joinDate"
-                  />
-                </FormLabel>
-                <FormLabel htmlFor="birthdate">
-                  Fecha de Nacimiento:
-
-                  <Input
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                    type="date"
-                    id="birthdate"
+                    type="text"
+                    id="phone"
                     onChange={handleChange}
 
-                    value={formData.birthdate.toString()}
-                    name="birthdate"
+                    value={formData.phone}
+                    name="phone"
                   />
                 </FormLabel>
               </div>
-              <FormLabel htmlFor="phone">
-                Teléfono:
-                <Input
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                  type="text"
-                  id="phone"
-                  onChange={handleChange}
 
-                  value={formData.phone}
-                  name="phone"
-                />
-              </FormLabel>
+
+              <div className="flex flex-col items-center">
+                <FormLabel htmlFor='image'>Foto de Perfil: </FormLabel>
+                <div className="flex flex-col h-56 justify-center">
+                  <Input
+                    bgImage={'/image.png'}
+                    bgSize='cover'
+                    bgRepeat='no-repeat'
+                    h="23vh"
+                    w="13vw"
+                    type="text"
+                    id="image"
+                    name="image"
+                    value={formData.image}
+                    onChange={handleChange}
+                  />
+                  <Button
+                    mt={4}
+                    colorScheme='gray'
+                  >Subir Imagen</Button>
+
+                </div>
+
+              </div>
+
             </div>
 
 
-            <div className="flex flex-col items-center">
-              <FormLabel htmlFor='image'>Foto de Perfil: </FormLabel>
-              <div className="flex flex-col h-56 justify-center">
-                <Input
-                  bgImage={'/image.png'}
-                  bgSize='cover'
-                  bgRepeat='no-repeat'
-                  h="23vh"
-                  w="13vw"
-                  type="text"
-                  id="image"
-                  name="image"
-                  value={formData.image}
-                  onChange={handleChange}
-                />
-                <Button
-                  mt={4}
-                  colorScheme='gray'
-                >Subir Imagen</Button>
 
-              </div>
-
-            </div>
 
           </div>
 
+        </FormControl>
+      </form >
 
-
-          <Button
-            mt={4}
-            colorScheme='gray'
-            type='submit'
-          >Enviar</Button>
-        </div>
-
-      </FormControl>
-    </form >
-
+    </>
 
   );
 };
