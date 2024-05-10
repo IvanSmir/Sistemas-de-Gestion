@@ -1,14 +1,14 @@
 'use client'
 import axios from "axios";
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import React, { ChangeEvent, FormEvent, useState, useEffect } from "react";
 import { useRouter } from 'next/navigation'
-import { Button } from "@chakra-ui/react";
-
+import { InputGroup, InputLeftElement, Input, Button} from "@chakra-ui/react";
+import { PhoneIcon } from "@chakra-ui/icons";
 
 interface FormValues {
     name: string;
     description: string;
-    vacancies: number;
+    sueldoBase: number;
 }
 
 export const FormCargo: React.FC = () => {
@@ -18,7 +18,7 @@ export const FormCargo: React.FC = () => {
         {
             name: "",
             description: "",
-            vacancies: 0,
+            sueldoBase: 0,
         }
     );
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -30,8 +30,8 @@ export const FormCargo: React.FC = () => {
         e.preventDefault();
         setFormData(formData);
         try {
-            const response = await axios.post("http://localhost:3002/cargos", { ...formData, vacancies: +formData.vacancies });
-            console.log(+formData.vacancies);
+            const response = await axios.post("http://localhost:3002/cargos", { ...formData, sueldoBase: +formData.sueldoBase });
+            console.log(+formData.sueldoBase);
             console.log(response);
             router.push('/generales/cargos')
 
@@ -39,50 +39,52 @@ export const FormCargo: React.FC = () => {
             console.log(error);
         }
     };
-
+    
+        
+      
     return (
-        <form>
-            <div className="flext justify-center w-full max-w-3xl p-8 bg-white shadow-md rounded-lg">
 
-                <div className="grid grid-cols-2 gap-6">
+        
+        <form className="bg-[#F3F3F3] h-full relative" onSubmit={handleSubmit}>
+            <div>
+                <div className="absolute h-auto min-h-[80vh] max-h-[80vh] rounded-md bg-white w-[70%] p-5 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                     <div>
-
-                        <label className="block text-xl font-medium text-gray-700" htmlFor="name">
+                    <h1 className='text-4xl' >Cargos</h1>
+                        <label className="block text-xl font-medium pt-5 text-gray-700" htmlFor="name">
                             Nombre:
-                            <input
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                                type="text"
-                                id="name"
-                                name="name"
-                                onChange={handleChange}
-                                required
-                            />
+                            <InputGroup>
+                            
+                                <Input type='text' placeholder='Nombre' onChange={handleChange} />
+                            </InputGroup>
                         </label>
 
 
-                        <label className="block text-xl font-medium text-gray-700" htmlFor="description">
+                        <label className="block text-xl pt-5 Si font-medium text-gray-700" htmlFor="description">
                             Descripción:
-                            <input
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                                type="text"
+                            <InputGroup>
+                                
+                                <Input className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                                type='text' 
+                                placeholder='Nombre' 
                                 id="description"
-                                onChange={handleChange}
+                                onChange={handleChange} 
                                 name="description"
-                            />
+                                />
+                            </InputGroup>
+                            
                         </label>
 
-                        <label className="block text-xl font-medium text-gray-700" htmlFor="vacant">
-                            Vacante:
-                            <input
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                                type="number"
-                                id="vacancies"
-                                onChange={handleChange}
-                                name="vacancies"
-                            />
+                        <label className="block text-xl pt-5 font-medium text-gray-700" htmlFor="vacant">
+                            Sueldo Base:
+                            <InputGroup>
+                                <Input type='text' 
+                                id="sueldoBase"
+                                onChange={handleChange} 
+                                name="sueldoBase"
+                                />
+                            </InputGroup>
+                            
                         </label>
-
-
                     </div>
                 </div>
             </div>
