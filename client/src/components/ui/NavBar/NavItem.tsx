@@ -1,30 +1,49 @@
 'use client'
-import clsx from 'clsx';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import React from 'react'
+import {
+  Flex,
+  Text,
+  Icon,
+  Link,
+  Menu,
+  MenuButton,
+  MenuList
+} from '@chakra-ui/react'
+interface NavItemProps {
+  navSize: string; 
+  icon: React.ElementType;
+  title: string;
+  active: boolean;
+  onClick?: (title: string) => void; 
+}
 
-export function NavItem({
-  href,
-  children
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
-  const pathname = usePathname();
-  console.log(pathname, 'pathname', href, 'href')
-  console.log(href)
-
-  return (
-    <Link
-      href={href}
-      className={clsx(
-        'flex items-center gap-3 rounded-lg  px-3 py-2 text-gray-900  transition-all hover:text-gray-900  dark:text-gray-50 dark:hover:text-gray-50',
-        {
-          'bg-gray-100 dark:bg-gray-800': pathname === href
-        }
-      )}
+export const NavItem = ({navSize, icon, title, active}: NavItemProps) =>{
+  
+  return(
+    <Flex
+      mt={30}
+      flexDir="column"
+      w="100%"
+      alignItems={navSize == "small" ? "center" : "flex-start"}
     >
-      {children}
-    </Link>
-  );
+      <Menu placement='right'>
+        <Link
+        backgroundColor={active ? "#D18F9D" : "transparent"} 
+        p={3}
+        borderRadius={8}
+        color="#FFFFFF"
+        fontFamily="Source Sans 3"
+        _hover={{textDecor: 'none', backgroundColor: '#D18F9D'}}
+        w={navSize == "large" ? "100%" : "auto"} 
+        >
+        <MenuButton w="100%">
+            <Flex>
+              <Icon as={icon} font size="xl" color={active ? "white" : "white"}/>
+              <Text ml={5}  display={navSize == "small" ? "none" : "flex"}>{title}</Text>
+            </Flex>
+        </MenuButton>
+        </Link>
+      </Menu>
+    </Flex>
+  )
 }

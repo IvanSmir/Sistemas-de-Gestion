@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @media (prefers-color-scheme: ligh) {
   :root {
     --foreground-rgb: 255, 255, 255;
@@ -17,17 +16,22 @@
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background-color:  #D8D9DB;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* Dentro de globals.css */
+
+.navbar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%; /* Altura de la barra de navegación */
+  background-color: #AA546D; /* Color de fondo */
+  box-shadow: 0 4px 12px 0 rgba(0,0,0,0.05); /* Sombra */
 }
