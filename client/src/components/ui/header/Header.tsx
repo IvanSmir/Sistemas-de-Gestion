@@ -1,14 +1,44 @@
-import Link from 'next/link'
+'use client'
+import React from 'react';
+import {
+  Box,
+  Flex,
+  Text,
+  Avatar,
+  Button,
+  useDisclosure,
+  useColorModeValue,
+  Stack,
+  useColorMode
+} from '@chakra-ui/react';
+import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 
 export const Header = () => {
+  const { colorMode, toggleColorMode } = useColorMode();
   return (
-            <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40 justify-between lg:justify-end">
-              <Link
-                className="flex items-center gap-2 font-semibold lg:hidden"
-                href="/"
-              >
-                <span className="">Ferreteria</span>
-              </Link>
-            </header>
-  )
+    <>
+      <Box w="100%" bg={useColorModeValue('gray.100', 'gray.900')} px={10}>
+        <Flex h={100}  alignItems={'center'} justifyContent={'space-between'}>
+          <Box>
+            <Text fontSize='3xl'></Text>
+          </Box>
+
+          <Flex alignItems={'center'}>
+            <Stack direction={'row'} spacing={7}>
+              <Button onClick={toggleColorMode}>
+                {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+              </Button >
+              <Flex alignItems={'center'}>
+                <Avatar
+                    src={'https://avatars.dicebear.com/api/male/username.svg'}
+                  />
+                  <Text ml={2}>Juan Perez</Text>
+              </Flex>
+              
+            </Stack>
+          </Flex>
+        </Flex>
+      </Box>
+    </>
+  );
 }
