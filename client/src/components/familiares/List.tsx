@@ -1,12 +1,11 @@
-'use client';
-import React,{useState} from "react";
+'use client'
+import React, { useState, useEffect } from "react";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
-import ReactPaginate from 'react-paginate';
 import {
     Box,
     Flex,
-    Heading,
-    Button,
+    Input,
+    Select,
     TableContainer,
     Table,
     Thead,
@@ -44,10 +43,68 @@ export const List: React.FC = () => {
             relationship: "Hija",
         },
     ];
+
+    const [filters, setFilters] = useState({
+        ci: '',
+        ageRange: '',
+    });
+    const [filteredFamiliares, setFilteredFamiliares] = useState<Familiar[]>(familiares);
+
+    useEffect(() => {
+        const filtered = familiares.filter((familiar) => {
+            const now = new Date();
+            const birthDate = new Date(familiar.birthday);
+            const age = now.getFullYear() - birthDate.getFullYear();
+
+            if (filters.ci && !familiar.ci.includes(filters.ci)) {
+                return false;
+            }
+
+            if (filters.ageRange === 'menores18' && age >= 18) {
+                return false;
+            }
+
+            if (filters.ageRange === 'mayores18' && age < 18) {
+                return false;
+            }
+
+            return true;
+        });
+        setFilteredFamiliares(filtered);
+    }, [filters]);
+
+    const handleCiFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFilters({ ...filters, ci: e.target.value });
+    };
+
+    const handleAgeRangeFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setFilters({ ...filters, ageRange: e.target.value });
+    };
+    
     return (
-        <Box position="absolute" top={160} left={300} width={900} height={426}
-        borderRadius="2xl" padding="8px">
-            <TableContainer position="absolute" top={100}  width={850} height={330} padding="8px 3px" >
+        <Box position="absolute" top={160} left={300} width={900} height={426} borderRadius="2xl" padding="8px" margin="auto">
+            <Flex justifyContent="flex-start" mb={4}>
+                <Box mr={4}>
+                    <label htmlFor="ci">Número de cédula:</label>
+                    <Input
+                        id="ci"
+                        type="text"
+                        value={filters.ci}
+                        onChange={handleCiFilter}
+                        placeholder="Cédula"
+                        size="sm"
+                    />
+                </Box>
+                <Box>
+                    <label htmlFor="ageRange">Rango de edad:</label>
+                    <Select id="ageRange" value={filters.ageRange} onChange={handleAgeRangeFilter} size="sm">
+                        <option value="">Todos</option>
+                        <option value="menores18">Menores de 18</option>
+                        <option value="mayores18">Mayores de 18</option>
+                    </Select>
+                </Box>
+            </Flex>
+            <TableContainer>
                 <Table variant="simple" fontSize="14px">
                     <Thead>
                         <Tr>
@@ -59,7 +116,7 @@ export const List: React.FC = () => {
                         </Tr>
                     </Thead>
                     <Tbody>
-                        {familiares.map((familiar, index) => (
+                        {filteredFamiliares.map((familiar, index) => (
                             <Tr key={index}>
                                 <Td>{familiar.ci}</Td>
                                 <Td>{familiar.name}</Td>
@@ -68,7 +125,7 @@ export const List: React.FC = () => {
                                 <Td>
                                     <EditIcon mr={2} cursor="pointer" />
                                     <DeleteIcon cursor="pointer" />
-                                </Td> 
+                                </Td>
                             </Tr>
                         ))}
                     </Tbody>
@@ -77,4 +134,3 @@ export const List: React.FC = () => {
         </Box>
     );
 };
-
