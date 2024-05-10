@@ -2,9 +2,10 @@
 import axios from 'axios'
 import Link from 'next/link'
 import { use, useEffect, useState } from 'react'
-import {Input,  IconButton, InputGroup, InputLeftElement, Button,} from '@chakra-ui/react'
+import { Input, IconButton, InputGroup, InputLeftElement, Button, } from '@chakra-ui/react'
 import { DeleteIcon, EditIcon, AddIcon, ChevronDownIcon } from '@chakra-ui/icons'
-import {Table,Thead,Tbody,Tfoot,Tr,Th,Td,TableCaption,TableContainer,} from '@chakra-ui/react'
+import { Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, TableContainer, } from '@chakra-ui/react'
+import Pagination from './Pagination'
 
 const ListaCargo = () => {
 
@@ -37,20 +38,20 @@ const ListaCargo = () => {
 
                 <div className="flex justify-between">
                     <div className="flex items-center gap-2">
-                      
-                        <Button rounded={23} fontSize={13} py={1} px={5} background='white' variant='outline' rightIcon={<ChevronDownIcon />} gap={2}  color='white'>
-                        <span className="text-[#888888]">botonAlgo</span>
-                        </Button>  
-                        <Button rounded={23} fontSize={13} py={1} px={5} background='white'variant='outline' rightIcon={<ChevronDownIcon />} gap={2}  color='white'  >
+
+                        <Button rounded={23} fontSize={13} py={1} px={5} background='white' variant='outline' rightIcon={<ChevronDownIcon />} gap={2} color='white'>
+                            <span className="text-[#888888]">botonAlgo</span>
+                        </Button>
+                        <Button rounded={23} fontSize={13} py={1} px={5} background='white' variant='outline' rightIcon={<ChevronDownIcon />} gap={2} color='white'  >
                             <span className="text-[#888888]">Ordenar Por:</span>
                             <span className="font-semibold ">{"Algo"}</span>
-                        </Button>  
+                        </Button>
                     </div>
-                    <Button rounded={23} fontSize={13} py={1} px={5} background='#AA546D'   gap={2}  color='white'   ><AddIcon />Agregar Cargo </Button> 
+                    <Button rounded={23} fontSize={13} py={1} px={5} background='#AA546D' gap={2} color='white'   ><AddIcon />Agregar Cargo </Button>
                 </div>
-                
+
                 <TableContainer>
-                
+
                     <Table className='table-auto w-full mt-2 pt-3' variant='simple' colorScheme='teal'>
 
                         <Thead>
@@ -70,8 +71,8 @@ const ListaCargo = () => {
                                         <Td className='py-1'>{cargo.descripcion}</Td>
                                         <Td className='py-1'>{cargo.sueldoBase}</Td>
                                         <Td className='flex gap-1 px-4 py-1'>
-                                            <IconButton aria-label='Editar' colorScheme='white'  icon={<EditIcon />} color='#AA546D'/>
-                                            <IconButton aria-label='borrar'colorScheme='white' icon={<DeleteIcon />} color='red'/>
+                                            <IconButton aria-label='Editar' colorScheme='white' icon={<EditIcon />} color='#AA546D' />
+                                            <IconButton aria-label='borrar' colorScheme='white' icon={<DeleteIcon />} color='red' />
 
 
                                         </Td>
@@ -81,9 +82,8 @@ const ListaCargo = () => {
                         </Tbody>
                     </Table>
                 </TableContainer>
+                <Pagination />
             </div>
-
-
         </div>
     );
 };
