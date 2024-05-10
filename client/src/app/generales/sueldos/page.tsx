@@ -1,5 +1,5 @@
 import React from 'react'
-import { Sueldo } from '@/components/generales/sueldos/Sueldo'
+import Sueldo from '@/components/generales/sueldos/Sueldo'
 
 const index = () => {
 
