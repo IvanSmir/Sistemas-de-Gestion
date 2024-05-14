@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { CargosModule } from './cargos/cargos.module';
-import { PrismaService } from './prisma/prisma.service';
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
+import { PositionsModule } from './positions/positions.module';
+import { CommonModule } from './common/common.module';
+import { PersonModule } from './person/person.module';
 import { EmployeesModule } from './employees/employees.module';
 
 @Module({
-  imports: [CargosModule, EmployeesModule],
-  controllers: [AppController],
-  providers: [AppService, PrismaService],
+  imports: [ConfigModule.forRoot(), AuthModule, PositionsModule, CommonModule, PersonModule, EmployeesModule],
+  exports: [ConfigModule],
 })
 export class AppModule {}
