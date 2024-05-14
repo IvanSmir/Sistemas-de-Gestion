@@ -10,6 +10,7 @@ dist/
 /build
 /out
 migrations/
+postgres/
 
 # Package lock files
 **/package-lock.json
