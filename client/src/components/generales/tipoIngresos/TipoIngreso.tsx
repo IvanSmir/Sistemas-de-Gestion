@@ -8,17 +8,17 @@ import { CloseIcon } from "@chakra-ui/icons";
 interface FormValues {
     name: string;
     description: string;
-    sueldoBase: number;
+    
 }
 
-export const Form: React.FC = () => {
+export const TipoIngreso: React.FC = () => {
     const router = useRouter()
 
     const [formData, setFormData] = useState<FormValues>(
         {
             name: "",
             description: "",
-            sueldoBase: 0,
+           
         }
     );
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -30,10 +30,7 @@ export const Form: React.FC = () => {
         e.preventDefault();
         setFormData(formData);
         try {
-            const response = await axios.post("http://localhost:3002/cargos", { ...formData, sueldoBase: +formData.sueldoBase });
-            console.log(+formData.sueldoBase);
-            console.log(response);
-            router.push('/generales/cargos')
+           
 
         } catch (error) {
             console.log(error);
@@ -54,9 +51,9 @@ export const Form: React.FC = () => {
                         </InputRightElement>
                     </InputGroup>
                     <div mr-8>
-                        <h1 className='text-4xl' >Cargos</h1>
+                        <h1 className='text-4xl' >Tipo de Ingreso</h1>
                     </div>
-                    <Box w={400} m={5}>
+                    <Box w={400} m={15}>
 
                         <label className="block  font-size={13} pt-5 font-medium text-gray-700" htmlFor="name">
                             Nombre:*
@@ -86,25 +83,12 @@ export const Form: React.FC = () => {
 
                         </label>
 
-                        <label className="block font-size={14} py-5 font-medium text-gray-700" htmlFor="sueldoBase">
-                            Sueldo Base:
-                            <InputGroup>
-
-                                <Input className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" size='sm'
-                                    type='text'
-                                    placeholder='Gs.'
-                                    id="sueldoBase"
-                                    onChange={handleChange}
-                                    name="sueldoBase"
-                                />
-                            </InputGroup>
-
-                        </label>
+                        
 
                         <div  >
                             <Center>
-                                <Button background='#EBEBEB' size='sm' _hovertext-white w={137} h={42} font-bold py={2} px={4} mt={5} rounded-full type="submit">
-                                    Cargar
+                                <Button background='#EBEBEB' size='sm' _hovertext-white w={137} h={42} font-bold p={4}  mt={5} rounded-full type="submit">
+                                    Guardar
                                 </Button>
                             </Center>
 
@@ -119,3 +103,5 @@ export const Form: React.FC = () => {
     );
 
 };
+
+export default TipoIngreso

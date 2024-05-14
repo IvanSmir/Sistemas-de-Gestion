@@ -13,15 +13,15 @@ const Sueldo = () => {
             _id: 1,
 
             concepto: "Sueldo",
-            monto: "2500000",
-            iva: `${229000}`,
+            ingreso: "2250000",
+            egreso: "0",
 
         },{
             _id: 2,
 
             concepto: "Adelanto",
-            monto: "-250000",
-            iva: "0",
+            ingreso: "0",
+            egreso: `${229000}`,
 
         }
     ]
@@ -75,8 +75,8 @@ const Sueldo = () => {
                             <Tr>
 
                                 <Th>Concepto</Th>
-                                <Th >Monto</Th>
-                                <Th >IVA</Th>
+                                <Th >Ingreso</Th>
+                                <Th >Egreso</Th>
                                 <Th >Acciones</Th>
                             </Tr>
                         </Thead>
@@ -86,11 +86,11 @@ const Sueldo = () => {
                                     <Tr key={sueldo._id}>
 
                                         <Td className=' py-1'>{sueldo.concepto}</Td>
-                                        <Td className=' py-1'>{sueldo.monto}</Td>
-                                        <Td className=' py-1'>{sueldo.iva}</Td>
+                                        <Td className=' py-1'>{sueldo.ingreso}</Td>
+                                        <Td className=' py-1'>{sueldo.egreso}</Td>
                                         <Td className='flex gap-1 px-4 py-1'>
-                                            <IconButton aria-label='Editar' colorScheme='teal' icon={<EditIcon />} />
-                                            <IconButton aria-label='borrar' colorScheme='red'  icon={<DeleteIcon />} />
+                                            <IconButton aria-label='Editar' colorScheme='white' icon={<EditIcon />} color='#D8D9DB'/>
+                                            <IconButton aria-label='borrar' colorScheme='white' icon={<DeleteIcon />}  color='red' />
 
 
                                         </Td>
@@ -107,16 +107,16 @@ const Sueldo = () => {
             <div className="flex justify-end px-5 mt-2 mb-5">
                 <div className="flex flex-col font-semibold text-[17px] gap-2">
                     <div className="flex justify-end">
-                        <span>TOTAL:</span>
-                        <div className="min-w-40 text-right">{sueldo.map(s=>Number(s.monto)).reduce((a,b)=>a+b)} Gs</div>
+                        <span>TOTAL INGRESO:</span>
+                        <div className="min-w-40 text-right">{sueldo.map(s=>Number(s.ingreso)).reduce((a,b)=>a+b)} Gs</div>
                     </div>
                     <div className="flex justify-end">
-                        <span>IVA:</span>
-                        <div className="min-w-40 text-right">{sueldo.map(s=>Number(s.iva)).reduce((a,b)=>a+b)} Gs</div>
+                        <span>TOTAL EGRESO:</span>
+                        <div className="min-w-40 text-right">{sueldo.map(s=>Number(s.egreso)).reduce((a,b)=>a+b)} Gs</div>
                     </div>
                     <div className="flex justify-end">
-                        <span>NETO:</span>
-                        <div className="min-w-40 text-right">{sueldo.map(s=>Number(s.monto)).reduce((a,b)=>a+b) - sueldo.map(s=>Number(s.iva)).reduce((a,b)=>a+b)} Gs</div>
+                        <span>MONTO:</span>
+                        <div className="min-w-40 text-right">{sueldo.map(s=>Number(s.ingreso)).reduce((a,b)=>a+b) - sueldo.map(s=>Number(s.egreso)).reduce((a,b)=>a+b)} Gs</div>
                     </div>
                 </div>
             </div>
