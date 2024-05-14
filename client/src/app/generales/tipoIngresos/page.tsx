@@ -1,12 +1,12 @@
 import React from 'react'
-import TipoIngreso from '@/components/generales/tipoIngresos/TipoIngreso';
+import Ingreso from '@/components/generales/tipoIngresos/Ingreso';
 
 
 const index = () => {
 
     return (
 
-        <TipoIngreso/>
+        <Ingreso/>
 
     )
 
