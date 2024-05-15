@@ -34,7 +34,6 @@ export const FormCargo: React.FC = () => {
             console.log(+formData.sueldoBase);
             console.log(response);
             router.push('/generales/cargos')
-
         } catch (error) {
             console.log(error);
         }
@@ -42,12 +41,9 @@ export const FormCargo: React.FC = () => {
 
 
 
-    return (
+    return <form className="bg-[#F3F3F3] h-full relative" onSubmit={handleSubmit}>
 
-
-        <form className="bg-[#F3F3F3] h-full relative" onSubmit={handleSubmit}>
-
-            <div className="absolute h-auto min-h-[80vh] max-h-[80vh] rounded-md bg-white w-[60%] p-5 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div className="absolute h-auto min-h-[80vh] max-h-[80vh] rounded-md bg-white w-[70%] p-5 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 <div>
                     <InputGroup m={2}>
                         <InputRightElement mx={5} >
@@ -103,18 +99,17 @@ export const FormCargo: React.FC = () => {
                         </label>
 
                         <div  >
-                            
-                            <Button position='relative' h='100px' background='#D18F9D' _hovertext-white font-bold py={2} px={4} mt={5} rounded-full type="submit">
+                            <Center>
+                             <Button background='#D#EBEBEB' w={137} h={42} _hovertext-white font-bold py={2} px={4} mt={5} rounded-full type="submit">
                                 Cargar
-                            </Button>
+                            </Button>   
+                            </Center>
+                            
                         </div>
-                    </div>
+                    </Box>
                 </div>
             </div>
 
         </form>
-
-
-    );
 
 };

@@ -2,8 +2,8 @@
 import axios from "axios";
 import React, { ChangeEvent, FormEvent, useState, useEffect } from "react";
 import { useRouter } from 'next/navigation'
-import { InputGroup,  Switch, FormControl, FormLabel, Center, Input, Button, IconButton, Menu, MenuButton, MenuItem, MenuList, InputRightElement, Box, } from "@chakra-ui/react";
-import { CloseIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { InputGroup, Center, Input, Button, IconButton, InputLeftElement, InputRightElement, Box } from "@chakra-ui/react";
+import { CloseIcon } from "@chakra-ui/icons";
 
 interface FormValues {
     name: string;
@@ -11,7 +11,7 @@ interface FormValues {
     
 }
 
-export const Ingreso: React.FC = () => {
+export const TipoEgreso: React.FC = () => {
     const router = useRouter()
 
     const [formData, setFormData] = useState<FormValues>(
@@ -43,7 +43,7 @@ export const Ingreso: React.FC = () => {
 
         <form className="bg-[#F3F3F3] h-full relative" onSubmit={handleSubmit}>
 
-            <div className="absolute h-auto min-h-[80vh] max-h-[80vh] rounded-md bg-white w-[50%] p-5 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div className="absolute h-auto min-h-[80vh] max-h-[80vh] rounded-md bg-white w-[60%] p-5 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 <div>
                     <InputGroup m={2}>
                         <InputRightElement mx={5} >
@@ -51,28 +51,25 @@ export const Ingreso: React.FC = () => {
                         </InputRightElement>
                     </InputGroup>
                     <div mr-8>
-                        <h1 className='text-4xl' >Ingreso</h1>
+                        <h1 className='text-4xl' >Tipo de Egreso</h1>
                     </div>
-                    <Box w={400} m={15}>
+                    <Box w={400} >
 
-                        <label className="block  font-size={13} pt-5 font-medium text-gray-700" htmlFor="tipo">
-                            Tipo de Ingreso:
-                            <Menu  >
-                                <MenuButton m={5} p={5}  w={220} as={Button} rightIcon={<ChevronDownIcon />}>
-                                    Tipo de Ingresos
-                                </MenuButton>
-                                <MenuList>
-                                    <MenuItem>Horas Extras</MenuItem>
-                                    <MenuItem>Comision</MenuItem>
-                                    <MenuItem>xxxxxxxx</MenuItem>
-                                    <MenuItem>aaaaaaa</MenuItem>
-                                    <MenuItem>bbbbbbb</MenuItem>
-                                </MenuList>
-                            </Menu>
+                        <label className="block  font-size={13} pt-5 font-medium text-gray-700" htmlFor="name">
+                            Nombre:*
+                            <InputGroup>
+
+                                <Input className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" size='sm'
+                                    type='text'
+                                    placeholder='Nombre'
+                                    onChange={handleChange}
+                                    name="name"
+                                />
+                            </InputGroup>
                         </label>
 
-                        <label className="block font-size={14} pt-5  font-medium text-gray-700" htmlFor="monto">
-                            Monto:*
+                        <label className="block font-size={14} pt-5  font-medium text-gray-700" htmlFor="description">
+                            Descripción:*
                             <InputGroup>
 
                                 <Input className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" size='sm'
@@ -85,17 +82,12 @@ export const Ingreso: React.FC = () => {
                             </InputGroup>
 
                         </label>
-                        <FormControl display='flex' alignItems='center' mt={15} pt={5}>
-                            <FormLabel htmlFor='deducible' mb='0'>
-                                Deducible:
-                            </FormLabel>
-                            <Switch id='deducible' colorScheme='pink' />
-                        </FormControl>
 
+                        
 
                         <div  >
                             <Center>
-                                <Button background='#EBEBEB' size='sm' _hovertext-white w={137} h={42} font-bold p={4} mt={5} rounded-full type="submit">
+                                <Button background='#EBEBEB' size='sm' _hovertext-white w={137} h={42} font-bold p={4}  mt={5} rounded-full type="submit">
                                     Guardar
                                 </Button>
                             </Center>
@@ -112,4 +104,4 @@ export const Ingreso: React.FC = () => {
 
 };
 
-export default Ingreso
+export default TipoEgreso

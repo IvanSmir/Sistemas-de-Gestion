@@ -11,7 +11,7 @@ interface FormValues {
     
 }
 
-export const Ingreso: React.FC = () => {
+export const Egreso: React.FC = () => {
     const router = useRouter()
 
     const [formData, setFormData] = useState<FormValues>(
@@ -51,19 +51,19 @@ export const Ingreso: React.FC = () => {
                         </InputRightElement>
                     </InputGroup>
                     <div mr-8>
-                        <h1 className='text-4xl' >Ingreso</h1>
+                        <h1 className='text-4xl' >Egreso</h1>
                     </div>
                     <Box w={400} m={15}>
 
                         <label className="block  font-size={13} pt-5 font-medium text-gray-700" htmlFor="tipo">
-                            Tipo de Ingreso:
+                            Tipo de Egreso:
                             <Menu  >
                                 <MenuButton m={5} p={5}  w={220} as={Button} rightIcon={<ChevronDownIcon />}>
-                                    Tipo de Ingresos
+                                    Tipo de Egresos
                                 </MenuButton>
                                 <MenuList>
-                                    <MenuItem>Horas Extras</MenuItem>
-                                    <MenuItem>Comision</MenuItem>
+                                    <MenuItem>Anticipo</MenuItem>
+                                    <MenuItem>Permiso</MenuItem>
                                     <MenuItem>xxxxxxxx</MenuItem>
                                     <MenuItem>aaaaaaa</MenuItem>
                                     <MenuItem>bbbbbbb</MenuItem>
@@ -112,4 +112,4 @@ export const Ingreso: React.FC = () => {
 
 };
 
-export default Ingreso
+export default Egreso

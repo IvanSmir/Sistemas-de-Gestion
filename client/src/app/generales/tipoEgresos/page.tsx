@@ -1,9 +1,15 @@
 import React from 'react'
-import { FormCargo } from '@/components/generales/cargos/Form';
+import Egreso from '@/components/generales/tipoEgresos/Egreso';
+
 
 const index = () => {
+
     return (
-            <FormCargo />
+
+        <Egreso/>
+
     )
+
 }
+
 export default index;
