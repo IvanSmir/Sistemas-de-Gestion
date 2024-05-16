@@ -4,7 +4,7 @@ import React from 'react'
 const Index = () => {
     return (
         <div className='w-full flex justify-center h-full items-center'>
-            <Register></Register>
+            <Register />
         </div>
     )
 }

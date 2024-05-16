@@ -12,14 +12,14 @@ export const Login = () => {
             <form className='w-80' >
                 <FormControl className='flex  justify-center flex-col gap-3'>
                     <Text fontSize='xl' as='b'>Iniciar sesion</Text>
-                    <Text fontSize='sm'>Inicia sesion con tu correo y contraseña</Text>
+                    <Text fontSize='sm'>Inicia sesion con tu usuario y contraseña</Text>
                     <div>
-                        <FormLabel htmlFor='email'>Correo electrónico:
+                        <FormLabel htmlFor='userName'>Usuario:
                             <Input
-                                type="email"
-                                id='email'
-                                name='email'
-                                placeholder="example@gmail.com"
+                                type="text"
+                                id='userName'
+                                name='userName'
+                                placeholder="juanPerez"
                             />
 
                         </FormLabel>

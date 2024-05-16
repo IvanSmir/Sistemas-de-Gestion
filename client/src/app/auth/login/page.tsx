@@ -1,11 +1,13 @@
-import { Login } from '@/components/auth/Login'
-import React from 'react'
+// app/auth/login/page.js o page.tsx
+import React from 'react';
+import { Login } from '@/components/auth/Login';
 
-const Index = () => {
+const LoginPage = () => {
     return (
         <div className='w-full flex justify-center h-full items-center'>
-            <Login></Login>
+            <Login />
         </div>
-    )
+    );
 }
-export default Index;
+
+export default LoginPage;
