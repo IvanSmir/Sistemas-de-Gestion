@@ -2,7 +2,7 @@
 'use client'
 import { useRouter } from "next/navigation"
 import "../globals.css"
-import { useContext, useEffect } from "react"
+import { useEffect } from "react"
 import { useAuth } from "@/components/context/AuthProvider";
 
 export default function LoginLayout({
@@ -14,10 +14,8 @@ export default function LoginLayout({
     const router = useRouter();
 
     useEffect(() => {
-        if (!isLoading && user) {
-            router.push('/');
-        } else if (!isLoading && !user) {
-            router.push('/auth/login')
+        if (!isLoading && !user) {
+            router.push('/auth/login');
         }
     }, [isLoading, user, router]);
 
@@ -27,6 +25,10 @@ export default function LoginLayout({
 
     if (error) {
         return <div>Error: {error.message}</div>;
+    }
+
+    if (!user) {
+        return <div>Loading...</div>;
     }
 
     console.log('LoginLayout')

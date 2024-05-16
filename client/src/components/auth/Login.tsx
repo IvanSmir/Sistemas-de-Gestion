@@ -6,8 +6,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema } from '@/validations/loginSchema';
 import { loginHttp } from '@/utils/auth.http';
-import { AuthContext } from '../context';
 import Link from 'next/link';
+import { useAuth } from '../context/AuthProvider';
 
 type LoginInputs = {
     userName: string;
@@ -16,7 +16,7 @@ type LoginInputs = {
 
 export const Login = () => {
     const router = useRouter();
-    const { login, logged, user } = useContext(AuthContext);
+    const { login } = useAuth();
     const [show, setShow] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -34,8 +34,7 @@ export const Login = () => {
             });
             login(userData);
             console.log(userData);
-            console.log('user:', user, 'logged:', logged);
-            router.push('/'); // Redirige a la página de dashboard o la ruta que prefieras
+            router.push('/'); 
         } catch (err: any) {
             setError(err.message);
         }

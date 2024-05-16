@@ -1,67 +1,84 @@
 // auth/AuthProvider.tsx
 
 'use client';
-import React, { useReducer, useEffect, ReactNode } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { AuthContext } from './AuthContext';
-import { authReducer } from './authReducer';
-import { types, AuthState, AuthActionTypes, User } from './types/types';
+import React, { useState, useEffect, useCallback, useContext, createContext, ReactNode, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { User } from './types/types';
 
-const init = (): AuthState => {
-    const user = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user') || 'null') : null;
-    return {
-        logged: !!user,
-        user: user,
-    };
-};
+interface AuthContextType {
+    user?: User | null;
+    isLoading: boolean;
+    error?: Error | null;
+    login: (user: User) => void;
+    logout: () => void;
+    checkSession: () => Promise<void>;
+}
+
+
+const AuthContext = createContext<AuthContextType>({
+    isLoading: true,
+    login: () => { },
+    logout: () => { },
+    checkSession: async () => { }
+});
+
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [authState, dispatch] = useReducer(authReducer, {}, init);
+    const [user, setUser] = useState<User | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
     const router = useRouter();
-    const pathname = usePathname();
+
+    const checkSession = useCallback(async () => {
+        try {
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                setUser(JSON.parse(storedUser));
+            } else {
+                setUser(null);
+                router.push('/auth/login');
+            }
+        } catch (err) {
+            setError(err as Error);
+            setUser(null);
+            router.push('/auth/login');
+        } finally {
+            setIsLoading(false);
+        }
+    }, [router]);
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('user') || 'null');
-        if (user) {
-            dispatch({
-                type: types.login,
-                payload: user,
-            });
-        } else if (pathname !== '/auth/login' && pathname !== '/auth/register') {
-            router.push('/auth/login');
-        }
-    }, [pathname, router]);
+        checkSession();
+    }, [checkSession]);
 
-    useEffect(() => {
-        if (!authState.logged && pathname !== '/auth/login' && pathname !== '/auth/register') {
-            router.push('/auth/login');
-        } else if (authState.logged && (pathname === '/auth/login' || pathname === '/auth/register')) {
-            router.push('/dashboard'); // O cualquier ruta protegida a la que quieras redirigir
-        }
-    }, [authState.logged, pathname, router]);
-
-    const login = (user: User) => {
-        const action: AuthActionTypes = {
-            type: types.login,
-            payload: user,
-        };
+    const login = useCallback((user: User) => {
         localStorage.setItem('user', JSON.stringify(user));
-        dispatch(action);
-    };
+        setUser(user);
+        router.push('/dashboard');
+    }, [router]);
 
-    const logout = () => {
-        const action: AuthActionTypes = {
-            type: types.logout,
-        };
+    const logout = useCallback(() => {
         localStorage.removeItem('user');
-        dispatch(action);
+        setUser(null);
         router.push('/auth/login');
-    };
+    }, [router]);
 
-    console.log('AuthState:', authState); // Para depuración
+    const value = useMemo(() => ({
+        user,
+        isLoading,
+        error,
+        login,
+        logout,
+        checkSession
+    }), [user, isLoading, error, login, logout, checkSession]);
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
 
     return (
-        <AuthContext.Provider value={{ ...authState, login, logout }}>
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );
