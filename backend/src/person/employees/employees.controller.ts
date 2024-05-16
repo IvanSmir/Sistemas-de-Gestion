@@ -13,6 +13,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiCookieAuth,
 } from '@nestjs/swagger';
 import { EmployeesService } from './employees.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
@@ -22,7 +23,7 @@ import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { Users } from '@prisma/client';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
-@ApiTags('employees')
+@ApiTags('Employees')
 @Controller('employees')
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}

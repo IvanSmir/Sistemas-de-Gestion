@@ -1,13 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
-import { Users } from '@prisma/client';
+import { Employees, Users } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PersonService } from 'src/person/person.service';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { HandleDbErrorService } from 'src/common/services/handle-db-error.service';
 import { isUUID } from 'class-validator';
-import { Employee } from './entities/employee.entity';
 
 @Injectable()
 export class EmployeesService {
@@ -63,17 +62,23 @@ export class EmployeesService {
         take: limit,
         skip: (page - 1) * limit,
         select: this.selectOptions,
+        where: {
+          isDeleted: false,
+        },
       });
       return employees;
-    } catch (error) {}
+    } catch (error) {
+      this.handleDbErrorService.handleDbError(error, 'Employee', '');
+    }
   }
 
   findOne(term: string) {
     try {
-      let employee: Employee;
+      let employee;
       if (isUUID(term)) {
         employee = this.prismaService.employees.findUnique({
           where: {
+            isDeleted: false,
             id: term,
           },
           select: this.selectOptions,
@@ -82,6 +87,7 @@ export class EmployeesService {
       if (!employee) {
         employee = this.prismaService.employees.findFirst({
           where: {
+            isDeleted: false,
             person: {
               ciRuc: term,
             },
@@ -92,6 +98,8 @@ export class EmployeesService {
       if (!employee) {
         employee = this.prismaService.employees.findFirst({
           where: {
+            isDeleted: false,
+
             person: {
               name: term,
             },
@@ -102,6 +110,8 @@ export class EmployeesService {
       if (!employee) {
         employee = this.prismaService.employees.findFirst({
           where: {
+            isDeleted: false,
+
             person: {
               email: term,
             },
@@ -112,6 +122,8 @@ export class EmployeesService {
       if (!employee) {
         employee = this.prismaService.employees.findFirst({
           where: {
+            isDeleted: false,
+
             person: {
               phone: term,
             },
@@ -127,13 +139,13 @@ export class EmployeesService {
     }
   }
 
-  update(id: string, updateEmployeeDto: UpdateEmployeeDto, user: Users) {
+  async update(id: string, updateEmployeeDto: UpdateEmployeeDto, user: Users) {
     const { enterDate, ...updatePersonDto } = updateEmployeeDto;
     try {
-      const employee = this.prismaService.employees.update({
+      const employee = await this.prismaService.employees.update({
         where: {
           id,
-          isActive: true,
+          isDeleted: false,
         },
         data: {
           enterDate: new Date(enterDate),
@@ -154,10 +166,10 @@ export class EmployeesService {
       const employee = this.prismaService.employees.update({
         where: {
           id,
-          isActive: true,
+          isDeleted: false,
         },
         data: {
-          isActive: false,
+          isDeleted: true,
           userId: user.id,
         },
       });
