@@ -1,7 +1,7 @@
 'use client'
 
 import { ChangeEvent, FormEvent, useState } from 'react';
-import { Button, FormControl, FormLabel, Input, Modal, ModalCloseButton, ModalFooter, ModalHeader, Select, useDisclosure } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, Input, Modal, ModalCloseButton, ModalFooter, ModalHeader, Select } from '@chakra-ui/react';
 import Relative from '@/types/relative';
 
 
@@ -24,11 +24,11 @@ export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelati
         relationshipType: ""
     });
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const target = e.target;
         let value: any = target.value;
 
-        if (target.name === 'birthDate') {
+        if (target.name === 'birthDate' && target instanceof HTMLInputElement) {
             value = new Date(target.value);
         }
 
@@ -104,7 +104,6 @@ export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelati
                                 borderRadius="sm"
                             >
                                 <option value="father">Padre</option>
-
                                 <option value="mother">Madre</option>
                                 <option value="son">Hijo</option>
                                 <option value="daughter">Hija</option>
@@ -118,7 +117,6 @@ export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelati
 
                             <Select
                                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-
                                 id="gender"
                                 name="gender"
                                 onChange={handleChange}
