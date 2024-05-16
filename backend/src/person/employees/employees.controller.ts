@@ -48,6 +48,7 @@ export class EmployeesController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   findAll(@Query() paginationDto: PaginationDto) {
+    console.log('paginationDto', paginationDto);
     return this.employeesService.findAll(paginationDto);
   }
 

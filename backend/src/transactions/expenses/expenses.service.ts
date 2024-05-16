@@ -51,6 +51,9 @@ export class ExpensesService {
     const take = limit;
 
     try {
+      const totalCount = await this.prismaService.expenses.count({
+        where: { isDeleted: false },
+      });
       const expenses = await this.prismaService.expenses.findMany({
         skip,
         take,
@@ -60,7 +63,13 @@ export class ExpensesService {
           active: true,
         },
       });
-      return expenses;
+      return {
+        data: expenses,
+        currentPage: page,
+        limit,
+        totalPages: Math.ceil(totalCount / limit),
+        totalCount,
+      };
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Expenses', '');
     }

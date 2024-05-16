@@ -6,6 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { HandleDbErrorService } from 'src/common/services/handle-db-error.service';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { isUUID } from 'class-validator';
+import { da } from '@faker-js/faker';
 
 @Injectable()
 export class EmployeeDetailsService {
@@ -44,6 +45,9 @@ export class EmployeeDetailsService {
   async findAll(paginationDto: PaginationDto) {
     const { page = 1, limit = 10 } = paginationDto;
     try {
+      const totalCount = await this.prisma.employeeDetails.count({
+        where: { isDeleted: false },
+      });
       const employeeDetails = await this.prisma.employeeDetails.findMany({
         select: this.selectOptions,
         take: limit,
@@ -52,7 +56,13 @@ export class EmployeeDetailsService {
           isDeleted: false,
         },
       });
-      return employeeDetails;
+      return {
+        data: employeeDetails,
+        currentPage: page,
+        limit,
+        totalPages: Math.ceil(totalCount / limit),
+        totalCount,
+      };
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'EmployeeDetail', '');
     }

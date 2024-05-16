@@ -40,17 +40,18 @@ export class FamilyTypesService {
     const { page, limit } = paginationDto;
     try {
       const skip = (page - 1) * limit;
-      const total = await this.prismaService.familyTypes.count();
-      const data = await this.prismaService.familyTypes.findMany({
+      const totalCount = await this.prismaService.familyTypes.count();
+      const familyTypes = await this.prismaService.familyTypes.findMany({
         select: this.selecOptions,
         skip,
         take: limit,
       });
       return {
-        data,
-        total,
-        page,
+        data: familyTypes,
+        currentPage: page,
         limit,
+        totalPages: Math.ceil(totalCount / limit),
+        totalCount,
       };
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Family Type', '');

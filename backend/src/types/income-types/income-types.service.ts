@@ -43,8 +43,8 @@ export class IncomeTypesService {
     const { page, limit } = paginationDto;
     try {
       const skip = (page - 1) * limit;
-      const total = await this.prismaService.incomeTypes.count();
-      const data = await this.prismaService.incomeTypes.findMany({
+      const totalCount = await this.prismaService.incomeTypes.count();
+      const incomeTypes = await this.prismaService.incomeTypes.findMany({
         where: {
           isDeleted: false,
         },
@@ -53,10 +53,11 @@ export class IncomeTypesService {
         take: limit,
       });
       return {
-        data,
-        total,
-        page,
+        data: incomeTypes,
+        currentPage: page,
         limit,
+        totalPages: Math.ceil(totalCount / limit),
+        totalCount,
       };
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Income Type', '');

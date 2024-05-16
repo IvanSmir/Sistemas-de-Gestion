@@ -55,9 +55,11 @@ export class EmployeesService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { page = 1, limit = 10 } = paginationDto;
-
+    const { page, limit } = paginationDto;
     try {
+      const totalCount = await this.prismaService.employees.count({
+        where: { isDeleted: false },
+      });
       const employees = await this.prismaService.employees.findMany({
         take: limit,
         skip: (page - 1) * limit,
@@ -66,7 +68,13 @@ export class EmployeesService {
           isDeleted: false,
         },
       });
-      return employees;
+      return {
+        data: employees,
+        currenPage: page,
+        limit,
+        totalPages: Math.ceil(employees.length / limit),
+        totalCount,
+      };
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Employee', '');
     }

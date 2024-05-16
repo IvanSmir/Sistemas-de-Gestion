@@ -43,8 +43,8 @@ export class ExpenseTypesService {
     const skip = (page - 1) * limit;
 
     try {
-      const total = await this.prismaService.expenseTypes.count();
-      const data = await this.prismaService.expenseTypes.findMany({
+      const totalCount = await this.prismaService.expenseTypes.count();
+      const expenseTypes = await this.prismaService.expenseTypes.findMany({
         select: this.selectOptions,
         where: {
           isDeleted: false,
@@ -53,10 +53,11 @@ export class ExpenseTypesService {
         take: limit,
       });
       return {
-        data,
-        total,
-        page,
+        data: expenseTypes,
+        currentPage: page,
         limit,
+        totalPages: Math.ceil(totalCount / limit),
+        totalCount,
       };
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Expense Type', '');

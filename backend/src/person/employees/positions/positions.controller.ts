@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -47,7 +48,7 @@ export class PositionsController {
     description: 'Positions retrieved successfully.',
     type: [CreatePositionDto],
   })
-  findAll(@Param() paginationDto: PaginationDto) {
+  findAll(@Query() paginationDto: PaginationDto) {
     return this.positionsService.findAll(paginationDto);
   }
 

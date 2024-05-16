@@ -36,11 +36,12 @@ export class PositionsService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { page, limit } = paginationDto;
-    const offset = (page - 1) * limit;
-
+    const { page = 1, limit = 10 } = paginationDto;
+    const skip = (page - 1) * limit;
     try {
-      const totalCount = await this.prismaService.positions.count();
+      const totalCount = await this.prismaService.positions.count({
+        where: { isDeleted: false },
+      });
       const positions = await this.prismaService.positions.findMany({
         where: { isDeleted: false },
         select: {
@@ -49,7 +50,7 @@ export class PositionsService {
           name: true,
         },
         take: limit,
-        skip: offset,
+        skip: skip,
       });
 
       return {

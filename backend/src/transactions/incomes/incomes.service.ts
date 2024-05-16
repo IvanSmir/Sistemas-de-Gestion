@@ -3,7 +3,6 @@ import { CreateIncomeDto } from './dto/create-income.dto';
 import { UpdateIncomeDto } from './dto/update-income.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { HandleDbErrorService } from 'src/common/services/handle-db-error.service';
-import { IncomeType } from 'src/types/income-types/entities/income-type.entity';
 import { Users } from '@prisma/client';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { isUUID } from 'class-validator';
@@ -52,6 +51,10 @@ export class IncomesService {
     const take = limit;
 
     try {
+      const totalCount = await this.prismaService.income.count({
+        where: { isDeleted: false },
+      });
+
       const incomes = await this.prismaService.income.findMany({
         skip,
         take,
@@ -61,7 +64,13 @@ export class IncomesService {
           active: true,
         },
       });
-      return incomes;
+      return {
+        data: incomes,
+        currentPage: page,
+        limit,
+        totalPages: Math.ceil(totalCount / limit),
+        totalCount,
+      };
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Incomes', '');
     }

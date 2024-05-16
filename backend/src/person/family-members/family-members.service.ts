@@ -62,6 +62,9 @@ export class FamilyMembersService {
   async findAll(paginationDto: PaginationDto) {
     const { page, limit } = paginationDto;
     try {
+      const totalCount = await this.prismaService.familyMembers.count({
+        where: { isDeleted: false },
+      });
       const familyMembers = await this.prismaService.familyMembers.findMany({
         where: {
           isDeleted: false,
@@ -70,7 +73,13 @@ export class FamilyMembersService {
         take: limit,
         select: this.selectOptions,
       });
-      return familyMembers;
+      return {
+        data: familyMembers,
+        currentPage: page,
+        limit,
+        totalPages: Math.ceil(totalCount / limit),
+        totalCount,
+      };
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Family Member', '');
     }
