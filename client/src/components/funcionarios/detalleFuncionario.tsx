@@ -1,7 +1,189 @@
-import React from 'react'
+'use client'
+import { PhoneIcon } from '@chakra-ui/icons'
+import { AbsoluteCenter, As, AspectRatio, Avatar, Box, Button, Container, Divider, Fade, Flex, FormControl, FormLabel, Grid, GridItem, Input, Link, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Spacer, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, useDisclosure, VStack, Wrap, WrapItem } from '@chakra-ui/react'
+import React, { useState } from 'react'
+import { List } from '../familiares/List'
+import router from 'next/router'
 
-export const detalleFuncionario = () => {
+
+export const DetalleFuncionario = () => {
+
+  const [formData, setFormData] = useState(
+    {
+      name: "",
+      email: "",
+      image: "",
+      gender: "",
+      direction: "",
+      phone: " ",
+      ruc: "",
+      joinDate: new Date(),
+      birthdate: new Date(),
+      cargo:"",
+      detalle:"",
+      sueldoBase:""
+    }
+  );
+
+  const handleBack = () => {
+    router.back()
+  }
   return (
-    <div>detalleFuncionario</div>
-  )
-}
+      <>
+        <form>
+          <FormControl>
+            <Flex>
+              <Box flex='1' display="flex" justifyContent="center" alignItems="center">
+                <Wrap>
+                  <WrapItem>
+                    <Avatar size='2xl' />
+                  </WrapItem>
+                </Wrap>
+                
+              </Box>
+              
+              <Box flex='2' >
+                <Flex  >
+                  <Box mr={8} mb={8}>
+                    <FormLabel htmlFor="ruc">Ruc/Ci:</FormLabel>
+                      <Input
+                      type="text"
+                      id="ruc"
+                      name="ruc"
+                      value={formData.ruc}
+                      readOnly
+                      mb={4}
+                      />
+                      <FormLabel htmlFor="gender">Sexo:</FormLabel>
+                      <Input
+                      type="text"
+                      id="gender"
+                      name="gender"
+                      value={formData.gender}
+                      readOnly
+                      mb={4}
+                      />
+
+                      <FormLabel htmlFor="cargo">Cargo:</FormLabel>
+                      <Input
+                      type="text"
+                      id="cargo"
+                      name="cargo"
+                      value={formData.cargo}
+                      mb={4}
+                      readOnly
+                      />
+                  </Box>
+
+                  <Box mr={8} mb={8}>
+                    <FormLabel htmlFor="name">Nombre:</FormLabel>
+                      <Input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        mb={4}
+                        readOnly
+                      />
+                    <FormLabel htmlFor="birthdate">Fecha Nacimiento:</FormLabel>
+                      <Input
+                        type="text"
+                        id="birthdate"
+                        name="birthdate"
+                        value={formData.birthdate.toLocaleDateString()}
+                        readOnly
+                        mb={4}
+                      />
+                  </Box>
+
+                  <Box>
+                    <FormLabel htmlFor="email">Correo:</FormLabel>
+                      <Input
+                        type="text"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        readOnly
+                        mb={4}
+                      />
+                      <FormLabel htmlFor="direction">Dirección:</FormLabel>
+                      <Input
+                        type="text"
+                        id="direction"
+                        name="direction"
+                        value={formData.direction}
+                        readOnly
+                      />
+                  </Box>
+                </Flex>  
+
+                <Divider orientation='horizontal' w='75%'  mb={4} />
+                
+                <Tabs variant='soft-rounded' colorScheme='green'>
+                  
+                  <TabList>
+                    <Tab _selected={{ color: 'white', bg: '#AA546D' }}>Datos Generales</Tab>
+                    <Tab _selected={{ color: 'white', bg: '#AA546D' }}>Familiares</Tab>
+                  </TabList>
+                  
+                  <TabPanels>
+
+                    <TabPanel>
+                      <Flex >
+                        <Box mr={8}>
+                          <FormLabel htmlFor="joinDate">Fecha Ingreso:</FormLabel>
+                            <Input
+                              type="date"
+                              id="joinDate"
+                              name="joinDate"
+                              value={formData.joinDate.toLocaleDateString()}
+                              readOnly
+                            />
+                        </Box>
+                        <Box mr={8}>
+                        <FormLabel htmlFor="detalle">Detalle:</FormLabel>
+                            <Input
+                              type="text"
+                              id="detalle"
+                              name="detalle"
+                              value={formData.detalle}
+                              readOnly
+                            />
+                        </Box>
+                        <Box>
+                        <FormLabel htmlFor="sueldoBase">Sueldo Base:</FormLabel>
+                            <Input
+                              type="text"
+                              id="sueldoBase"
+                              name="direction"
+                              value={formData.sueldoBase}
+                              readOnly
+                            />
+                        </Box>
+                      </Flex>
+                    </TabPanel>
+
+                    <TabPanel>
+                      <List />
+                    </TabPanel> 
+                    
+                  </TabPanels>
+                </Tabs>
+              </Box>
+            </Flex> 
+          </FormControl>
+        </form>
+         
+        <Spacer/>
+          <Link href="/funcionarios">
+             <Button
+                position="absolute"
+                
+                bottom="4"          
+                  >
+                    Volver
+              </Button>
+            </Link>
+      </>
+    )
+  }

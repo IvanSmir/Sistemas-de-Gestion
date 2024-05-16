@@ -1,10 +1,10 @@
-import { ListaFuncionarios } from '@/components/funcionarios/ListaFuncionarios';
 import React from 'react';
+import { DetalleFuncionario } from '@/components/funcionarios/DetalleFuncionario';
 const index = () => {
   return (
     <>
       <h1 className=" text-6xl">Funcionarios</h1>
-      <ListaFuncionarios></ListaFuncionarios>
+      <DetalleFuncionario/>
     </>
   )
 

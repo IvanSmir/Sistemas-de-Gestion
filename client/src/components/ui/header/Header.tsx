@@ -1,44 +1,42 @@
 'use client'
-import React from 'react';
-import {
-  Box,
-  Flex,
-  Text,
-  Avatar,
-  Button,
-  useDisclosure,
-  useColorModeValue,
-  Stack,
-  useColorMode
-} from '@chakra-ui/react';
-import { MoonIcon, SunIcon } from '@chakra-ui/icons';
+import { Box, Drawer, DrawerContent, useColorModeValue, useDisclosure } from "@chakra-ui/react";
+import { ReactNode } from "react";
+import { IconType } from "react-icons";
+import { FiCompass, FiHome, FiSettings, FiStar, FiTrendingUp } from "react-icons/fi";
+import { MobileNav } from "../NavBar/MobilNav";
+import { SidebarContent } from "../NavBar/SideBar";
 
-export const Header = () => {
-  const { colorMode, toggleColorMode } = useColorMode();
+
+
+export default function SidebarWithHeader({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <>
-      <Box w="100%" bg={useColorModeValue('gray.100', 'gray.900')} px={10}>
-        <Flex h={100}  alignItems={'center'} justifyContent={'space-between'}>
-          <Box>
-            <Text fontSize='3xl'></Text>
-          </Box>
-
-          <Flex alignItems={'center'}>
-            <Stack direction={'row'} spacing={7}>
-              <Button onClick={toggleColorMode}>
-                {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-              </Button >
-              <Flex alignItems={'center'}>
-                <Avatar
-                    src={'https://avatars.dicebear.com/api/male/username.svg'}
-                  />
-                  <Text ml={2}>Juan Perez</Text>
-              </Flex>
-              
-            </Stack>
-          </Flex>
-        </Flex>
+    <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
+      <SidebarContent
+        onClose={() => onClose}
+        display={{ base: 'none', md: 'block' }}
+      />
+      <Drawer
+        autoFocus={false}
+        isOpen={isOpen}
+        placement="left"
+        onClose={onClose}
+        returnFocusOnClose={false}
+        onOverlayClick={onClose}
+        size="full">
+        <DrawerContent>
+          <SidebarContent onClose={onClose} />
+        </DrawerContent>
+      </Drawer>
+      {/* mobilenav */}
+      <MobileNav onOpen={onOpen} />
+      <Box  ml={{ base: 0, md: 60 }} mt={{ base: 20, md: 0 }} p="4">
+        {children}
       </Box>
-    </>
+    </Box>
   );
 }

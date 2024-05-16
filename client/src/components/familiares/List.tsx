@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from "react";
-import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import { EditIcon, DeleteIcon, SmallAddIcon, AddIcon } from "@chakra-ui/icons";
 import {
     Box,
     Flex,
@@ -13,6 +13,10 @@ import {
     Tr,
     Th,
     Td,
+    Circle,
+    Button,
+    Link,
+    Spacer,
 } from "@chakra-ui/react";
 
 interface Familiar {
@@ -82,7 +86,7 @@ export const List: React.FC = () => {
     };
     
     return (
-        <Box position="absolute" top={160} left={300} width={900} height={426} borderRadius="2xl" padding="8px" margin="auto">
+        <Box position="absolute">
             <Flex justifyContent="flex-start" mb={4}>
                 <Box mr={4}>
                     <label htmlFor="ci">Número de cédula:</label>
@@ -102,6 +106,12 @@ export const List: React.FC = () => {
                         <option value="menores18">Menores de 18</option>
                         <option value="mayores18">Mayores de 18</option>
                     </Select>
+                </Box>
+                <Spacer />
+                <Box >
+                    <Link href="/familiares/add">
+                        <Button rounded={23} background='#AA546D' color='white'   ><AddIcon /> </Button>
+                    </Link>
                 </Box>
             </Flex>
             <TableContainer>
@@ -134,3 +144,4 @@ export const List: React.FC = () => {
         </Box>
     );
 };
+export default List;
