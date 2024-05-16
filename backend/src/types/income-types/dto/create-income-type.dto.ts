@@ -1,12 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsString, MinLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsString,
+  Max,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class CreateIncomeTypeDto {
   @IsString()
   @MinLength(3)
+  @MaxLength(50)
   @ApiProperty({
     description: 'Name of the income type',
     minLength: 3,
+    maxLength: 50,
     example: 'Sueldo Minimo',
     type: String,
   })

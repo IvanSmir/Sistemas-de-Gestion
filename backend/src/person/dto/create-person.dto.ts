@@ -5,6 +5,8 @@ import {
   IsIn,
   IsPhoneNumber,
   IsString,
+  Max,
+  MaxLength,
   MinLength,
 } from 'class-validator';
 import { IsCedulaOrRUC } from '../decorators/is-ci-ruc.decorator';
@@ -13,17 +15,23 @@ import { Transform } from 'class-transformer';
 export class CreatePersonDto {
   @IsString()
   @MinLength(3)
+  @MaxLength(50)
   @ApiProperty({
     example: 'Juan',
     description: 'Name of the person',
+    minLength: 3,
+    maxLength: 50,
   })
   name: string;
 
   @IsString()
   @MinLength(3)
+  @MaxLength(100)
   @ApiProperty({
     example: 'Av. 10 de Agosto',
     description: 'Address of the person',
+    minLength: 3,
+    maxLength: 100,
   })
   address: string;
 
