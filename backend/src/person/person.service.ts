@@ -8,6 +8,8 @@ import { CreatePersonDto } from './dto/create-person.dto';
 import { Person, Users } from '@prisma/client';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { HandleDbErrorService } from 'src/common/services/handle-db-error.service';
+import { UpdatePersonDto } from './dto/update-person.dto';
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class PersonService {
@@ -21,7 +23,7 @@ export class PersonService {
       const person = await this.prismaService.person.create({
         data: { ...createPersonDto, userId: user.id },
       });
-      const { userId, createdAt, updatedAt, isActive, ...sanitizedPerson } =
+      const { userId, createdAt, updatedAt, isDeleted, ...sanitizedPerson } =
         person;
 
       return sanitizedPerson;
@@ -70,16 +72,18 @@ export class PersonService {
         person = await this.prismaService.person.findUnique({
           where: {
             ciRuc: term,
-            isActive: true,
+            isDeleted: false,
           },
         });
-      } else {
+      } else if (isUUID(term)) {
         person = await this.prismaService.person.findUnique({
           where: {
             id: term,
-            isActive: true,
+            isDeleted: false,
           },
         });
+      } else {
+        throw new BadRequestException('Invalid term');
       }
       return person;
     } catch (error) {
@@ -87,10 +91,10 @@ export class PersonService {
     }
   }
 
-  async update(id: string, updatePersonDto: CreatePersonDto, user: Users) {
+  async update(id: string, updatePersonDto: UpdatePersonDto, user: Users) {
     try {
       const person = await this.prismaService.person.update({
-        where: { id, isActive: true },
+        where: { id, isDeleted: false },
         data: { ...updatePersonDto, userId: user.id },
       });
       return person;
@@ -102,8 +106,8 @@ export class PersonService {
   async remove(id: string, user: Users) {
     try {
       await this.prismaService.person.update({
-        where: { id, isActive: true },
-        data: { isActive: false, userId: user.id },
+        where: { id, isDeleted: false },
+        data: { isDeleted: true, userId: user.id },
       });
       return { message: 'Person deleted successfully' };
     } catch (error) {

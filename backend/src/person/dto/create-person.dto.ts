@@ -8,6 +8,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { IsCedulaOrRUC } from '../decorators/is-ci-ruc.decorator';
+import { Transform } from 'class-transformer';
 
 export class CreatePersonDto {
   @IsString()
@@ -28,7 +29,7 @@ export class CreatePersonDto {
 
   @IsPhoneNumber()
   @ApiProperty({
-    example: '0971123123',
+    example: '+595971123123',
     description: 'Phone number of the person',
   })
   phone: string;
@@ -49,8 +50,9 @@ export class CreatePersonDto {
   ciRuc: string;
 
   @IsDate()
+  @Transform(({ value }) => new Date(value))
   @ApiProperty({
-    example: '1990-01-01',
+    example: '2021-09-01T00:00:00Z',
     description: 'Birthdate of the person',
   })
   birthDate: Date;
