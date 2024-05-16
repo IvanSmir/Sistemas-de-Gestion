@@ -30,6 +30,20 @@ npm install
 docker-compose up -d
 ```
 
+### Configuración de la Base de Datos
+
+1. Realiza las migraciones de la base de datos:
+
+```bash
+npx prisma migrate dev --name init
+```
+
+2. Realiza el seeding de la base de datos:
+
+```bash
+npm run seed
+```
+
 ### Iniciando la Aplicación
 
 1. Inicia el servidor de desarrollo:
