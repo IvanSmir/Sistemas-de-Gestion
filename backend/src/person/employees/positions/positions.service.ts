@@ -42,7 +42,7 @@ export class PositionsService {
     try {
       const totalCount = await this.prismaService.positions.count();
       const positions = await this.prismaService.positions.findMany({
-        where: { isActive: true },
+        where: { isDeleted: false },
         select: {
           id: true,
           description: true,
@@ -71,7 +71,7 @@ export class PositionsService {
         positions = await this.prismaService.positions.findUnique({
           where: {
             id: term,
-            isActive: true,
+            isDeleted: false,
           },
         });
       }
@@ -82,14 +82,14 @@ export class PositionsService {
               equals: term.toLowerCase(),
               mode: 'insensitive',
             },
-            isActive: true,
+            isDeleted: false,
           },
         });
       }
       if (!positions) {
         throw new BadRequestException(`Position: ${term} not found`);
       }
-      const { userId, createdAt, updatedAt, isActive, ...result } = positions;
+      const { userId, createdAt, updatedAt, isDeleted, ...result } = positions;
       return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Position', term);
@@ -101,7 +101,7 @@ export class PositionsService {
       const updatePosition = await this.prismaService.positions.update({
         where: {
           id,
-          isActive: true,
+          isDeleted: false,
         },
         data: { ...updatePositionDto, userId: user.id },
         select: {
@@ -125,10 +125,10 @@ export class PositionsService {
       await this.prismaService.positions.update({
         where: {
           id,
-          isActive: true,
+          isDeleted: false,
         },
         data: {
-          isActive: false,
+          isDeleted: true,
           userId: user.id,
         },
       });
