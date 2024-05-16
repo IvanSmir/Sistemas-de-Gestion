@@ -1,3 +1,5 @@
+import { Box } from "@chakra-ui/react"
+import Header from "@/components/ui/header/Header"
 import "./globals.css"
 
 import { Providers } from './providers'
@@ -10,7 +12,11 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <Header>
+            {children}
+          </Header>
+        </Providers>
       </body>
     </html>
   )
