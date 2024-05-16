@@ -2,6 +2,7 @@ import { types, AuthActionTypes, AuthState, LoginAction } from "./types/types";
 
 const initialState: AuthState = {
   logged: false,
+  user: null,
 };
 
 export const authReducer = (
@@ -18,6 +19,7 @@ export const authReducer = (
     case types.logout:
       return {
         logged: false,
+        user: null,
       };
     default:
       return state;

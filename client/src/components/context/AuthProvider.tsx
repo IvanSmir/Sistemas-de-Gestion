@@ -1,45 +1,51 @@
+// auth/AuthProvider.tsx
+
 'use client';
-import React, { useReducer, FC, ReactNode, useEffect } from 'react';
+import React, { useReducer, useEffect, ReactNode } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { AuthContext } from './AuthContext';
 import { authReducer } from './authReducer';
 import { types, AuthState, AuthActionTypes, User } from './types/types';
 
 const init = (): AuthState => {
-    if (typeof window !== 'undefined') {
-        const user = JSON.parse(localStorage.getItem('user') || 'null');
-        return {
-            logged: !!user,
-            user: user,
-        };
-    }
+    const user = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user') || 'null') : null;
     return {
-        logged: false,
+        logged: !!user,
+        user: user,
     };
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [authState, dispatch] = useReducer(authReducer, {}, init);
+    const router = useRouter();
+    const pathname = usePathname();
 
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const user = JSON.parse(localStorage.getItem('user') || 'null');
-            if (user) {
-                dispatch({
-                    type: types.login,
-                    payload: user,
-                });
-            }
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        if (user) {
+            dispatch({
+                type: types.login,
+                payload: user,
+            });
+        } else if (pathname !== '/auth/login' && pathname !== '/auth/register') {
+            router.push('/auth/login');
         }
-    }, []);
+    }, [pathname, router]);
+
+    useEffect(() => {
+        if (!authState.logged && pathname !== '/auth/login' && pathname !== '/auth/register') {
+            router.push('/auth/login');
+        } else if (authState.logged && (pathname === '/auth/login' || pathname === '/auth/register')) {
+            router.push('/dashboard'); // O cualquier ruta protegida a la que quieras redirigir
+        }
+    }, [authState.logged, pathname, router]);
 
     const login = (user: User) => {
         const action: AuthActionTypes = {
             type: types.login,
             payload: user,
         };
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('user', JSON.stringify(user));
-        }
+        localStorage.setItem('user', JSON.stringify(user));
         dispatch(action);
     };
 
@@ -47,11 +53,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const action: AuthActionTypes = {
             type: types.logout,
         };
-        if (typeof window !== 'undefined') {
-            localStorage.removeItem('user');
-        }
+        localStorage.removeItem('user');
         dispatch(action);
+        router.push('/auth/login');
     };
+
+    console.log('AuthState:', authState); // Para depuración
 
     return (
         <AuthContext.Provider value={{ ...authState, login, logout }}>

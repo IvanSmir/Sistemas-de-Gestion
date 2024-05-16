@@ -1,22 +1,27 @@
 const API_URL = "http://localhost:3000/api/auth"; // Reemplaza con la URL de tu API
 
 // Login
-export const login = async (username: string, password: string) => {
+export const loginHttp = async ({
+  user,
+}: {
+  user: {
+    userName: string;
+    password: string;
+  };
+}) => {
   try {
     const response = await fetch(`${API_URL}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify(user),
     });
 
     if (!response.ok) {
       throw new Error("Error al iniciar sesión");
     }
-
     const data = await response.json();
-    localStorage.setItem("token", data.access_token);
     return data;
   } catch (error: any) {
     throw new Error(error.message || "Error al iniciar sesión");

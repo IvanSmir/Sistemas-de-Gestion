@@ -6,9 +6,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { userSchema } from '@/validations/userSchema';
 import { register as signup } from '@/utils/auth.http';
+import Link from 'next/link';
 
 type Inputs = {
-    name: string;
+    fullName: string;
     userName: string;
     password: string;
     confirmPassword: string;
@@ -29,10 +30,7 @@ export const Register = () => {
             setError(null);
             await signup({
                 user: {
-                    fullName: data.name,
-                    userName: data.userName,
-                    password: data.password,
-                    confirmPassword: data.confirmPassword
+                    ...data
                 }
             }
             );
@@ -48,14 +46,14 @@ export const Register = () => {
                 <Text fontSize='x-large' as='b'>Registrarse</Text>
                 <Text fontSize='small'>Registrate con tu nombre de usuario y una contraseña segura</Text>
                 {error && <Text color='red.500'>{error}</Text>}
-                <FormControl isInvalid={!!errors.name}>
-                    <FormLabel htmlFor='name'>Nombre:</FormLabel>
+                <FormControl isInvalid={!!errors.fullName}>
+                    <FormLabel htmlFor='fullName'>Nombre:</FormLabel>
                     <Input type="text"
-                        id='name'
+                        id='fullName'
                         placeholder="Juan Manuel"
-                        {...register('name')}
+                        {...register('fullName')}
                     />
-                    {errors.name && <FormErrorMessage>{errors.name.message}</FormErrorMessage>}
+                    {errors.fullName && <FormErrorMessage>{errors.fullName.message}</FormErrorMessage>}
                 </FormControl>
 
                 <FormControl isInvalid={!!errors.userName}>
@@ -107,7 +105,10 @@ export const Register = () => {
                 </FormControl>
 
                 <Button bg='#AA546D' color='white' type='submit' size='md'>Registrarse</Button>
-                <a className='flex justify-end' href="#"><Text as='u'>Volver al inicio de sesión</Text></a>
+                <div className='flex justify-end '>
+                    <Text className='mr-2' as='p'>Ya tienes una cuenta?</Text>
+                    <Link href='/auth/login' ><Text as='u'> Iniciar Sesión</Text></Link>
+                </div>
             </form>
         </Box>
     );
