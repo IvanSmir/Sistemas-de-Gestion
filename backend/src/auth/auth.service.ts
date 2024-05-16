@@ -38,6 +38,7 @@ export class AuthService {
       const {
         password: _,
         isActive,
+        isDeleted,
         createdAt,
         updatedAt,
         ...userWithoutSensitiveInfo
@@ -57,7 +58,7 @@ export class AuthService {
     try {
       const { password, userName } = loginUserDto;
       const user = await this.prismaService.users.findUnique({
-        where: { userName: userName },
+        where: { userName: userName, isDeleted: false },
         select: { id: true, userName: true, password: true, isActive: true },
       });
       if (!user) {

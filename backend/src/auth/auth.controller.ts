@@ -1,5 +1,11 @@
 import { Controller, Post, Body, UseInterceptors, Get } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -62,6 +68,7 @@ export class AuthController {
   @Get('test3')
   @Auth()
   @ApiOperation({ summary: 'Test authentication module' })
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Auth module is working.',

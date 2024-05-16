@@ -47,13 +47,4 @@ export class CreateUserDto {
     description: 'Password for the user',
   })
   confirmPassword: string;
-
-  @IsString()
-  @IsEmail()
-  @IsOptional()
-  @ApiProperty({
-    example: 'john.doe@example.com',
-    description: 'Email of the user',
-  })
-  email?: string;
 }
