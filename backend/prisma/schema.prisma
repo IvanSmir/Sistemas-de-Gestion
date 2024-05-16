@@ -31,6 +31,7 @@ model Users {
   Income          Income[]
   ExpenseTypes    ExpenseTypes[]
   Expenses        Expenses[]
+  isDeleted       Boolean           @default(false)
   isActive        Boolean           @default(true)
 }
 
@@ -43,8 +44,7 @@ model Positions {
   user            Users             @relation(fields: [userId], references: [id])
   userId          String
   EmployeeDetails EmployeeDetails[]
-
-  isActive Boolean @default(true)
+  isDeleted       Boolean           @default(false)
 }
 
 model Person {
@@ -62,7 +62,7 @@ model Person {
   userId       String
   Employee     Employees?
   FamilyMember FamilyMembers?
-  isActive     Boolean        @default(true)
+  isDeleted    Boolean        @default(false)
 }
 
 model Employees {
@@ -78,7 +78,7 @@ model Employees {
   EmployeeDetails EmployeeDetails[]
   Income          Income[]
   Expenses        Expenses[]
-  isActive        Boolean           @default(true)
+  isDeleted       Boolean           @default(false)
 }
 
 model FamilyTypes {
@@ -89,7 +89,7 @@ model FamilyTypes {
   user         Users           @relation(fields: [userId], references: [id])
   userId       String
   FamilyMember FamilyMembers[]
-  isActive     Boolean         @default(true)
+  isDeleted    Boolean         @default(false)
 }
 
 model FamilyMembers {
@@ -104,7 +104,7 @@ model FamilyMembers {
   userId       String
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
-  isActive     Boolean     @default(true)
+  isDeleted    Boolean     @default(false)
 }
 
 model EmployeeDetails {
@@ -113,22 +113,26 @@ model EmployeeDetails {
   employeeId String
   position   Positions @relation(fields: [positionId], references: [id])
   positionId String
+  startDate  DateTime
+  endDate    DateTime
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   user       Users     @relation(fields: [userId], references: [id])
   userId     String
+  isDeleted  Boolean   @default(false)
   isActive   Boolean   @default(true)
 }
 
 model IncomeTypes {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      Users    @relation(fields: [userId], references: [id])
-  userId    String
-  Income    Income[]
-  isActive  Boolean  @default(true)
+  id         String   @id @default(uuid())
+  name       String   @unique
+  deductible Boolean
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       Users    @relation(fields: [userId], references: [id])
+  userId     String
+  Income     Income[]
+  isDeleted  Boolean  @default(false)
 }
 
 model Income {
@@ -144,7 +148,7 @@ model Income {
   updatedAt    DateTime    @updatedAt
   user         Users       @relation(fields: [userId], references: [id])
   userId       String
-  isActive     Boolean     @default(true)
+  isDeleted    Boolean     @default(false)
 }
 
 model ExpenseTypes {
@@ -155,7 +159,7 @@ model ExpenseTypes {
   user      Users      @relation(fields: [userId], references: [id])
   userId    String
   Expenses  Expenses[]
-  isActive  Boolean    @default(true)
+  isDeleted Boolean    @default(false)
 }
 
 model Expenses {
@@ -171,5 +175,5 @@ model Expenses {
   updatedAt     DateTime     @updatedAt
   user          Users        @relation(fields: [userId], references: [id])
   userId        String
-  isActive      Boolean      @default(true)
+  isDeleted     Boolean      @default(false)
 }
