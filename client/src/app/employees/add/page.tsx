@@ -4,6 +4,10 @@ import { FormPosition } from '@/components/employees/positions/Position';
 import { ModalRelative } from '@/components/employees/relatives/Relatives';
 import { FormRelative } from '@/components/relatives/add/Form';
 import { StepperFunc } from '@/components/steppers/StepperFunc';
+import Employee from '@/types/employee';
+import EmployeeData from '@/types/employeeData';
+import PositionEmployee from '@/types/positionEmployee';
+import Relative from '@/types/relative';
 import { Button } from '@chakra-ui/react';
 import { useState } from 'react';
 
@@ -12,7 +16,25 @@ import { useState } from 'react';
 const AddEmployeePage = () => {
 
     const [currentStep, setCurrentStep] = useState(0);
-
+    const [employeeData, setEmployeeData] = useState<EmployeeData>({
+        employee: {
+            name: '',
+            email: '',
+            image: '',
+            gender: '',
+            address: '',
+            ruc: '',
+            joinDate: new Date(),
+            birthdate: new Date(),
+            phone: ''
+        },
+        position: {
+            position: '',
+            wageType: '',
+            salary: 0
+        },
+        relatives: []
+    });
     const handleNextStep = () => {
         setCurrentStep((prevStep) => prevStep + 1);
     };
@@ -20,6 +42,37 @@ const AddEmployeePage = () => {
         setCurrentStep((prevStep) => prevStep - 1);
     };
 
+    const handleSave = async () => {
+        try {
+            const { employee, position, relatives } = employeeData;
+
+            const employeeResponse = await fetch('/api/employee', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(employee),
+            });
+            const savedEmployee = await employeeResponse.json();
+
+            await fetch(`/api/employee/${savedEmployee.id}/position`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(position),
+            });
+
+            for (const relative of relatives) {
+                await fetch(`/api/employee/${savedEmployee.id}/relative`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(relative),
+                });
+            }
+
+            alert('Employee saved successfully!');
+        } catch (error) {
+            console.error('Error saving employee:', error);
+            alert('Failed to save employee.');
+        }
+    };
     return (
         <>
             <div className='  flex flex-col w-full justify-center items-center'>

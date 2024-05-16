@@ -4,6 +4,7 @@ export const userSchema = z
   .object({
     fullName: z
       .string()
+      .min(1, { message: "El nombre es requerido" })
       .min(3, {
         message: "El nombre debe de ser minimo de 3 caracteres",
       })
@@ -12,6 +13,7 @@ export const userSchema = z
 
     userName: z
       .string()
+      .min(1, { message: "El nombre es requerido" })
       .min(5, {
         message: "El nombre de usuario debe de ser minimo de 5 caracteres",
       })
@@ -22,6 +24,8 @@ export const userSchema = z
       ),
     password: z
       .string()
+      .min(1, { message: "El nombre es requerido" })
+
       .min(6, {
         message: "La contraseña debe contener un minimo de 6 caracteres",
       })
@@ -30,7 +34,9 @@ export const userSchema = z
         "La contraseña debe tener al menos una mayúscula, una minúscula, un número y un símbolo"
       ),
 
-    confirmPassword: z.string().min(6, {
+    confirmPassword: z.string()
+    .min(1, { message: "El nombre es requerido" })
+    .min(6, {
       message: "La contraseña debe contener un minimo de 6 caracteres",
     }),
   })

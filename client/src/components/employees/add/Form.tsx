@@ -5,26 +5,18 @@ import { ChangeEvent, useState } from 'react';
 import { Button, FormControl, FormLabel, Input, Select } from '@chakra-ui/react';
 import Employee from "@/types/employee";
 
+interface FormEmployeeProps {
+    employee: Employee;
+    setEmployee: (employee: Employee) => void;
+}
 
-export const FormEmployee: React.FC = () => {
-    const [employee, setEmployee] = useState<Employee>(
-        {
-            name: "",
-            email: "",
-            image: "",
-            gender: "",
-            address: "",
-            phone: " ",
-            ruc: "",
-            joinDate: new Date(),
-            birthdate: new Date()
-        }
-    );
+export const FormEmployee: React.FC<FormEmployeeProps> = ({ employee, setEmployee }) => {
+
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const target = e.target;
-        let value = target.value;
-        setEmployee({ ...employee, [target.name]: value });
+        const { name, value } = e.target;
+        setEmployee({ ...employee, [name]: value });
     };
+
     return (
         <form>
             <div className="flex gap-4">
