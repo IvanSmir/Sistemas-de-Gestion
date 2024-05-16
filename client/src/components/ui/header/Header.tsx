@@ -8,7 +8,7 @@ import { SidebarContent } from "@/components/ui/navbar/Sidebar";
 
 
 
-export default function SidebarWithHeader({
+export function SidebarWithHeader({
     children,
 }: {
     children: ReactNode;

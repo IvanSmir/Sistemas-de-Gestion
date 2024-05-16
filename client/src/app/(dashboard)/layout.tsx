@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import "../globals.css"
 import { useEffect } from "react"
 import { useAuth } from "@/components/context/AuthProvider";
+import { SidebarWithHeader } from "@/components/ui/header/Header";
 
 export default function LoginLayout({
     children,
@@ -31,11 +32,10 @@ export default function LoginLayout({
         return <div>Loading...</div>;
     }
 
-    console.log('LoginLayout')
     return (
 
-        <div className='w flex justify-center h-screen items-center'>
+        <SidebarWithHeader>
             {children}
-        </div>
+        </SidebarWithHeader>
     )
 }
