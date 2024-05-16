@@ -25,6 +25,21 @@ async function bootstrap() {
       'API for managing employee data and payroll operations within organizational management systems. This API provides endpoints for handling personal details, employment records, and payroll processing, ensuring seamless integration and efficient management of human resources.',
     )
     .setVersion('1.0')
+    .addBearerAuth()
+    .addTag('Auth', 'Endpoints for user authentication and authorization')
+    // .addTag('Payroll', 'Endpoints for managing payroll data')
+    .addTag('Employees', 'Endpoints for managing employee data')
+    .addTag('Positions', 'Endpoints for managing employee positions')
+    .addTag(
+      'Employee details',
+      'Endpoints for managing employee personal details',
+    )
+    .addTag('Family Types', 'Endpoints for managing family types')
+    .addTag('Family Members', 'Endpoints for managing family members')
+    .addTag('Income Types', 'Endpoints for managing income types')
+    .addTag('Incomes', 'Endpoints for managing employee incomes')
+    .addTag('Expense Types', 'Endpoints for managing expense types')
+    .addTag('Expenses', 'Endpoints for managing employee expenses')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
