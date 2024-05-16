@@ -59,7 +59,13 @@ export class AuthService {
       const { password, userName } = loginUserDto;
       const user = await this.prismaService.users.findUnique({
         where: { userName: userName, isDeleted: false },
-        select: { id: true, userName: true, password: true, isActive: true },
+        select: {
+          id: true,
+          userName: true,
+          password: true,
+          isActive: true,
+          fullName: true,
+        },
       });
       if (!user) {
         throw new BadRequestException('Invalid credentials');
