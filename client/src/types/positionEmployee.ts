@@ -1,6 +1,6 @@
 interface PositionEmployee {
-  position: string;
-  wageType: string;
-  salary: number;
+  positionId: string;
+  incomeTypeId: string;
+  amount: number;
 }
 export default PositionEmployee;

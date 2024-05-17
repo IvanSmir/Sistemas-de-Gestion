@@ -5,7 +5,7 @@ interface Employee {
   gender: string;
   address: string;
   ciRuc: string;
-  joinDate: Date;
+  enterDate: Date;
   birthDate: Date;
   phone: string;
 }

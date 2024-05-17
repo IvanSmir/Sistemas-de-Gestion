@@ -82,16 +82,16 @@ export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors }) 
                         </FormControl>
                     </div>
                     <div className="flex gap-4">
-                        <FormControl isInvalid={!!errors.joinDate}>
+                        <FormControl isInvalid={!!errors.enterDate}>
                             <FormLabel htmlFor="joinDate">Fecha de Incorporación:</FormLabel>
                             <Input
                                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                                 type="date"
                                 id="joinDate"
-                                {...register('joinDate')}
+                                {...register('enterDate')}
 
                             />
-                            <FormErrorMessage>{getErrorMessage(errors.joinDate)}</FormErrorMessage>
+                            <FormErrorMessage>{getErrorMessage(errors.enterDate)}</FormErrorMessage>
                         </FormControl>
                         <FormControl isInvalid={!!errors.birthDate}>
                             <FormLabel htmlFor="birthdate">Fecha de Nacimiento:</FormLabel>

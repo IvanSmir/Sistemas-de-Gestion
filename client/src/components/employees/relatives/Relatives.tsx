@@ -15,7 +15,7 @@ const columnMapping = {
     'Cédula de Identidad': 'ciRuc',
     'Fecha de Nacimiento': 'birthDateFormatted',
     'Género': 'gender',
-    'Parentesco': 'relationshipType'
+    'Parentesco': 'familyTypeId'
 };
 
 const transformRelatives = (relatives: Relative[]) => {

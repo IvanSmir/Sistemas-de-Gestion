@@ -41,11 +41,14 @@ const transformData = (data: Root[]) => {
 const ListEmployeePage = () => {
     const [employeeData, setEmployeeData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [total, setTotal] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = await getEmployees();
+                const data = await getEmployees(1);
+
+                setTotal(data.totalPages);
                 setEmployeeData(transformData(data.data));
                 console.log(data)
                 setLoading(false);
@@ -70,7 +73,7 @@ const ListEmployeePage = () => {
             {loading ? (
                 <p>Cargando...</p>
             ) : (
-                <TableEmployee data={employeeData} columnMapping={columnMapping} />
+                <TableEmployee data={employeeData} columnMapping={columnMapping} setEmployeeData={setEmployeeData} total={total}/>
             )}
         </>
     );

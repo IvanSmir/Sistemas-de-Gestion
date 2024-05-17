@@ -58,17 +58,17 @@ export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelati
                         <FormErrorMessage>{errors.ciRuc && errors.ciRuc.message}</FormErrorMessage>
                     </FormControl>
                     <div className="flex gap-4">
-                        <FormControl isInvalid={!!errors.relationshipType}>
+                        <FormControl isInvalid={!!errors.familyTypeId}>
                             <FormLabel htmlFor="relationshipType">Parentesco:</FormLabel>
                             <Select
-                                id="relationshipType"
-                                {...register('relationshipType')}
+                                id="familyTypeId"
+                                {...register('familyTypeId')}
                             >
                                 {familyTypes.map((type) => (
                                     <option key={type.id} value={type.id}>{type.name}</option>
                                 ))}
                             </Select>
-                            <FormErrorMessage>{errors.relationshipType && errors.relationshipType.message}</FormErrorMessage>
+                            <FormErrorMessage>{errors.familyTypeId && errors.familyTypeId.message}</FormErrorMessage>
                         </FormControl>
                         <FormControl isInvalid={!!errors.gender}>
                             <FormLabel htmlFor="gender">Género:</FormLabel>

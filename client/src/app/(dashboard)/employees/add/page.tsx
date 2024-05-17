@@ -1,5 +1,6 @@
 'use client'
 
+import { useAuth } from '@/components/context/AuthProvider';
 import { FormEmployee } from '@/components/employees/add/Form';
 import { FormPosition } from '@/components/employees/positions/Position';
 import { ModalRelative } from '@/components/employees/relatives/Relatives';
@@ -14,10 +15,13 @@ import { positionSchema } from '@/validations/positionSchema';
 import { relativeSchema } from '@/validations/relativeSchema';
 import { Button } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 const AddEmployeePage = () => {
+    const auth = useAuth();
+    const router = useRouter();
     const [currentStep, setCurrentStep] = useState(0);
     const [employee, setEmployee] = useState<Employee>({
         name: '',
@@ -26,14 +30,14 @@ const AddEmployeePage = () => {
         gender: '',
         address: '',
         ciRuc: '',
-        joinDate: new Date(),
+        enterDate: new Date(),
         birthDate: new Date(),
         phone: ''
     });
     const [positionEmployee, setPositionEmployee] = useState<PositionEmployee>({
-        position: '',
-        wageType: '',
-        salary: 0
+        positionId: '',
+        incomeTypeId: '',
+        amount: 0
     });
     const [relatives, setRelatives] = useState<Relative[]>([]);
 
@@ -63,16 +67,27 @@ const AddEmployeePage = () => {
                 return;
             }
         } else if (currentStep === 1) {
+            console.log('currentStep', currentStep);
             const valid = await triggerPosition();
+            console.log('valid', valid);
             if (valid) {
                 handleSubmitPosition((data) => setPositionEmployee(data))();
+                console.log('positionEmployee', positionEmployee);
                 setCurrentStep((prevStep) => prevStep + 1);
+            }
+            if (!valid) {
+                console.log('Errores en el formulario de empleado:', errorsPosition);
+                return;
             }
         } else if (currentStep === 2) {
             const valid = await triggerRelative();
             if (valid) {
 
                 setCurrentStep((prevStep) => prevStep + 1);
+            }
+            if (!valid) {
+                console.log('Errores en el formulario de empleado:', errorsRelative);
+                return;
             }
         }
         console.log('currentStep', currentStep);
@@ -93,12 +108,18 @@ const AddEmployeePage = () => {
         console.log('employeeData', employeeData);
 
         try {
-            const employeeResponse = await fetch('http:localhost:3000/api/employee/full', {
+            const { user } = auth;
+            const token = user?.token;
+            const employeeResponse = await fetch('http://localhost:3000/api/employees/complete', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
                 body: JSON.stringify(employeeData),
             });
             alert('Employee saved successfully!');
+            router.push('/employees');
         } catch (error) {
             console.error('Error saving employee:', error);
             alert('Failed to save employee.');

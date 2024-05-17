@@ -91,13 +91,13 @@ export class EmployeesController {
   }
 
   @Post('complete')
+  @Auth()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Complete an employee' })
   @ApiResponse({ status: 200, description: 'Employee completed successfully.' })
   @ApiResponse({ status: 404, description: 'Employee not found.' })
-  complete(
-    @Body() createFullEmployeeDto: createFullDto,
-    @GetUser() user: Users,
-  ) {
+  complete(@Body() createFullEmployeeDto, @GetUser() user: Users) {
+    console.log('createFullEmployeeDto', createFullEmployeeDto);
     return this.employeesService.createFull(createFullEmployeeDto, user);
   }
 }

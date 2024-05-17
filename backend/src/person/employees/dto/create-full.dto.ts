@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { CreateEmployeeDto } from './create-employee.dto';
 import { CreatePersonDto } from 'src/person/dto/create-person.dto';
 
@@ -12,7 +13,8 @@ class role {
 }
 
 export class createFullDto {
-  employe: CreateEmployeeDto;
+  @ApiProperty()
+  employee: CreateEmployeeDto;
   role: role;
   familyMembers: familyMember[];
 }

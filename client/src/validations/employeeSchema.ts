@@ -40,7 +40,7 @@ export const employeeSchema = z.object({
       .date()
       .refine((date) => !isNaN(date.getTime()), { message: "Invalid date" })
   ),
-  joinDate: z.preprocess(
+  enterDate: z.preprocess(
     (arg) => new Date(arg as string),
     z
       .date()

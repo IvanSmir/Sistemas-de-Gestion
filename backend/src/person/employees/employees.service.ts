@@ -75,7 +75,7 @@ export class EmployeesService {
         data: employees,
         currenPage: page,
         limit,
-        totalPages: Math.ceil(employees.length / limit),
+        totalPages: Math.ceil(totalCount / limit),
         totalCount,
       };
     } catch (error) {
@@ -191,8 +191,9 @@ export class EmployeesService {
   }
 
   async createFull(createFullEmployeeDto: createFullDto, user: Users) {
+    console.log('createFullEmployeeDto', createFullEmployeeDto);
     try {
-      const { employe, role, familyMembers } = createFullEmployeeDto;
+      const { employee: employe, role, familyMembers } = createFullEmployeeDto;
       const employee = await this.create(employe, user);
 
       const employeeDetail = await this.prismaService.employeeDetails.create({
@@ -231,7 +232,7 @@ export class EmployeesService {
       this.handleDbErrorService.handleDbError(
         error,
         'Employee',
-        createFullEmployeeDto.employe.ciRuc,
+        createFullEmployeeDto.employee.ciRuc,
       );
     }
   }

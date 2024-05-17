@@ -50,44 +50,44 @@ export const FormPosition: React.FC<FormPositionProps> = ({ register, errors }) 
             <div className="flex gap-4">
                 <div className="flex-1">
                     <div className="flex gap-4">
-                        <FormControl isInvalid={!!errors.position}>
+                        <FormControl isInvalid={!!errors.positionId}>
                             <FormLabel htmlFor="position">Cargo:</FormLabel>
                             <Select
-                                id="position"
+                                id="positionId"
                                 placeholder='Seleccione el cargo'
-                                {...register('position')}
+                                {...register('positionId')}
                             >
                                 {positions.map((pos) => (
                                     <option key={pos.id} value={pos.id}>{pos.name}</option>
                                 ))}
                             </Select>
-                            <FormErrorMessage>{errors.position?.message}</FormErrorMessage>
+                            <FormErrorMessage>{errors.positionId?.message}</FormErrorMessage>
                         </FormControl>
-                        <FormControl isInvalid={!!errors.wageType}>
-                            <FormLabel htmlFor="wageType">Tipos de sueldo:</FormLabel>
+                        <FormControl isInvalid={!!errors.incomeTypeId}>
+                            <FormLabel htmlFor="incomeTypeId">Tipos de sueldo:</FormLabel>
                             <Select
-                                id="wageType"
+                                id="incomeTypeId"
                                 placeholder='Seleccione el tipo de sueldo'
-                                {...register('wageType')}
+                                {...register('incomeTypeId')}
                             >
                                 {wageTypes.map((type) => (
                                     <option key={type.id} value={type.id}>{type.name}</option>
                                 ))}
                             </Select>
-                            <FormErrorMessage>{errors.wageType?.message}</FormErrorMessage>
+                            <FormErrorMessage>{errors.incomeTypeId?.message}</FormErrorMessage>
                         </FormControl>
                     </div>
                     <div className="flex justify-center w-[100%]">
                         <div className="w-4/5">
-                            <FormControl isInvalid={!!errors.salary}>
-                                <FormLabel htmlFor="salary">Salario:</FormLabel>
+                            <FormControl isInvalid={!!errors.amount}>
+                                <FormLabel htmlFor="amount">Salario:</FormLabel>
                                 <Input
                                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                                     type="number"
-                                    id="salary"
-                                    {...register('salary')}
+                                    id="amount"
+                                    {...register('amount')}
                                 />
-                                <FormErrorMessage>{errors.salary?.message}</FormErrorMessage>
+                                <FormErrorMessage>{errors.amount?.message}</FormErrorMessage>
                             </FormControl>
                         </div>
                     </div>
