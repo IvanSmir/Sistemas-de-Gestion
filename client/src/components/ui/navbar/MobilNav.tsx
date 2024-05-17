@@ -1,20 +1,20 @@
 'use client'
 
 import { useAuth } from "@/components/context/AuthProvider";
-import { Flex, FlexProps, HStack, IconButton, useColorModeValue, Text, Menu, MenuButton, Avatar, VStack, Box, MenuList, MenuItem, MenuDivider, Icon, AvatarBadge } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
+import { Flex, FlexProps, HStack, IconButton, useColorModeValue, Text, Menu, MenuButton, Avatar, VStack, Box, MenuList, MenuItem, AvatarBadge } from "@chakra-ui/react";
 import { FiBell, FiChevronDown, FiMenu } from "react-icons/fi";
 
 interface MobileProps extends FlexProps {
     onOpen: () => void;
 }
+
 export const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
-    const { user, logout } = useAuth()
+    const { user, logout } = useAuth();
     return (
         <Flex
             ml={{ base: 0, md: 60 }}
             px={{ base: 4, md: 4 }}
-            height="20"
+            height="60px"  // Ajusta la altura aquí
             alignItems="center"
             bg={useColorModeValue('white', 'gray.900')}
             borderBottomWidth="1px"

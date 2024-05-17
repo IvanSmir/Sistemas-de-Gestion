@@ -1,12 +1,8 @@
 'use client'
 import { Box, Drawer, DrawerContent, useColorModeValue, useDisclosure } from "@chakra-ui/react";
 import { ReactNode } from "react";
-import { IconType } from "react-icons";
-import { FiCompass, FiHome, FiSettings, FiStar, FiTrendingUp } from "react-icons/fi";
 import { MobileNav } from "@/components/ui/navbar/MobilNav";
 import { SidebarContent } from "@/components/ui/navbar/Sidebar";
-
-
 
 export function SidebarWithHeader({
     children,
@@ -34,7 +30,14 @@ export function SidebarWithHeader({
             </Drawer>
             {/* mobilenav */}
             <MobileNav onOpen={onOpen} />
-            <Box ml={{ base: 0, md: 60 }} mt={{ base: 20, md: 0 }} p="4">
+            <Box
+                ml={{ base: 0, md: 60 }}
+                mt={{ base: 20, md: 0 }}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                minHeight="calc(100vh - 84px)" // Ajusta la altura mínima para centrar el contenido
+            >
                 {children}
             </Box>
         </Box>

@@ -1,17 +1,28 @@
 'use client'
 import { Flex, FlexProps, Icon, Link } from "@chakra-ui/react";
-import { ReactText } from "react";
-
 import { IconType } from "react-icons";
+import { usePathname } from 'next/navigation';
 
 interface NavItemProps extends FlexProps {
     icon: IconType;
-    children: ReactText;
+    children: React.ReactNode;
     href: string;
 }
+
 export const NavItem = ({ icon, children, href, ...rest }: NavItemProps) => {
+    const pathname = usePathname();
+
+    const handleClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+        if (pathname === href) {
+            event.preventDefault();
+        } else if (href === '/') {
+            event.preventDefault();
+            window.location.href = '/';
+        }
+    };
+
     return (
-        <Link href={href} style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
+        <Link href={href} onClick={handleClick} style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
             <Flex
                 align="center"
                 p="4"
