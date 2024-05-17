@@ -35,6 +35,7 @@ export default function LoginLayout({
     return (
 
         <SidebarWithHeader>
+            
             {children}
         </SidebarWithHeader>
     )
