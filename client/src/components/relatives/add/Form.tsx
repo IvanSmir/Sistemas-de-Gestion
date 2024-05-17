@@ -1,200 +1,127 @@
 'use client'
 
-import { ChangeEvent, FormEvent, useState } from 'react';
-import { Button, FormControl, FormLabel, Input, Modal, ModalCloseButton, ModalFooter, ModalHeader, Select } from '@chakra-ui/react';
+import { FormEvent } from 'react';
+import { Button, FormControl, FormLabel, Input, Modal, ModalCloseButton, ModalFooter, ModalHeader, Select, FormErrorMessage } from '@chakra-ui/react';
 import Relative from '@/types/relative';
-
+import { FieldErrors, UseFormHandleSubmit, UseFormRegister } from 'react-hook-form';
 
 interface FormRelativeProps {
     relatives: Relative[];
     setRelatives: (relatives: Relative[]) => void;
     onClose: () => void;
+    register: UseFormRegister<Relative>;
+    errors: FieldErrors<Relative>;
+    handleSubmit: UseFormHandleSubmit<Relative>;
 }
 
-export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelatives, onClose }) => {
-    const [relative, setRelative] = useState<Relative>({
-        name: "",
-        last_name: "",
-        address: "",
-        phone: "",
-        email: "",
-        ci: "",
-        birthDate: new Date(),
-        gender: "",
-        relationshipType: ""
-    });
+export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelatives, onClose, register, errors, handleSubmit }) => {
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const target = e.target;
-        let value: any = target.value;
-
-        if (target.name === 'birthDate' && target instanceof HTMLInputElement) {
-            value = new Date(target.value);
-        }
-
-        setRelative({ ...relative, [target.name]: value });
-    };
-
-
-    const handleSubmit = () => {
-        setRelatives([...relatives, relative]);
+    const onSubmit = (data: Relative) => {
+        console.log(errors)
+        setRelatives([...relatives, data]);
         onClose();
     };
 
     return (
-
-        <form>
-            <ModalHeader >Agregar Familiar</ModalHeader>
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <ModalHeader>Agregar Familiar</ModalHeader>
             <ModalCloseButton />
             <div className="flex gap-4">
                 <div className="flex-1">
                     <div className="flex gap-4">
-                        <FormControl>
-                            <FormLabel htmlFor="name" >Nombre:</FormLabel>
+                        <FormControl isInvalid={!!errors.name}>
+                            <FormLabel htmlFor="name">Nombre:</FormLabel>
                             <Input
                                 type="text"
                                 id="name"
-                                name="name"
-                                onChange={handleChange}
-                                value={relative.name}
+                                {...register('name')}
                             />
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel htmlFor="last_name">
-                                Apellido:
-                            </FormLabel>
-
-                            <Input
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                                type="last_name"
-                                id="last_name"
-                                onChange={handleChange}
-
-                                value={relative.last_name}
-                                name="last_name"
-                            />
+                            <FormErrorMessage>{errors.name && errors.name.message}</FormErrorMessage>
                         </FormControl>
                     </div>
-                    <FormControl>
-                        <FormLabel htmlFor="ci">Número de cédula:
-                        </FormLabel>
-
+                    <FormControl isInvalid={!!errors.ciRuc}>
+                        <FormLabel htmlFor="ci">Número de cédula:</FormLabel>
                         <Input
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                             type="text"
-                            id="ci"
-                            onChange={handleChange}
-
-                            value={relative.ci}
-                            name="ci"
+                            id="ciRuc"
+                            {...register('ciRuc')}
                         />
+                        <FormErrorMessage>{errors.ciRuc && errors.ciRuc.message}</FormErrorMessage>
                     </FormControl>
                     <div className="flex gap-4">
-                        <FormControl>
-                            <FormLabel htmlFor="relationshipType">Parentesco:
-                            </FormLabel>
-
+                        <FormControl isInvalid={!!errors.relationshipType}>
+                            <FormLabel htmlFor="relationshipType">Parentesco:</FormLabel>
                             <Select
-                                className="mt-1 block w-full border  border-gray-300 rounded-md shadow-sm p-2"
-
                                 id="relationshipType"
-                                name="relationshipType"
-                                onChange={handleChange}
-                                value={relative.relationshipType}
-                                borderRadius="sm"
+                                {...register('relationshipType')}
                             >
                                 <option value="father">Padre</option>
                                 <option value="mother">Madre</option>
                                 <option value="son">Hijo</option>
                                 <option value="daughter">Hija</option>
-                                <option value="husband"> Esposo</option>
+                                <option value="husband">Esposo</option>
                                 <option value="wife">Esposa</option>
                             </Select>
+                            <FormErrorMessage>{errors.relationshipType && errors.relationshipType.message}</FormErrorMessage>
                         </FormControl>
-                        <FormControl>
-                            <FormLabel htmlFor="gender">Genero:
-                            </FormLabel>
-
+                        <FormControl isInvalid={!!errors.gender}>
+                            <FormLabel htmlFor="gender">Género:</FormLabel>
                             <Select
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                                 id="gender"
-                                name="gender"
-                                onChange={handleChange}
-                                value={relative.gender}
-                                borderRadius="sm"
+                                {...register('gender')}
                             >
                                 <option value="female">Femenino</option>
                                 <option value="male">Masculino</option>
-
                             </Select>
+                            <FormErrorMessage>{errors.gender && errors.gender.message}</FormErrorMessage>
                         </FormControl>
-
                     </div>
-                    <FormControl>
-                        <FormLabel htmlFor="email">
-                            Correo Electrónico:
-                        </FormLabel>
-
+                    <FormControl isInvalid={!!errors.email}>
+                        <FormLabel htmlFor="email">Correo Electrónico:</FormLabel>
                         <Input
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                             type="email"
                             id="email"
-                            onChange={handleChange}
-
-                            value={relative.email}
-                            name="email"
+                            {...register('email')}
                         />
+                        <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
                     </FormControl>
                     <div className="flex gap-4">
-                        <FormControl>
+                        <FormControl isInvalid={!!errors.birthDate}>
                             <FormLabel htmlFor="birthDate">Fecha de Nacimiento:</FormLabel>
                             <Input
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                                 type="date"
                                 id="birthDate"
-                                onChange={handleChange}
-                                value={relative.birthDate ? relative.birthDate.toISOString().split('T')[0] : ''}
-                                name="birthDate"
+                                {...register('birthDate')}
                             />
+                            <FormErrorMessage>{errors.birthDate && errors.birthDate.message}</FormErrorMessage>
                         </FormControl>
-                        <FormControl>
-                            <FormLabel htmlFor="phone">
-                                Teléfono:
-                            </FormLabel>
-
+                        <FormControl isInvalid={!!errors.phone}>
+                            <FormLabel htmlFor="phone">Teléfono:</FormLabel>
                             <Input
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                                 type="number"
                                 id="phone"
-                                onChange={handleChange}
-                                value={relative.phone}
-                                name="phone"
+                                {...register('phone')}
                             />
+                            <FormErrorMessage>{errors.phone && errors.phone.message}</FormErrorMessage>
                         </FormControl>
                     </div>
-                    <FormControl>
-                        <FormLabel htmlFor="address">
-                            Dirección:
-                        </FormLabel>
-
+                    <FormControl isInvalid={!!errors.address}>
+                        <FormLabel htmlFor="address">Dirección:</FormLabel>
                         <Input
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                             type="text"
                             id="address"
-                            onChange={handleChange}
-                            value={relative.address}
-                            name="address"
+                            {...register('address')}
                         />
+                        <FormErrorMessage>{errors.address && errors.address.message}</FormErrorMessage>
                     </FormControl>
                 </div>
-
             </div>
             <ModalFooter>
-                <Button onClick={handleSubmit} colorScheme='blue' mr={3}>
-                    Save
+                <Button type="submit" colorScheme="blue" mr={3}>
+                    Guardar
                 </Button>
-                <Button onClick={onClose}>Cancel</Button>
+                <Button onClick={onClose}>Cancelar</Button>
             </ModalFooter>
-        </form >
-    )
+        </form>
+    );
 }

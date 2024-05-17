@@ -25,9 +25,9 @@ const AddEmployeePage = () => {
         image: '',
         gender: '',
         address: '',
-        ruc: '',
+        ciRuc: '',
         joinDate: new Date(),
-        birthdate: new Date(),
+        birthDate: new Date(),
         phone: ''
     });
     const [positionEmployee, setPositionEmployee] = useState<PositionEmployee>({
@@ -37,27 +37,47 @@ const AddEmployeePage = () => {
     });
     const [relatives, setRelatives] = useState<Relative[]>([]);
 
-    const { register, handleSubmit, formState: { errors }, trigger } = useForm({
+    const { register, handleSubmit, formState: { errors }, trigger } = useForm<Employee>({
         resolver: zodResolver(employeeSchema)
     });
 
-    const { register: registerPosition, handleSubmit: handleSubmitPosition, formState: { errors: errorsPosition }, trigger: triggerPosition } = useForm({
+    const { register: registerPosition, handleSubmit: handleSubmitPosition, formState: { errors: errorsPosition }, trigger: triggerPosition } = useForm<PositionEmployee>({
         resolver: zodResolver(positionSchema)
     });
 
-    const { register: registerRelative, handleSubmit: handleSubmitRelative, formState: { errors: errorsRelative }, trigger: triggerRelative } = useForm({
+    const { register: registerRelative, handleSubmit: handleSubmitRelative, formState: { errors: errorsRelative }, trigger: triggerRelative } = useForm<Relative>({
         resolver: zodResolver(relativeSchema)
     });
 
     const handleNextStep = async () => {
-        let valid;
-        if (currentStep === 0) valid = await trigger();
-        if (currentStep === 1) valid = await triggerPosition();
-        if (currentStep === 2) valid = await triggerRelative();
 
-        if (valid) {
-            setCurrentStep((prevStep) => prevStep + 1);
+
+        if (currentStep === 0) {
+            const valid = await trigger();
+            if (valid) {
+                handleSubmit((data) => setEmployee(data))();
+                setCurrentStep((prevStep) => prevStep + 1);
+            }
+            if (!valid) {
+                console.log('Errores en el formulario de empleado:', errors);
+                return;
+            }
+        } else if (currentStep === 1) {
+            const valid = await triggerPosition();
+            if (valid) {
+                handleSubmitPosition((data) => setPositionEmployee(data))();
+                setCurrentStep((prevStep) => prevStep + 1);
+            }
+        } else if (currentStep === 2) {
+            const valid = await triggerRelative();
+            if (valid) {
+                
+                setCurrentStep((prevStep) => prevStep + 1);
+            }
         }
+        console.log('currentStep', currentStep);
+        console.log('employee', employee);
+        console.log('positionEmployee', positionEmployee);
     };
 
     const handleBackStep = () => {
@@ -93,19 +113,13 @@ const AddEmployeePage = () => {
             <div className='mt-10 w-[60vw]'>
                 {currentStep === 0 && (
                     <FormEmployee
-                        employee={employee}
-                        setEmployee={setEmployee}
                         register={register}
-                        handleSubmit={handleSubmit((data) => setEmployee(data))}
                         errors={errors}
                     />
                 )}
-                {/* {currentStep === 1 && (
+                {currentStep === 1 && (
                     <FormPosition
-                        position={positionEmployee}
-                        setPosition={setPositionEmployee}
                         register={registerPosition}
-                        handleSubmit={handleSubmitPosition((data) => setPositionEmployee(data))}
                         errors={errorsPosition}
                     />
                 )}
@@ -114,10 +128,10 @@ const AddEmployeePage = () => {
                         relative={relatives}
                         setRelative={setRelatives}
                         register={registerRelative}
-                        handleSubmit={handleSubmitRelative((data) => setRelatives(data))}
+                        handleSubmit={handleSubmitRelative}
                         errors={errorsRelative}
                     />
-                )} */}
+                )}
                 <div className='w-[55%] bottom-32 flex gap-14 justify-end fixed'>
                     {currentStep > 0 && (
                         <Button onClick={handleBackStep}>Atrás</Button>

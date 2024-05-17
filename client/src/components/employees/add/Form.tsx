@@ -6,14 +6,11 @@ import { Button, FormControl, FormLabel, Input, Select, FormErrorMessage } from 
 import Employee from "@/types/employee";
 
 interface FormEmployeeProps {
-    employee: Employee;
-    setEmployee: React.Dispatch<React.SetStateAction<Employee>>;
     register: UseFormRegister<Employee>;
-    handleSubmit: UseFormHandleSubmit<Employee>;
     errors: FieldErrors<Employee>;
 }
 
-export const FormEmployee: React.FC<FormEmployeeProps> = ({ employee, setEmployee, register, handleSubmit, errors }) => {
+export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors }) => {
     const getErrorMessage = (error: any) => {
         if (error && typeof error.message === 'string') {
             return error.message;
@@ -22,7 +19,7 @@ export const FormEmployee: React.FC<FormEmployeeProps> = ({ employee, setEmploye
     };
 
     return (
-        <form onSubmit={handleSubmit((data) => setEmployee(data))} className="space-y-4">
+        <form className="space-y-4">
 
             <div className="flex gap-4">
                 <div className="flex-1">
@@ -73,15 +70,15 @@ export const FormEmployee: React.FC<FormEmployeeProps> = ({ employee, setEmploye
                             </Select>
                             <FormErrorMessage>{getErrorMessage(errors.gender)}</FormErrorMessage>
                         </FormControl>
-                        <FormControl isInvalid={!!errors.ruc}>
+                        <FormControl isInvalid={!!errors.ciRuc}>
                             <FormLabel htmlFor="ruc">RUC:</FormLabel>
                             <Input
                                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                                 type="text"
-                                id="ruc"
-                                {...register('ruc')}
+                                id="ciRuc"
+                                {...register('ciRuc')}
                             />
-                            <FormErrorMessage>{getErrorMessage(errors.ruc)}</FormErrorMessage>
+                            <FormErrorMessage>{getErrorMessage(errors.ciRuc)}</FormErrorMessage>
                         </FormControl>
                     </div>
                     <div className="flex gap-4">
@@ -96,16 +93,16 @@ export const FormEmployee: React.FC<FormEmployeeProps> = ({ employee, setEmploye
                             />
                             <FormErrorMessage>{getErrorMessage(errors.joinDate)}</FormErrorMessage>
                         </FormControl>
-                        <FormControl isInvalid={!!errors.birthdate}>
+                        <FormControl isInvalid={!!errors.birthDate}>
                             <FormLabel htmlFor="birthdate">Fecha de Nacimiento:</FormLabel>
                             <Input
                                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                                 type="date"
                                 id="birthdate"
-                                {...register('birthdate')}
+                                {...register('birthDate')}
 
                             />
-                            <FormErrorMessage>{getErrorMessage(errors.birthdate)}</FormErrorMessage>
+                            <FormErrorMessage>{getErrorMessage(errors.birthDate)}</FormErrorMessage>
                         </FormControl>
                     </div>
                     <FormControl isInvalid={!!errors.phone}>

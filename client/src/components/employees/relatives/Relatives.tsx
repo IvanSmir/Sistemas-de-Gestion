@@ -5,61 +5,14 @@ import { Button, Modal, ModalBody, ModalContent, ModalOverlay, useDisclosure } f
 import { FormRelative } from '@/components/relatives/add/Form';
 import { TablePerson } from '@/components/lists/TablePerson';
 import Relative from '@/types/relative';
-
-
-const initialData: Relative[] = [
-    {
-        name: "Juan",
-        last_name: "Pérez",
-        address: "Calle Falsa 123, Ciudad Real",
-        phone: "5551234567",
-        email: "juan.perez@example.com",
-        ci: "V-12345678",
-        birthDate: new Date("1985-03-15"),
-        gender: "male",
-        relationshipType: "father"
-    },
-    {
-        name: "María",
-        last_name: "García",
-        address: "Avenida Siempreviva 456, Ciudad Esperanza",
-        phone: "5559876543",
-        email: "maria.garcia@example.com",
-        ci: "V-23456789",
-        birthDate: new Date("1989-07-20"),
-        gender: "female",
-        relationshipType: "sister"
-    },
-    {
-        name: "Carlos",
-        last_name: "Martínez",
-        address: "Paseo de los Olivos 789, Nueva Vida",
-        phone: "5556543210",
-        email: "carlos.martinez@example.com",
-        ci: "V-34567890",
-        birthDate: new Date("1992-10-05"),
-        gender: "male",
-        relationshipType: "cousin"
-    },
-    {
-        name: "Lucía",
-        last_name: "Fernández",
-        address: "Ronda del Valle 321, Ciudad Sol",
-        phone: "5553214567",
-        email: "lucia.fernandez@example.com",
-        ci: "V-45678901",
-        birthDate: new Date("1996-12-15"),
-        gender: "female",
-        relationshipType: "daughter"
-    }
-];
+import { Field, FieldErrors, UseFormHandleSubmit, UseFormRegister } from 'react-hook-form';
 
 const columnMapping = {
     'Nombre Completo': 'fullName',
     'Dirección': 'address',
     'Teléfono': 'phone',
     'Correo Electrónico': 'email',
-    'Cédula de Identidad': 'ci',
+    'Cédula de Identidad': 'ciRuc',
     'Fecha de Nacimiento': 'birthDateFormatted',
     'Género': 'gender',
     'Parentesco': 'relationshipType'
@@ -68,7 +21,7 @@ const columnMapping = {
 const transformRelatives = (relatives: Relative[]) => {
     return relatives.map(relative => ({
         ...relative,
-        fullName: `${relative.name} ${relative.last_name}`,
+        fullName: `${relative.name}`,
         birthDateFormatted: relative.birthDate.toLocaleDateString('es-ES')
     }));
 };
@@ -76,13 +29,14 @@ const transformRelatives = (relatives: Relative[]) => {
 interface FormRelativeProps {
     relative: Relative[];
     setRelative: React.Dispatch<React.SetStateAction<Relative[]>>;
+    register: UseFormRegister<Relative>;
+    errors: FieldErrors<Relative>;
+    handleSubmit: UseFormHandleSubmit<Relative>;
 }
 
-export const ModalRelative: React.FC<FormRelativeProps> = ({ relative, setRelative }) => {
+export const ModalRelative: React.FC<FormRelativeProps> = ({ relative, setRelative, register, errors, handleSubmit }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [relatives, setRelatives] = useState<Relative[]>(initialData);
-
-    const transformedData = transformRelatives(relatives);
+    const transformedData = transformRelatives(relative);
 
     return (
         <>
@@ -93,9 +47,12 @@ export const ModalRelative: React.FC<FormRelativeProps> = ({ relative, setRelati
                 <ModalContent>
                     <ModalBody pb={6}>
                         <FormRelative
-                            relatives={relatives}
-                            setRelatives={setRelatives}
+                            register={register}
+                            errors={errors}
+                            relatives={relative}
+                            setRelatives={setRelative}
                             onClose={onClose}
+                            handleSubmit={handleSubmit}
                         />
                     </ModalBody>
                 </ModalContent>

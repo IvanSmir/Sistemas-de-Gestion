@@ -7,7 +7,7 @@ import React from 'react'
 
 // Definimos los tipos para las props
 type TablePersonProps = {
-    data: { ci: string;[key: string]: any }[]; // Cada dato tiene un ID y valores dinámicos
+    data: { ciRuc: string;[key: string]: any }[]; // Cada dato tiene un ID y valores dinámicos
     columnMapping: { [header: string]: string }; // Mapeo de headers a claves de datos
 }
 
@@ -29,9 +29,9 @@ export const TablePerson: React.FC<TablePersonProps> = ({ data, columnMapping })
                     </Thead>
                     <Tbody>
                         {data.map((datum) => (
-                            <Tr key={datum.ci}>
+                            <Tr key={datum.ciRuc}>
                                 {headers.map((header) => (
-                                    <Td key={`${datum.ci}-${header}`} textAlign="center" verticalAlign="middle">
+                                    <Td key={`${datum.ciRuc}-${header}`} textAlign="center" verticalAlign="middle">
                                         {datum[columnMapping[header]]}
                                     </Td>
 
