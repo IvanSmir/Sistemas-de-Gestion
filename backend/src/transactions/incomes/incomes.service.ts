@@ -46,7 +46,7 @@ export class IncomesService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { page, limit } = paginationDto;
+    const { page = 1, limit = 10 } = paginationDto;
     const skip = limit * (page - 1);
     const take = limit;
 

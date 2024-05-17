@@ -1,18 +1,18 @@
 'use client'
 
 import Image from "next/image";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, FormControl, FormLabel, Input, Select, FormErrorMessage } from '@chakra-ui/react';
 import PositionEmployee from "@/types/positionEmployee";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 
-const positions = [
-    "Funcionario",
-    "Jefe",
-    "Gerente",
-    "Asistente",
-    "Analista"
-];
+// const positions = [
+//     "Funcionario",
+//     "Jefe",
+//     "Gerente",
+//     "Asistente",
+//     "Analista"
+// ];
 
 const wageTypes = [
     "Sueldo minimo",
@@ -28,6 +28,23 @@ interface FormPositionProps {
 }
 
 export const FormPosition: React.FC<FormPositionProps> = ({ register, errors }) => {
+    const [positions, setPositions] = useState<{ id: string, name: string }[]>([]);
+    const [wageTypes, setWageTypes] = useState<{ id: string, name: string }[]>([]);
+
+    useEffect(() => {
+        const fetchPositions = async () => {
+            const response = await fetch('http://localhost:3000/api/positions?limit=10&page=1');
+            const data = await response.json();
+            setPositions(data.data);
+        }
+        const fetchWageTypes = async () => {
+            const response = await fetch('http://localhost:3000/api/income-types');
+            const data = await response.json();
+            setWageTypes(data.data);
+        }
+        fetchPositions();
+        fetchWageTypes();
+    }, []);
     return (
         <form>
             <div className="flex gap-4">
@@ -40,8 +57,8 @@ export const FormPosition: React.FC<FormPositionProps> = ({ register, errors }) 
                                 placeholder='Seleccione el cargo'
                                 {...register('position')}
                             >
-                                {positions.map((pos, index) => (
-                                    <option key={index} value={pos}>{pos}</option>
+                                {positions.map((pos) => (
+                                    <option key={pos.id} value={pos.id}>{pos.name}</option>
                                 ))}
                             </Select>
                             <FormErrorMessage>{errors.position?.message}</FormErrorMessage>
@@ -53,8 +70,8 @@ export const FormPosition: React.FC<FormPositionProps> = ({ register, errors }) 
                                 placeholder='Seleccione el tipo de sueldo'
                                 {...register('wageType')}
                             >
-                                {wageTypes.map((type, index) => (
-                                    <option key={index} value={type}>{type}</option>
+                                {wageTypes.map((type) => (
+                                    <option key={type.id} value={type.id}>{type.name}</option>
                                 ))}
                             </Select>
                             <FormErrorMessage>{errors.wageType?.message}</FormErrorMessage>

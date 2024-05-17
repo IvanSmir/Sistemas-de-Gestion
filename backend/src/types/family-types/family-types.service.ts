@@ -37,7 +37,7 @@ export class FamilyTypesService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { page, limit } = paginationDto;
+    const { page = 1, limit = 10 } = paginationDto;
     try {
       const skip = (page - 1) * limit;
       const totalCount = await this.prismaService.familyTypes.count();

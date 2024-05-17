@@ -7,6 +7,8 @@ import { PersonService } from 'src/person/person.service';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { HandleDbErrorService } from 'src/common/services/handle-db-error.service';
 import { isUUID } from 'class-validator';
+import { createFullDto } from './dto/create-full.dto';
+import { FamilyMembersService } from '../family-members/family-members.service';
 
 @Injectable()
 export class EmployeesService {
@@ -14,6 +16,7 @@ export class EmployeesService {
     private readonly prismaService: PrismaService,
     private readonly personService: PersonService,
     private readonly handleDbErrorService: HandleDbErrorService,
+    private readonly familyMembersService: FamilyMembersService,
   ) {}
 
   private selectOptions = {
@@ -184,6 +187,52 @@ export class EmployeesService {
       return { message: 'Position deleted successfully' };
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Employee', id);
+    }
+  }
+
+  async createFull(createFullEmployeeDto: createFullDto, user: Users) {
+    try {
+      const { employe, role, familyMembers } = createFullEmployeeDto;
+      const employee = await this.create(employe, user);
+
+      const employeeDetail = await this.prismaService.employeeDetails.create({
+        data: {
+          startDate: new Date(),
+          employeeId: employee.id,
+          positionId: role.positionId,
+          userId: user.id,
+        },
+      });
+
+      const income = await this.prismaService.income.create({
+        data: {
+          date: new Date(),
+          employeeId: employee.id,
+          userId: user.id,
+          amount: role.amount,
+          active: true,
+          incomeTypeId: role.incomeTypeId,
+        },
+      });
+
+      const familyMembersPromises = familyMembers.map(async (familyMember) => {
+        await this.familyMembersService.create(
+          {
+            ...familyMember,
+            employeeId: employee.id,
+          },
+          user,
+        );
+      });
+
+      await Promise.all(familyMembersPromises);
+      return employee;
+    } catch (error) {
+      this.handleDbErrorService.handleDbError(
+        error,
+        'Employee',
+        createFullEmployeeDto.employe.ciRuc,
+      );
     }
   }
 }

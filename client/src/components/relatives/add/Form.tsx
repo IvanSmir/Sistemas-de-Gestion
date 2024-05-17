@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent } from 'react';
+import { FormEvent, use, useEffect, useState } from 'react';
 import { Button, FormControl, FormLabel, Input, Modal, ModalCloseButton, ModalFooter, ModalHeader, Select, FormErrorMessage } from '@chakra-ui/react';
 import Relative from '@/types/relative';
 import { FieldErrors, UseFormHandleSubmit, UseFormRegister } from 'react-hook-form';
@@ -15,7 +15,16 @@ interface FormRelativeProps {
 }
 
 export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelatives, onClose, register, errors, handleSubmit }) => {
+    const [familyTypes, setFamilyTypes] = useState<{ id: string, name: string }[]>([]);
 
+    useEffect(() => {
+        const fetchFamilyTypes = async () => {
+            const response = await fetch('http://localhost:3000/api/family-types');
+            const data = await response.json();
+            setFamilyTypes(data.data);
+        }
+        fetchFamilyTypes();
+    }, []);
     const onSubmit = (data: Relative) => {
         console.log(errors)
         setRelatives([...relatives, data]);
@@ -55,12 +64,9 @@ export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelati
                                 id="relationshipType"
                                 {...register('relationshipType')}
                             >
-                                <option value="father">Padre</option>
-                                <option value="mother">Madre</option>
-                                <option value="son">Hijo</option>
-                                <option value="daughter">Hija</option>
-                                <option value="husband">Esposo</option>
-                                <option value="wife">Esposa</option>
+                                {familyTypes.map((type) => (
+                                    <option key={type.id} value={type.id}>{type.name}</option>
+                                ))}
                             </Select>
                             <FormErrorMessage>{errors.relationshipType && errors.relationshipType.message}</FormErrorMessage>
                         </FormControl>
@@ -98,7 +104,7 @@ export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelati
                         <FormControl isInvalid={!!errors.phone}>
                             <FormLabel htmlFor="phone">Teléfono:</FormLabel>
                             <Input
-                                type="number"
+                                type="text"
                                 id="phone"
                                 {...register('phone')}
                             />

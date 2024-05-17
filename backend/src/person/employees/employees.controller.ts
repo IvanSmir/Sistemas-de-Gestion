@@ -22,6 +22,7 @@ import { Auth } from 'src/auth/decorators/auth.decorator';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { Users } from '@prisma/client';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { createFullDto } from './dto/create-full.dto';
 
 @ApiTags('Employees')
 @Controller('employees')
@@ -87,5 +88,16 @@ export class EmployeesController {
   @ApiResponse({ status: 404, description: 'Employee not found.' })
   remove(@Param('id') id: string, @GetUser() user: Users) {
     return this.employeesService.remove(id, user);
+  }
+
+  @Post('complete')
+  @ApiOperation({ summary: 'Complete an employee' })
+  @ApiResponse({ status: 200, description: 'Employee completed successfully.' })
+  @ApiResponse({ status: 404, description: 'Employee not found.' })
+  complete(
+    @Body() createFullEmployeeDto: createFullDto,
+    @GetUser() user: Users,
+  ) {
+    return this.employeesService.createFull(createFullEmployeeDto, user);
   }
 }

@@ -35,5 +35,5 @@ export class CreateEmployeeDetailDto {
     example: '2021-09-01T00:00:00Z',
   })
   @Transform(({ value }) => new Date(value))
-  endDate: Date;
+  endDate?: Date;
 }

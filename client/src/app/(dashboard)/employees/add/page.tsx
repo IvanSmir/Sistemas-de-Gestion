@@ -71,7 +71,7 @@ const AddEmployeePage = () => {
         } else if (currentStep === 2) {
             const valid = await triggerRelative();
             if (valid) {
-                
+
                 setCurrentStep((prevStep) => prevStep + 1);
             }
         }
@@ -85,19 +85,19 @@ const AddEmployeePage = () => {
     };
 
     const handleSave = async () => {
-        const employeeData: EmployeeData = {
+        const employeeData = {
             employee,
-            position: positionEmployee,
-            relatives
+            role: positionEmployee,
+            familyMembers: relatives
         };
+        console.log('employeeData', employeeData);
 
         try {
-            const employeeResponse = await fetch('/api/employee', {
+            const employeeResponse = await fetch('http:localhost:3000/api/employee/full', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(employeeData),
             });
-
             alert('Employee saved successfully!');
         } catch (error) {
             console.error('Error saving employee:', error);

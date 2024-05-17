@@ -9,5 +9,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
   controllers: [FamilyMembersController],
   providers: [FamilyMembersService, PrismaService],
   imports: [PersonModule, CommonModule],
+  exports: [FamilyMembersService],
 })
 export class FamilyMembersModule {}
