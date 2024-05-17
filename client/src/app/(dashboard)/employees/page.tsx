@@ -1,8 +1,6 @@
 'use client';
 
-import { DataTable } from '@/components/lists/Table';
 import { TableEmployee } from '@/components/lists/TableEmployee';
-import { TablePerson } from '@/components/lists/TablePerson';
 import { getEmployees } from '@/utils/employee.http';
 import React, { useEffect, useState } from 'react';
 
