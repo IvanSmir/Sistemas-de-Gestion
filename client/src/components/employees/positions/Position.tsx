@@ -6,21 +6,8 @@ import { Button, FormControl, FormLabel, Input, Select, FormErrorMessage } from 
 import PositionEmployee from "@/types/positionEmployee";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 
-// const positions = [
-//     "Funcionario",
-//     "Jefe",
-//     "Gerente",
-//     "Asistente",
-//     "Analista"
-// ];
 
-const wageTypes = [
-    "Sueldo minimo",
-    "Sueldo medio",
-    "Sueldo alto",
-    "Sueldo por hora",
-    "Sueldo por proyecto"
-];
+const ApiUrl = process.env.NEXT_PUBLIC_API_URL
 
 interface FormPositionProps {
     register: UseFormRegister<PositionEmployee>;
@@ -33,12 +20,12 @@ export const FormPosition: React.FC<FormPositionProps> = ({ register, errors }) 
 
     useEffect(() => {
         const fetchPositions = async () => {
-            const response = await fetch('http://localhost:3000/api/positions?limit=10&page=1');
+            const response = await fetch(`${ApiUrl}/positions?limit=1000&page=1`);
             const data = await response.json();
             setPositions(data.data);
         }
         const fetchWageTypes = async () => {
-            const response = await fetch('http://localhost:3000/api/income-types');
+            const response = await fetch(`${ApiUrl}/income-types?limit=1000&page=1`);
             const data = await response.json();
             setWageTypes(data.data);
         }

@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/api/positions?limit=10&page=1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL + "/positions";
 
 const getPositions = async () => {
   try {

@@ -58,7 +58,7 @@ export const TableEmployee: React.FC<TableEmployeeProps> = ({ data, columnMappin
                             </Select>
                         </Flex>
                         <Link href={'/employees/add'}><Button rounded={23} mr={5} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} gap={2} color='white'>
-                            Agregar Familiar
+                            Agregar Funcionario
                         </Button></Link>
                     </Flex>
                     <TableContainer >

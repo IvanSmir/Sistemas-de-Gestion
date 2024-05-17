@@ -9,6 +9,7 @@ import Employee from '@/types/employee';
 import EmployeeData from '@/types/employeeData';
 import PositionEmployee from '@/types/positionEmployee';
 import Relative from '@/types/relative';
+import { completeEmployee } from '@/utils/employee.http';
 import { dataEmployeeSchema } from '@/validations/dataEmployeeSchema';
 import { employeeSchema } from '@/validations/employeeSchema';
 import { positionSchema } from '@/validations/positionSchema';
@@ -109,15 +110,8 @@ const AddEmployeePage = () => {
 
         try {
             const { user } = auth;
-            const token = user?.token;
-            const employeeResponse = await fetch('http://localhost:3000/api/employees/complete', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify(employeeData),
-            });
+            const token = user?.token || '';
+            const employeeResponse = await completeEmployee(employeeData, token);
             alert('Employee saved successfully!');
             router.push('/employees');
         } catch (error) {

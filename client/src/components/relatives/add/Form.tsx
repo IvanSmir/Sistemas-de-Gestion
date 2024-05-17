@@ -5,6 +5,8 @@ import { Button, FormControl, FormLabel, Input, Modal, ModalCloseButton, ModalFo
 import Relative from '@/types/relative';
 import { FieldErrors, UseFormHandleSubmit, UseFormRegister } from 'react-hook-form';
 
+const ApiUrl = process.env.NEXT_PUBLIC_API_URL + '/family-types';
+
 interface FormRelativeProps {
     relatives: Relative[];
     setRelatives: (relatives: Relative[]) => void;
@@ -18,8 +20,9 @@ export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelati
     const [familyTypes, setFamilyTypes] = useState<{ id: string, name: string }[]>([]);
 
     useEffect(() => {
+
         const fetchFamilyTypes = async () => {
-            const response = await fetch('http://localhost:3000/api/family-types');
+            const response = await fetch(ApiUrl);
             const data = await response.json();
             setFamilyTypes(data.data);
         }
