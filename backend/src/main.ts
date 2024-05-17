@@ -5,13 +5,13 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 
 const port = process.env.PORT || 3000;
-
+const host = process.env.FRONTEND_URL || 'http://localhost:3001';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   console.log('process.env.PORT', process.env.PORT);
   app.setGlobalPrefix('api');
   app.enableCors({
-    origin: 'http://localhost:3001',
+    origin: host,
     credentials: true,
   });
   app.use(cookieParser());
