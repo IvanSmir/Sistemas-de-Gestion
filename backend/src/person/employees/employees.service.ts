@@ -55,7 +55,7 @@ export class EmployeesService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { page, limit } = paginationDto;
+    const { page = 1, limit = 10 } = paginationDto;
     try {
       const totalCount = await this.prismaService.employees.count({
         where: { isDeleted: false },
