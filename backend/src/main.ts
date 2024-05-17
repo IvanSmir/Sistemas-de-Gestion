@@ -4,9 +4,11 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 
+const port = process.env.PORT || 3000;
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  console.log('process.env.PORT', process.env.PORT);
   app.setGlobalPrefix('api');
   app.enableCors({
     origin: 'http://localhost:3001',
@@ -48,6 +50,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(`${process.env.PORT || 3000}`);
+  await app.listen(`${parseInt(process.env.PORT) || 3000}`);
 }
 bootstrap();
