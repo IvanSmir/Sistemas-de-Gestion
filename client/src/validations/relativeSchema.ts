@@ -6,7 +6,7 @@ const isCedulaOrRUC = (value: string) => {
   return cedulaRegex.test(value) || rucRegex.test(value);
 };
 
-export const employeeSchema = z.object({
+export const relativeSchema = z.object({
   name: z
     .string()
     .min(1, { message: 'Name is required' })
@@ -36,12 +36,9 @@ export const employeeSchema = z.object({
     (arg) => new Date(arg as string),
     z.date().refine((date) => !isNaN(date.getTime()), { message: 'Invalid date' })
   ),
-  joinDate: z.preprocess(
-    (arg) => new Date(arg as string),
-    z.date().refine((date) => !isNaN(date.getTime()), { message: 'Invalid date' })
-  ),
-  
   gender: z
   .enum(['male', 'female'], 
   { message: 'Gender must be either "male" or "female"' }),
+  relationshipType: z
+  .string(),
 });

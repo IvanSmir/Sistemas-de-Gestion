@@ -24,7 +24,6 @@ export const Register = () => {
     const handleClick = () => setShow(!show);
     const handleConfirmClick = () => setShowConfirm(!showConfirm);
     const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({ resolver: zodResolver(userSchema) });
-
     const onSubmit = async (data: Inputs) => {
         try {
             setError(null);

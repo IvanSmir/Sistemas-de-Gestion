@@ -73,7 +73,12 @@ const transformRelatives = (relatives: Relative[]) => {
     }));
 };
 
-export const ModalRelative: React.FC = () => {
+interface FormRelativeProps {
+    relative: Relative[];
+    setRelative: React.Dispatch<React.SetStateAction<Relative[]>>;
+}
+
+export const ModalRelative: React.FC<FormRelativeProps> = ({ relative, setRelative }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [relatives, setRelatives] = useState<Relative[]>(initialData);
 

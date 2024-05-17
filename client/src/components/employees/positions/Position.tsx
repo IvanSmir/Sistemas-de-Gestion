@@ -22,13 +22,13 @@ const wageTypes = [
     "Sueldo por hora",
     "Sueldo por proyecto"
 ];
+interface FormPositionProps {
+    position: PositionEmployee;
+    setPosition: React.Dispatch<React.SetStateAction<PositionEmployee>>;
+}
 
-export const FormPosition: React.FC = () => {
-    const [position, setPosition] = useState<PositionEmployee>({
-        position: "",
-        wageType: "",
-        salary: 0,
-    });
+export const FormPosition: React.FC<FormPositionProps> = ({ position, setPosition }) => {
+
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -39,7 +39,7 @@ export const FormPosition: React.FC = () => {
         if (position.wageType === "Sueldo minimo") {
             setPosition(prevState => ({ ...prevState, salary: 2550307 }));
         }
-    }, [position.wageType]);
+    }, [position.wageType, setPosition]);
 
     return (
         <form>

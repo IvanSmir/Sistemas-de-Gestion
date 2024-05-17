@@ -1,150 +1,128 @@
 'use client'
-
+import React from 'react';
+import { UseFormRegister, FieldErrors, UseFormHandleSubmit } from 'react-hook-form';
 import Image from "next/image";
-import { ChangeEvent, useState } from 'react';
-import { Button, FormControl, FormLabel, Input, Select } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, Input, Select, FormErrorMessage } from '@chakra-ui/react';
 import Employee from "@/types/employee";
 
 interface FormEmployeeProps {
     employee: Employee;
-    setEmployee: (employee: Employee) => void;
+    setEmployee: React.Dispatch<React.SetStateAction<Employee>>;
+    register: UseFormRegister<Employee>;
+    handleSubmit: UseFormHandleSubmit<Employee>;
+    errors: FieldErrors<Employee>;
 }
 
-export const FormEmployee: React.FC<FormEmployeeProps> = ({ employee, setEmployee }) => {
-
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setEmployee({ ...employee, [name]: value });
+export const FormEmployee: React.FC<FormEmployeeProps> = ({ employee, setEmployee, register, handleSubmit, errors }) => {
+    const getErrorMessage = (error: any) => {
+        if (error && typeof error.message === 'string') {
+            return error.message;
+        }
+        return '';
     };
 
     return (
-        <form>
+        <form onSubmit={handleSubmit((data) => setEmployee(data))} className="space-y-4">
+
             <div className="flex gap-4">
                 <div className="flex-1">
                     <div className="flex gap-4">
-                        <FormControl>
-                            <FormLabel htmlFor="name" >Nombre:</FormLabel>
+                        <FormControl isInvalid={!!errors.name}>
+                            <FormLabel htmlFor="name">Nombre:</FormLabel>
                             <Input
-                                type="text"
                                 id="name"
-                                name="name"
-                                onChange={handleChange}
-                                value={employee.name}
-                            />
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel htmlFor="email">
-                                Correo:
-                            </FormLabel>
+                                {...register('name')}
 
+                            />
+                            <FormErrorMessage>{getErrorMessage(errors.name)}</FormErrorMessage>
+                        </FormControl>
+                        <FormControl isInvalid={!!errors.email}>
+                            <FormLabel htmlFor="email">Correo:</FormLabel>
                             <Input
                                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                                 type="email"
                                 id="email"
-                                onChange={handleChange}
+                                {...register('email')}
 
-                                value={employee.email}
-                                name="email"
                             />
+                            <FormErrorMessage>{getErrorMessage(errors.email)}</FormErrorMessage>
                         </FormControl>
                     </div>
-                    <FormControl>
-                        <FormLabel htmlFor="address">Dirección:
-                        </FormLabel>
-
+                    <FormControl isInvalid={!!errors.address}>
+                        <FormLabel htmlFor="address">Dirección:</FormLabel>
                         <Input
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                             type="text"
                             id="address"
-                            onChange={handleChange}
 
-                            value={employee.address}
-                            name="address"
+                            {...register('address')}
+
                         />
+                        <FormErrorMessage>{getErrorMessage(errors.address)}</FormErrorMessage>
                     </FormControl>
                     <div className="flex gap-4">
-                        <FormControl>
-                            <FormLabel htmlFor="gender">Sexo:
-                            </FormLabel>
-
+                        <FormControl isInvalid={!!errors.gender}>
+                            <FormLabel htmlFor="gender">Sexo:</FormLabel>
                             <Select
                                 id="gender"
-                                name="gender"
-                                value={employee.gender}
                                 placeholder='Seleccione el sexo'
-                                onChange={handleChange}
+                                {...register('gender')}
                             >
-                                <option value="hombre">Hombre</option>
-                                <option value="mujer">Mujer</option>
+                                <option value="male">Hombre</option>
+                                <option value="female">Mujer</option>
                             </Select>
+                            <FormErrorMessage>{getErrorMessage(errors.gender)}</FormErrorMessage>
                         </FormControl>
-                        <FormControl>
-                            <FormLabel htmlFor="ruc">
-                                RUC:
-                            </FormLabel>
-
+                        <FormControl isInvalid={!!errors.ruc}>
+                            <FormLabel htmlFor="ruc">RUC:</FormLabel>
                             <Input
                                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                                 type="text"
                                 id="ruc"
-                                onChange={handleChange}
-
-                                value={employee.ruc}
-                                name="ruc"
+                                {...register('ruc')}
                             />
+                            <FormErrorMessage>{getErrorMessage(errors.ruc)}</FormErrorMessage>
                         </FormControl>
                     </div>
                     <div className="flex gap-4">
-                        <FormControl>
-                            <FormLabel htmlFor="joinDate">
-                            </FormLabel>
-
-                            Fecha de Incorporación:
+                        <FormControl isInvalid={!!errors.joinDate}>
+                            <FormLabel htmlFor="joinDate">Fecha de Incorporación:</FormLabel>
                             <Input
                                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                                 type="date"
                                 id="joinDate"
-                                onChange={handleChange}
-                                value={employee.joinDate.toString()}
-                                name="joinDate"
-                            />
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel htmlFor="birthdate">
-                                Fecha de Nacimiento:
-                            </FormLabel>
+                                {...register('joinDate')}
 
+                            />
+                            <FormErrorMessage>{getErrorMessage(errors.joinDate)}</FormErrorMessage>
+                        </FormControl>
+                        <FormControl isInvalid={!!errors.birthdate}>
+                            <FormLabel htmlFor="birthdate">Fecha de Nacimiento:</FormLabel>
                             <Input
                                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                                 type="date"
                                 id="birthdate"
-                                onChange={handleChange}
+                                {...register('birthdate')}
 
-                                value={employee.birthdate.toString()}
-                                name="birthdate"
                             />
+                            <FormErrorMessage>{getErrorMessage(errors.birthdate)}</FormErrorMessage>
                         </FormControl>
                     </div>
-                    <FormControl>
-                        <FormLabel htmlFor="phone">
-                            Teléfono:
-                        </FormLabel>
-
+                    <FormControl isInvalid={!!errors.phone}>
+                        <FormLabel htmlFor="phone">Teléfono:</FormLabel>
                         <Input
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                             type="text"
                             id="phone"
-                            onChange={handleChange}
-                            value={employee.phone}
-                            name="phone"
+                            {...register('phone')}
+
                         />
+                        <FormErrorMessage>{getErrorMessage(errors.phone)}</FormErrorMessage>
                     </FormControl>
                 </div>
                 <div className="w-1/4 gap-4">
-                    <FormControl>
-
-
-                        <FormLabel htmlFor='image'>Foto de Perfil: </FormLabel>
+                    <FormControl isInvalid={!!errors.image}>
+                        <FormLabel htmlFor="image">Foto de Perfil:</FormLabel>
                         <div className="flex flex-col h-56 justify-center">
                             <div className="flex justify-center">
                                 <Image
@@ -158,21 +136,15 @@ export const FormEmployee: React.FC<FormEmployeeProps> = ({ employee, setEmploye
                             <Input
                                 type="text"
                                 id="image"
-                                name="image"
-                                value={employee.image}
-                                onChange={handleChange}
+                                {...register('image')}
+
                             />
-                            <Button
-                                mt={4}
-                                colorScheme='gray'
-                            >Subir Imagen</Button>
-
+                            <Button mt={4} colorScheme='gray'>Subir Imagen</Button>
                         </div>
+                        <FormErrorMessage>{getErrorMessage(errors.image)}</FormErrorMessage>
                     </FormControl>
-
                 </div>
-
             </div>
-        </form >
-    )
-}
+        </form>
+    );
+};
