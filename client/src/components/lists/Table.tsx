@@ -1,5 +1,6 @@
 import { TableContainer, Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
 import React from 'react'
+import Pagination from './Pagination'
 
 // Definimos los tipos para las props
 type DataTableProps = {
@@ -10,7 +11,7 @@ type DataTableProps = {
 export const DataTable: React.FC<DataTableProps> = ({ data, columnMapping }) => {
     // Obtener los encabezados desde las claves de columnMapping
     const headers = Object.keys(columnMapping);
-
+    console.log(data);
     return (
         <>
             <TableContainer >
@@ -27,12 +28,15 @@ export const DataTable: React.FC<DataTableProps> = ({ data, columnMapping }) => 
                                     <Td key={`${datum.id}-${header}`} textAlign="center" verticalAlign="middle">
                                         {datum[columnMapping[header]]}
                                     </Td>
+
                                 ))}
                             </Tr>
                         ))}
                     </Tbody>
                 </Table>
             </TableContainer>
+
+            <Pagination />
         </>
     )
 }
