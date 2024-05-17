@@ -70,6 +70,9 @@ export class EmployeesService {
         where: {
           isDeleted: false,
         },
+        orderBy: {
+          createdAt: 'desc',
+        },
       });
       return {
         data: employees,
