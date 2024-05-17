@@ -121,7 +121,7 @@ const AddEmployeePage = () => {
     };
 
     return (
-        <div className='flex flex-col w-full justify-center items-center'>
+        <div className='flex flex-col w-full justify-center items-center bg-white'>
             <div className='w-[70vw]'>
                 <StepperFunc currentIndex={currentStep} />
             </div>
