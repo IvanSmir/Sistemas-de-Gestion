@@ -14,7 +14,7 @@ interface PositionForm {
 interface FormAddPositionProps {
     isOpen: boolean;
     onClose: () => void;
-    onChange: (position: Position) => void;
+    onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
     onSave: (position: Position) => void;
 
 }

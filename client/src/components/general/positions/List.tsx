@@ -136,7 +136,7 @@ export const ListPositions: React.FC = () => {
                     </Tbody>
                 </Table>
             </TableContainer>
-            <FormAddPosition isOpen={isEditOpen} onClose={onEditClose} familiar={selectedPosition} onChange={handleChange} onSave={handleSave} />
+            <FormAddPosition isOpen={isEditOpen} onClose={onEditClose} onChange={handleChange} onSave={handleSave} />
         </Box>
     );
 };
