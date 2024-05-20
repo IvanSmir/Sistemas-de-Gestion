@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button, Modal, ModalBody, ModalContent, ModalOverlay, useDisclosure } from '@chakra-ui/react';
-import { FormRelative } from '@/components/relatives/add/Form';
+import { FormRelative } from '@/components/relatives/add/FormRelativeStepper';
 import { TablePerson } from '@/components/lists/TablePerson';
 import Relative from '@/types/relative';
 import { Field, FieldErrors, UseFormHandleSubmit, UseFormRegister } from 'react-hook-form';
