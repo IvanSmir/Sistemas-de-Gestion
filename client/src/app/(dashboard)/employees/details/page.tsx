@@ -1,6 +1,6 @@
 import React from 'react'
 import { EmployeeDetails } from '@/components/employees/details/details'
-export const details = () => {
+export details = () => {
     return (
         <div>
             <EmployeeDetails></EmployeeDetails>
