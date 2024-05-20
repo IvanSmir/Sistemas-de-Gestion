@@ -5,8 +5,9 @@ const AddRelativePage = () => {
 
 
     return (
+
         <>
-            <FormAddPosition />
+            <FormAddPosition isOpen onClose={() => { }} onChange={() => { }} onSave={() => { }} />
         </>
     );
 };

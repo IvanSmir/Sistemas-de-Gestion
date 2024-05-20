@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { ChangeEvent, FormEvent, useState } from 'react';
-import { Button, FormControl, FormLabel, Input, Select } from '@chakra-ui/react';
+import { Box, Button, Flex, FormControl, FormLabel, Input, Select, Text } from '@chakra-ui/react';
 import Position from "@/types/position";
 
 
@@ -34,28 +34,43 @@ export const FormAddPosition: React.FC<FormAddPositionProps> = ({ isOpen, onClos
     };
 
     return (
-        <form >
+        <Flex justify="center" align="center" minH="90vh">
+            <Box bg="white" p={5} borderRadius="md" boxShadow="md" width="90%">
+                <Text fontSize='24px' mb={6} textAlign="center" color="#AA546D"> Agregar Cargo</Text>
 
-            <FormControl>
-                <FormLabel htmlFor="name" >Nombre:</FormLabel>
-                <Input
-                    type="text"
-                    id="name"
-                    name="name"
-                    onChange={handleChange}
-                    value={position.name}
-                />
-            </FormControl>
-            <FormControl>
-                <FormLabel htmlFor="description" >Descripción:</FormLabel>
-                <Input
-                    type="text"
-                    id="description"
-                    name="description"
-                    onChange={handleChange}
-                    value={position.description}
-                />
-            </FormControl>
-        </form >
+                <form >
+
+                    <FormControl>
+                        <FormLabel htmlFor="name" >Nombre:</FormLabel>
+                        <Input
+                            type="text"
+                            id="name"
+                            name="name"
+                            onChange={handleChange}
+                            value={position.name}
+                        />
+                    </FormControl>
+                    <FormControl>
+                        <FormLabel htmlFor="description" >Descripción:</FormLabel>
+                        <Input
+                            type="text"
+                            id="description"
+                            name="description"
+                            onChange={handleChange}
+                            value={position.description}
+                        />
+                    </FormControl>
+                    <Flex>
+                        <Button variant="ghost" onClick={onClose} mr={3}>
+                            Cancelar
+                        </Button>
+                        <Button color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} mr={3}>
+                            Guardar
+                        </Button>
+                    </Flex>
+
+                </form >
+            </Box>
+        </Flex  >
     )
 }

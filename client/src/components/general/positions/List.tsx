@@ -111,7 +111,7 @@ export const ListPositions: React.FC = () => {
                     />
                 </Flex>
                 <Button rounded={23} mr={5} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} gap={2} color='white'>
-                    <AddIcon />Agregar Familiar
+                    <AddIcon />Agregar Cargo
                 </Button>
             </Flex>
             <TableContainer>
@@ -136,7 +136,7 @@ export const ListPositions: React.FC = () => {
                     </Tbody>
                 </Table>
             </TableContainer>
-            <FormAddPosition isOpen={isEditOpen} onClose={onEditClose} onChange={handleChange} onSave={handleSave} />
         </Box>
+
     );
 };
