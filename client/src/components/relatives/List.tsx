@@ -154,7 +154,7 @@ export const List: React.FC = () => {
     };
 
     return (
-        <Box backgroundColor={'white'} top={160} left={300} width={900} height={426} borderRadius="2xl" padding="8px" margin="auto" >
+        <Box backgroundColor={'white'} width={900} height={426} borderRadius="2xl" padding="8px" margin="auto" >
             <Flex justifyContent="space-between" mb={6} >
                 <Flex gap={2}>
                     <Input
