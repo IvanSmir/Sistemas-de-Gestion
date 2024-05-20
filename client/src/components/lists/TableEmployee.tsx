@@ -76,6 +76,7 @@ export const TableEmployee: React.FC<TableEmployeeProps> = ({ data, columnMappin
                                                 {datum.person[columnMapping[header]]}
                                             </Td>
 
+
                                         ))}
                                     </Tr>
                                 ))}

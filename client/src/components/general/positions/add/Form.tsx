@@ -6,8 +6,20 @@ import { Button, FormControl, FormLabel, Input, Select } from '@chakra-ui/react'
 import Position from "@/types/position";
 
 
+interface Position {
+    name: string;
+    description: string;
 
-export const FormAddPosition: React.FC = () => {
+}
+interface FormAddPositionProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onChange: (position: Position) => void;
+    onSave: (position: Position) => void;
+
+}
+export const FormAddPosition: React.FC<FormAddPositionProps> = ({ isOpen, onClose, onChange, onSave }) => {
+
     const [position, setPosition] = useState<Position>(
         {
             name: "",
