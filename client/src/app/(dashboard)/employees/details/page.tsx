@@ -1,6 +1,6 @@
 import React from 'react'
 import { EmployeeDetails } from '@/components/employees/details/details'
-export details = () => {
+const details = () => {
     return (
         <div>
             <EmployeeDetails></EmployeeDetails>
