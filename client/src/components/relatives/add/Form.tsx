@@ -1,136 +1,160 @@
 'use client'
-
-import { FormEvent, use, useEffect, useState } from 'react';
-import { Button, FormControl, FormLabel, Input, Modal, ModalCloseButton, ModalFooter, ModalHeader, Select, FormErrorMessage } from '@chakra-ui/react';
-import Relative from '@/types/relative';
-import { FieldErrors, UseFormHandleSubmit, UseFormRegister } from 'react-hook-form';
-
+import React, { ChangeEvent, FormEvent, useState } from "react";
+import { Text, FormControl, Input, FormLabel, Select, Button, Flex, Box } from '@chakra-ui/react'
 const ApiUrl = process.env.NEXT_PUBLIC_API_URL + '/family-types';
 
-interface FormRelativeProps {
-    relatives: Relative[];
-    setRelatives: (relatives: Relative[]) => void;
-    onClose: () => void;
-    register: UseFormRegister<Relative>;
-    errors: FieldErrors<Relative>;
-    handleSubmit: UseFormHandleSubmit<Relative>;
+interface FormValues {
+    name: string;
+    last_name: string;
+    address: string;
+    telephone: string;
+    email: string;
+    ci: string;
+    birthday: string;
+    relationship: string;
 }
 
-export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelatives, onClose, register, errors, handleSubmit }) => {
-    const [familyTypes, setFamilyTypes] = useState<{ id: string, name: string }[]>([]);
+export const Form: React.FC = () => {
+    const [formData, setFormData] = useState<FormValues>({
+        name: "",
+        last_name: "",
+        address: "",
+        telephone: "",
+        email: "",
+        ci: "",
+        birthday: "",
+        relationship: ""
+    });
 
-    useEffect(() => {
-
-        const fetchFamilyTypes = async () => {
-            const response = await fetch(ApiUrl);
-            const data = await response.json();
-            setFamilyTypes(data.data);
-        }
-        fetchFamilyTypes();
-    }, []);
-    const onSubmit = (data: Relative) => {
-        console.log(errors)
-        setRelatives([...relatives, data]);
-        onClose();
+    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
     };
 
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        console.log(formData);
+        try {
+            const response = await fetch(ApiUrl);
+            const data = await response.json();
+            setFormData(data.data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-            <ModalHeader>Agregar Familiar</ModalHeader>
-            <ModalCloseButton />
-            <div className="flex gap-4">
-                <div className="flex-1">
-                    <div className="flex gap-4">
-                        <FormControl isInvalid={!!errors.name}>
+        <Flex justify="center" align="center" minH="90vh">
+            <Box bg="white" p={5} borderRadius="md" boxShadow="md" width={{ base: "90%", sm: "80%", md: "70%", lg: "50%" }} padding="8px">
+                <Text fontSize='24px' mb={6} textAlign="center" color="#AA546D"> Agregar familiar</Text>
+                <form onSubmit={handleSubmit}>
+                    <Flex direction={{ base: "column", md: "row" }} gap={6}>
+                        <FormControl flex="1">
                             <FormLabel htmlFor="name">Nombre:</FormLabel>
                             <Input
                                 type="text"
                                 id="name"
-                                {...register('name')}
+                                name="name"
+                                onChange={handleChange}
+                                value={formData.name}
+                                borderRadius="sm"
                             />
-                            <FormErrorMessage>{errors.name && errors.name.message}</FormErrorMessage>
                         </FormControl>
-                    </div>
-                    <FormControl isInvalid={!!errors.ciRuc}>
-                        <FormLabel htmlFor="ci">Número de cédula:</FormLabel>
-                        <Input
-                            type="text"
-                            id="ciRuc"
-                            {...register('ciRuc')}
-                        />
-                        <FormErrorMessage>{errors.ciRuc && errors.ciRuc.message}</FormErrorMessage>
-                    </FormControl>
-                    <div className="flex gap-4">
-                        <FormControl isInvalid={!!errors.familyTypeId}>
-                            <FormLabel htmlFor="relationshipType">Parentesco:</FormLabel>
-                            <Select
-                                id="familyTypeId"
-                                {...register('familyTypeId')}
-                            >
-                                {familyTypes.map((type) => (
-                                    <option key={type.id} value={type.id}>{type.name}</option>
-                                ))}
-                            </Select>
-                            <FormErrorMessage>{errors.familyTypeId && errors.familyTypeId.message}</FormErrorMessage>
+                        <FormControl flex="1">
+                            <FormLabel htmlFor="last_name">Apellido:</FormLabel>
+                            <Input
+                                type="text"
+                                id="last_name"
+                                name="last_name"
+                                onChange={handleChange}
+                                value={formData.last_name}
+                                borderRadius="sm"
+                            />
                         </FormControl>
-                        <FormControl isInvalid={!!errors.gender}>
-                            <FormLabel htmlFor="gender">Género:</FormLabel>
-                            <Select
-                                id="gender"
-                                {...register('gender')}
-                            >
-                                <option value="female">Femenino</option>
-                                <option value="male">Masculino</option>
-                            </Select>
-                            <FormErrorMessage>{errors.gender && errors.gender.message}</FormErrorMessage>
+                    </Flex>
+                    <Flex direction={{ base: "column", md: "row" }} gap={6}>
+                        <FormControl flex="1">
+                            <FormLabel htmlFor="ci">Número de cédula:</FormLabel>
+                            <Input
+                                type="text"
+                                id="ci"
+                                name="ci"
+                                onChange={handleChange}
+                                value={formData.ci}
+                                borderRadius="sm"
+                            />
                         </FormControl>
-                    </div>
-                    <FormControl isInvalid={!!errors.email}>
-                        <FormLabel htmlFor="email">Correo Electrónico:</FormLabel>
+                        <FormControl flex="1">
+                            <FormLabel htmlFor="birthday">Fecha de nacimiento:</FormLabel>
+                            <Input
+                                type="date"
+                                id="birthday"
+                                name="birthday"
+                                onChange={handleChange}
+                                value={formData.birthday}
+                                borderRadius="sm"
+                            />
+                        </FormControl>
+                    </Flex>
+                    <FormControl>
+                        <FormLabel htmlFor="email">Correo electrónico:</FormLabel>
                         <Input
                             type="email"
                             id="email"
-                            {...register('email')}
+                            name="email"
+                            onChange={handleChange}
+                            value={formData.email}
+                            borderRadius="sm"
                         />
-                        <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
                     </FormControl>
-                    <div className="flex gap-4">
-                        <FormControl isInvalid={!!errors.birthDate}>
-                            <FormLabel htmlFor="birthDate">Fecha de Nacimiento:</FormLabel>
-                            <Input
-                                type="date"
-                                id="birthDate"
-                                {...register('birthDate')}
-                            />
-                            <FormErrorMessage>{errors.birthDate && errors.birthDate.message}</FormErrorMessage>
+                    <Flex direction={{ base: "column", md: "row" }} gap={6}>
+                        <FormControl flex="1">
+                            <FormLabel htmlFor="relationship">Parentesco:</FormLabel>
+                            <Select
+                                id="relationship"
+                                name="relationship"
+                                onChange={handleChange}
+                                value={formData.relationship}
+                                borderRadius="sm"
+                            >
+                                <option value="padre">Padre</option>
+                                <option value="madre">Madre</option>
+                                <option value="hijo">Hijo</option>
+                                <option value="hija">Hija</option>
+                                <option value="esposo/esposa">Esposo/Esposa</option>
+                            </Select>
                         </FormControl>
-                        <FormControl isInvalid={!!errors.phone}>
-                            <FormLabel htmlFor="phone">Teléfono:</FormLabel>
+                        <FormControl flex="1">
+                            <FormLabel htmlFor="telephone">Teléfono:</FormLabel>
+                            <Input
+                                type="tel"
+                                id="telephone"
+                                name="telephone"
+                                onChange={handleChange}
+                                value={formData.telephone}
+                                borderRadius="sm"
+                            />
+                        </FormControl>
+                    </Flex>
+                    <Flex direction={{ base: "column" }} gap={6}>
+                        <FormControl flex="1">
+                            <FormLabel htmlFor="address">Dirección:</FormLabel>
                             <Input
                                 type="text"
-                                id="phone"
-                                {...register('phone')}
+                                id="address"
+                                name="address"
+                                onChange={handleChange}
+                                value={formData.address}
+                                borderRadius="sm"
                             />
-                            <FormErrorMessage>{errors.phone && errors.phone.message}</FormErrorMessage>
                         </FormControl>
-                    </div>
-                    <FormControl isInvalid={!!errors.address}>
-                        <FormLabel htmlFor="address">Dirección:</FormLabel>
-                        <Input
-                            type="text"
-                            id="address"
-                            {...register('address')}
-                        />
-                        <FormErrorMessage>{errors.address && errors.address.message}</FormErrorMessage>
-                    </FormControl>
-                </div>
-            </div>
-            <ModalFooter>
-                <Button type="submit" colorScheme="blue" mr={3}>
-                    Guardar
-                </Button>
-                <Button onClick={onClose}>Cancelar</Button>
-            </ModalFooter>
-        </form>
+                        <Button mt={4} color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} type='submit' display="block" mx="auto">Guardar</Button>
+                    </Flex>
+                </form>
+            </Box>
+        </Flex>
     );
 }
+
+
