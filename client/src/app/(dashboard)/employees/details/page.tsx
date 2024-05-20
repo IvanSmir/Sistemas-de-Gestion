@@ -1,10 +1,10 @@
 import React from 'react'
 import { EmployeeDetails } from '@/components/employees/details/details'
-export details = () => {
+const detailsPage = () => {
     return (
         <div>
             <EmployeeDetails></EmployeeDetails>
         </div>
     )
 }
-export default details
+export default detailsPage
