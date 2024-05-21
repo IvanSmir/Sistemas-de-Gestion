@@ -33,6 +33,7 @@ export const FormPosition: React.FC<FormPositionProps> = ({ register, errors }) 
         fetchWageTypes();
     }, []);
     return (
+
         <form>
             <div className="flex gap-4">
                 <div className="flex-1">

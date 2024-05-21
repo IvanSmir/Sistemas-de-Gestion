@@ -72,7 +72,7 @@ const ListEmployeePage: React.FC = () => {
 
     const columnMapping = {
         'Nombre': 'name',
-        'Fecha de Nacimiento': 'age',
+        'Edad': 'age',
         'Correo Electrónico': 'email'
     };
 
