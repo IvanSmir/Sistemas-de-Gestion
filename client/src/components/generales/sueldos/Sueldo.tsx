@@ -89,7 +89,7 @@ const Sueldo = () => {
                                         <Td className=' py-1'>{sueldo.ingreso}</Td>
                                         <Td className=' py-1'>{sueldo.egreso}</Td>
                                         <Td className='flex gap-1 px-4 py-1'>
-                                            <IconButton aria-label='Editar' colorScheme='white' icon={<EditIcon />} color='#D8D9DB'/>
+                                            <IconButton aria-label='Editar' colorScheme='white' icon={<EditIcon />} color='#7A7A7A'/>
                                             <IconButton aria-label='borrar' colorScheme='white' icon={<DeleteIcon />}  color='red' />
 
 
