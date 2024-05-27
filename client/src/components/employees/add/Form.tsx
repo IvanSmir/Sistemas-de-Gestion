@@ -1,8 +1,8 @@
 'use client'
-import React, { useState } from 'react';
-import { UseFormRegister, FieldErrors, UseFormHandleSubmit } from 'react-hook-form';
+import React, { Dispatch, useState } from 'react';
+import { UseFormRegister, FieldErrors, UseFormHandleSubmit, UseFormSetValue } from 'react-hook-form';
 import Image from "next/image";
-import { Button, FormControl, FormLabel, Input, Select, FormErrorMessage, Flex } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, Input, Select, FormErrorMessage, Flex, Toast, useToast } from '@chakra-ui/react';
 import Employee from "@/types/employee";
 import { getPerson } from '@/utils/person.http';
 import { useAuth } from '@/components/context/AuthProvider';
@@ -10,9 +10,12 @@ import { useRouter } from 'next/navigation';
 interface FormEmployeeProps {
     register: UseFormRegister<Employee>;
     errors: FieldErrors<Employee>;
+    setIsPerson: React.Dispatch<React.SetStateAction<boolean>>;
+    setValue: UseFormSetValue<Employee>
 }
 
-export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors }) => {
+export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors, setIsPerson, setValue }) => {
+    const toast = useToast();
     const auth = useAuth();
     const [ruc, setRuc] = useState('');
     const router = useRouter();
@@ -29,18 +32,61 @@ export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors }) 
             const token = user?.token || '';
             const employeeResponse = await getPerson(ruc, token);
 
-            alert('Una persona con ese CI/RUC existe');
             console.log(employeeResponse);
             if (employeeResponse.isEmployee) {
+                toast({
+                    title: 'Redireccionando...',
+                    description: 'Un empleado con ese CI/RUC ya existe',
+                    status: 'loading',
+                    duration: 1000,
+                    isClosable: true,
+                });
                 router.push(`/employees/${employeeResponse.idEmployee}`);
             }
             else {
-                setIsDisabled(false);
+                toast({
+                    title: 'Info',
+                    description: 'Ya existe una persona con ese CI/RUC',
+                    status: 'info',
+                    duration: 1000,
+                    isClosable: true,
+                });
+                setIsPerson(true);
+                setIsDisabled(true);
+                setValue('name', employeeResponse.name);
+                setValue('email', employeeResponse.email);
+                setValue('address', employeeResponse.address);
+                setValue('phone', employeeResponse.phone);
+                setValue('birthDate', employeeResponse.birthDate.split('T')[0]);
+                setValue('gender', employeeResponse.gender);
             }
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving employee:', error);
-            alert('no se encontro la persona con ese CI/RUC');
+            if (error.message === 'Persona no encontrada') {
+                toast({
+                    title: 'Correcto',
+                    description: 'No existe una persona con ese CI/RUC',
+                    status: 'success',
+                    duration: 1000,
+                    isClosable: true,
+                });
+                setIsPerson(false);
+                setValue('name', '');
+                setValue('email', '');
+                setValue('address', '');
+                setValue('phone', '');
+                setValue('birthDate', '' as any);
+                setValue('gender', '');
+            } else {
+                toast({
+                    title: 'Error',
+                    description: error.message,
+                    status: 'error',
+                    duration: 1000,
+                    isClosable: true,
+                });
+            }
             setIsDisabled(false);
         }
 
@@ -139,7 +185,6 @@ export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors }) 
                         <FormControl isInvalid={!!errors.enterDate}>
                             <FormLabel htmlFor="joinDate">Fecha de Incorporación:</FormLabel>
                             <Input
-                                isDisabled={isDisabled}
                                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                                 type="date"
                                 id="joinDate"
