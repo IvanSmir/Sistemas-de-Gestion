@@ -4,78 +4,87 @@ import {
     ModalOverlay,
     ModalContent,
     ModalHeader,
-    ModalCloseButton,
     ModalBody,
-    Box,
-    VStack,
-    Text,
+    ModalCloseButton,
+    Table,
+    Tbody,
+    Tr,
+    Td,
 } from "@chakra-ui/react";
+import Relative from "@/types/relative";
 
-interface Familiar {
-    id: number;
+interface Person {
+    ciRuc: string;
     name: string;
-    last_name: string;
-    address: string;
-    telephone: string;
     email: string;
-    ci: string;
-    birthday: string;
-    relationship: string;
+    phone: string;
+    address: string;
+    birthDate: string;
+}
+
+interface FamilyMember extends Relative {
+    id: string;
+    familyType: {
+        name: string;
+    };
+    person: Person; 
+}
+
+interface FamilyMembersResponse {
+    data: FamilyMember[];
+    currentPage: number;
+    limit: number;
+    totalPages: number;
+    totalCount: number;
 }
 
 interface ModalDetallesProps {
     isOpen: boolean;
     onClose: () => void;
-    familiar: Familiar | null;
+    relative: FamilyMember;
 }
 
-export const ModalDetalles: React.FC<ModalDetallesProps> = ({ isOpen, onClose, familiar }) => {
-    if (!familiar) return null;
 
+export const ModalDetalles: React.FC<ModalDetallesProps> = ({ isOpen, onClose, relative }) => {
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size="xl" isCentered>
-            <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(4px)" />
-            <ModalContent bg="white" boxShadow="xl" borderRadius="lg">
-                <ModalHeader
-                    bg="#e4bdcc"
-                    fontSize="2xl"
-                    color="gray.600"
-                    py={4}
-                    px={6}
-                    borderTopRadius="lg"
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                >
-                    Detalles del Familiar
-                </ModalHeader>
+        <Modal isOpen={isOpen} onClose={onClose}>
+            <ModalOverlay />
+            <ModalContent>
+                <ModalHeader>Detalles del Familiar</ModalHeader>
                 <ModalCloseButton />
-                <ModalBody py={8} px={6} color="gray.600">
-                    <VStack align="stretch" justify="center" h="100%">
-                        <Box p={2}>
-                            <Text fontSize="2xl" mb={4}>
-                                {familiar.name} {familiar.last_name}
-                            </Text>
-                            <Text mb={4}>
-                                <strong>Cedula:</strong> {familiar.ci}
-                            </Text>
-                            <Text mb={4}>
-                                <strong>Fecha de nacimiento:</strong> {familiar.birthday}
-                            </Text>
-                            <Text mb={4}>
-                                <strong>Parentesco:</strong> {familiar.relationship}
-                            </Text>
-                            <Text mt={4}>
-                                <strong>Dirección:</strong> {familiar.address}
-                            </Text>
-                            <Text mt={4}>
-                                <strong>Teléfono:</strong> {familiar.telephone}
-                            </Text>
-                            <Text mt={4}>
-                                <strong>Correo electronico:</strong> {familiar.email}
-                            </Text>
-                        </Box>
-                    </VStack>
+                <ModalBody>
+                    <Table variant="simple">
+                        <Tbody>
+                            <Tr>
+                                <Td>Nombre:</Td>
+                                <Td>{relative.person.name}</Td>
+                            </Tr>
+                            <Tr>
+                                <Td>Dirección:</Td>
+                                <Td>{relative.person.address}</Td>
+                            </Tr>
+                            <Tr>
+                                <Td>Teléfono:</Td>
+                                <Td>{relative.person.phone}</Td>
+                            </Tr>
+                            <Tr>
+                                <Td>Email:</Td>
+                                <Td>{relative.person.email}</Td>
+                            </Tr>
+                            <Tr>
+                                <Td>CI/RUC:</Td>
+                                <Td>{relative.person.ciRuc}</Td>
+                            </Tr>
+                            <Tr>
+                                <Td>Fecha de Nacimiento:</Td>
+                                <Td>{new Date(relative.person.birthDate).toLocaleDateString()}</Td>
+                            </Tr>
+                            <Tr>
+                                <Td>Tipo de Parentesco:</Td>
+                                <Td>{relative.familyType.name}</Td>
+                            </Tr>
+                        </Tbody>
+                    </Table>
                 </ModalBody>
             </ModalContent>
         </Modal>
