@@ -67,12 +67,12 @@ export class PersonService {
     }
   }
 
-  async findOne(ciRuc: FindPersonDto) {
+  async findOne(ciRuc: string) {
     try {
       let person;
       person = await this.prismaService.person.findUnique({
         where: {
-          ciRuc: ciRuc.ciRuc,
+          ciRuc: ciRuc,
           isDeleted: false,
         },
         select: {
@@ -102,7 +102,7 @@ export class PersonService {
         isEmployee: false,
       };
     } catch (error) {
-      this.handleDbErrorService.handleDbError(error, 'Person', ciRuc.ciRuc);
+      this.handleDbErrorService.handleDbError(error, 'Person', ciRuc);
     }
   }
 
