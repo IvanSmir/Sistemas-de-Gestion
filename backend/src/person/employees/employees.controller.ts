@@ -97,7 +97,6 @@ export class EmployeesController {
   @ApiResponse({ status: 200, description: 'Employee completed successfully.' })
   @ApiResponse({ status: 404, description: 'Employee not found.' })
   complete(@Body() createFullEmployeeDto, @GetUser() user: Users) {
-    console.log('createFullEmployeeDto', createFullEmployeeDto);
     return this.employeesService.createFull(createFullEmployeeDto, user);
   }
 }
