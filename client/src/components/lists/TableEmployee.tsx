@@ -78,6 +78,11 @@ export const TableEmployee: React.FC<TableEmployeeProps> = ({ data, columnMappin
 
 
                                         ))}
+                                        <Td>
+                                        <Link href={`/employees/${datum.id}`}>
+                                        detalles
+                                        </Link>
+                                        </Td>
                                     </Tr>
                                 ))}
                             </Tbody>

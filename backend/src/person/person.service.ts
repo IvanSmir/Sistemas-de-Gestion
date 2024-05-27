@@ -10,6 +10,7 @@ import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { HandleDbErrorService } from 'src/common/services/handle-db-error.service';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { isUUID } from 'class-validator';
+import { join } from 'path';
 
 @Injectable()
 export class PersonService {
@@ -65,29 +66,43 @@ export class PersonService {
     }
   }
 
-  async findOne(term: string) {
+  async findOne(ciRuc: string) {
     try {
-      let person: Person;
-      if (term.length === 10 || term.length === 13) {
+      let person;
+      if (ciRuc.length === 10 || ciRuc.length === 13) {
         person = await this.prismaService.person.findUnique({
           where: {
-            ciRuc: term,
+            ciRuc: ciRuc,
             isDeleted: false,
           },
-        });
-      } else if (isUUID(term)) {
-        person = await this.prismaService.person.findUnique({
-          where: {
-            id: term,
-            isDeleted: false,
+          select: {
+            id: true,
+            ciRuc: true,
+            name: true,
+            birthDate: true,
+            email: true,
+            phone: true,
+            address: true,
           },
         });
-      } else {
-        throw new BadRequestException('Invalid term');
       }
-      return person;
+      if (!person) {
+        throw new BadRequestException(`Person: ${ciRuc} not found`);
+      }
+      const isEmployee = await this.prismaService.employees.findFirst({
+        where: {
+          personId: person.id,
+        },
+      });
+      if (isEmployee) {
+        return { ...person, enterDate: isEmployee.enterDate, isEmployee: true };
+      }
+      return {
+        ...person,
+        isEmployee: false,
+      };
     } catch (error) {
-      this.handleDbErrorService.handleDbError(error, 'Person', term);
+      this.handleDbErrorService.handleDbError(error, 'Person', ciRuc);
     }
   }
 
@@ -114,19 +129,4 @@ export class PersonService {
       this.handleDbErrorService.handleDbError(error, 'Person', id);
     }
   }
-
-  // private handleDbError(e: any) {
-  //   console.error(e);
-  //   if (e.code === 'P2002') {
-  //     throw new BadRequestException('The provided CI/RUC is already in use');
-  //   }
-
-  //   if (e.code === 'P2025') {
-  //     throw new BadRequestException('The provided user does not exist');
-  //   }
-
-  //   throw new InternalServerErrorException(
-  //     'An error occurred while processing the request, please try again later.',
-  //   );
-  // }
 }

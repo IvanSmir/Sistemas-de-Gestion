@@ -194,7 +194,6 @@ export class EmployeesService {
   }
 
   async createFull(createFullEmployeeDto: createFullDto, user: Users) {
-    console.log('createFullEmployeeDto', createFullEmployeeDto);
     try {
       const { employee: employe, role, familyMembers } = createFullEmployeeDto;
       const employee = await this.create(employe, user);

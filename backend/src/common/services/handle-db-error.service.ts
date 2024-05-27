@@ -31,7 +31,6 @@ export class HandleDbErrorService {
     } else if (e.code?.startsWith('5')) {
       throw new InternalServerErrorException('Something went wrong');
     }
-
     throw e;
   }
 }
