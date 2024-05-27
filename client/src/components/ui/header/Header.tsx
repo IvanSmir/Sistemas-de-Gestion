@@ -35,7 +35,6 @@ export function SidebarWithHeader({
                 mt={{ base: 20, md: 0 }}
                 display="flex"
                 justifyContent="center"
-                alignItems="center"
                 minHeight="calc(100vh - 84px)" // Ajusta la altura mínima para centrar el contenido
             >
                 {children}

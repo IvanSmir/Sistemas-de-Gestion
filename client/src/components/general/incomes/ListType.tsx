@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { EditIcon, DeleteIcon, AddIcon } from "@chakra-ui/icons";
-import { IncomeType } from "@/components/general/incomes/incomeType";
+import { IncomeType } from "@/components/general/incomes/IncomeType";
 import {
     Box,
     Flex,
