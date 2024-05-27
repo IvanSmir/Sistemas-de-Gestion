@@ -1,4 +1,3 @@
-'use client';
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { EditIcon, DeleteIcon, AddIcon } from "@chakra-ui/icons";
 import {
@@ -18,81 +17,70 @@ import {
 } from "@chakra-ui/react";
 import { ModalDetalles } from "./ModalDetalles";
 import { EditFamiliar } from "./Edit";
+import { getFamilyMembers, deleteFamilyMember, updateFamilyMember, getFamilyMember } from '@/utils/family.http';
+import Relative from "@/types/relative";
+import { useAuth } from "../context/AuthProvider";
 
-interface Familiar {
-    id: number;
+interface Person {
+    ciRuc: string;
     name: string;
-    last_name: string;
-    address: string;
-    telephone: string;
     email: string;
-    ci: string;
-    birthday: string;
-    relationship: string;
+    phone: string;
+    address: string;
+    birthDate: string;
+}
+
+interface FamilyMember extends Relative {
+    id: string;
+    familyType: {
+        name: string;
+    };
+    person: Person;
+}
+
+interface FamilyMembersResponse {
+    data: FamilyMember[];
+    currentPage: number;
+    limit: number;
+    totalPages: number;
+    totalCount: number;
 }
 
 export const List: React.FC = () => {
-    const initialFamiliares: Familiar[] = [
-        {
-            id: 1,
-            name: "Juan",
-            last_name: "Perez",
-            address: "Calle 21",
-            telephone: "0987564345",
-            email: "sdfrd@gmail.com",
-            ci: "12345678",
-            birthday: "1960-04-06",
-            relationship: "Padre",
-        },
-        {
-            id: 2,
-            name: "María ",
-            last_name: "Gómez",
-            address: "Calle 21",
-            telephone: "0987564345",
-            email: "wed@gmail.com",
-            ci: "87654321",
-            birthday: "1960-06-12",
-            relationship: "Madre",
-        },
-        {
-            id: 3,
-            name: "Ana",
-            last_name: "Perez",
-            address: "Calle 21",
-            telephone: "0987564345",
-            email: "qwe@gmail.com",
-            ci: "45678912",
-            birthday: "2002-06-12",
-            relationship: "Hija",
-        },
-        {
-            id: 4,
-            name: "Analia",
-            last_name: "Perez",
-            address: "Calle 1",
-            telephone: "098x64345",
-            email: "gsd@gmail.com",
-            ci: "45678912",
-            birthday: "2010-06-12",
-            relationship: "Hija",
-        },
-    ];
-
-    const [familiares, setFamiliares] = useState<Familiar[]>(initialFamiliares);
-    const [filters, setFilters] = useState<{ ci: string; ageRange: string }>({
-        ci: '',
+    const [familiares, setFamiliares] = useState<FamilyMember[]>([]);
+    const [filters, setFilters] = useState<{ ciRuc: string; ageRange: string }>({
+        ciRuc: '',
         ageRange: '',
     });
-    const [filteredFamiliares, setFilteredFamiliares] = useState<Familiar[]>(initialFamiliares);
+    const [filteredFamiliares, setFilteredFamiliares] = useState<FamilyMember[]>([]);
+    const [selectedFamiliar, setSelectedFamiliar] = useState<FamilyMember | null>(null);
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
+
+    const auth = useAuth();
+
+    useEffect(() => {
+        const fetchFamiliares = async () => {
+            try {
+                const familiaresData: FamilyMembersResponse = await getFamilyMembers();
+                console.log('Familiares recibidos:', familiaresData);
+                setFamiliares(familiaresData.data);
+                setFilteredFamiliares(familiaresData.data);
+            } catch (error) {
+                console.error('Error al obtener los familiares:', error);
+            }
+        };
+
+        fetchFamiliares();
+    }, []);
 
     useEffect(() => {
         const filtered = familiares.filter((familiar) => {
             const now = new Date();
-            const birthDate = new Date(familiar.birthday);
+            const birthDate = new Date(familiar.person.birthDate);
             const age = now.getFullYear() - birthDate.getFullYear();
 
-            if (filters.ci && !familiar.ci.includes(filters.ci)) {
+            if (filters.ciRuc && !familiar.person.ciRuc.includes(filters.ciRuc)) {
                 return false;
             }
 
@@ -110,56 +98,81 @@ export const List: React.FC = () => {
     }, [filters, familiares]);
 
     const handleCiFilter = (e: ChangeEvent<HTMLInputElement>) => {
-        setFilters({ ...filters, ci: e.target.value });
+        setFilters({ ...filters, ciRuc: e.target.value });
     };
 
     const handleAgeRangeFilter = (e: ChangeEvent<HTMLSelectElement>) => {
         setFilters({ ...filters, ageRange: e.target.value });
     };
 
-    const [selectedFamiliar, setSelectedFamiliar] = useState<Familiar | null>(null);
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
+    const handleRowClick = async (familiar: FamilyMember) => {
+        try {
+            const fetchedFamiliar = await getFamilyMember(familiar.id);
+            setSelectedFamiliar(fetchedFamiliar);
+            onOpen();
+        } catch (error) {
+            console.error('Error al obtener los detalles del familiar:', error);
+        }
+    };
 
-    const handleEditClick = (familiar: Familiar, event: React.MouseEvent) => {
+    const handleEditClick = (familiar: FamilyMember, event: React.MouseEvent) => {
         event.stopPropagation();
         setSelectedFamiliar(familiar);
         onEditOpen();
     };
 
-    const handleDeleteClick = (id: number, event: React.MouseEvent) => {
+    const handleDeleteClick = async (id: string, event: React.MouseEvent) => {
         event.stopPropagation();
-        setFamiliares(familiares.filter(familiar => familiar.id !== id));
-    };
-
-    const handleRowClick = (familiar: Familiar) => {
-        setSelectedFamiliar(familiar);
-        onOpen();
+        try {
+            const { user } = auth;
+            const token = user?.token || ''; // Obteniendo el token desde el contexto de autenticación
+            console.log("Token usado para eliminar:", token); // Verificar token
+            await deleteFamilyMember(id, token);
+            setFamiliares(familiares.filter(familiar => familiar.id !== id));
+        } catch (error) {
+            console.error('Error al eliminar el familiar:', error);
+            alert('No tienes autorización para realizar esta acción.');
+        }
     };
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         if (selectedFamiliar) {
             const { name, value } = e.target;
-            setSelectedFamiliar({ ...selectedFamiliar, [name]: value });
+            setSelectedFamiliar({ ...selectedFamiliar, person: { ...selectedFamiliar.person, [name]: value } });
         }
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (selectedFamiliar) {
-            setFamiliares(familiares.map(familiar =>
-                familiar.id === selectedFamiliar.id ? selectedFamiliar : familiar
-            ));
-            onEditClose();
+            try {
+                const { user } = auth;
+                const token = user?.token || '';
+                const updatedData = {
+                    familyType: selectedFamiliar.familyType.name,
+                    ...selectedFamiliar.person,
+                };
+                await updateFamilyMember(selectedFamiliar.id, updatedData, token);
+                setFamiliares(familiares.map(familiar =>
+                    familiar.id === selectedFamiliar.id ? { ...selectedFamiliar, person: updatedData } : familiar
+                ));
+                onEditClose();
+            } catch (error) {
+                console.error('Error al guardar los cambios:', error);
+                alert('No tienes autorización para realizar esta acción.');
+            }
         }
     };
+
+    
+    
 
     return (
         <Box backgroundColor={'white'} width={900} height={426} borderRadius="2xl" padding="8px" margin="auto" >
             <Flex justifyContent="space-between" mb={6} >
                 <Flex gap={2}>
                     <Input
-                        placeholder="Número de cédula"
-                        value={filters.ci}
+                        placeholder="Número de cédula/RUC"
+                        value={filters.ciRuc}
                         onChange={handleCiFilter}
                         rounded={15}
                         background='white'
@@ -187,7 +200,7 @@ export const List: React.FC = () => {
                 <Table variant="simple" fontSize="14px">
                     <Thead>
                         <Tr>
-                            <Th>Número de cédula</Th>
+                            <Th>Número de cédula/RUC</Th>
                             <Th>Nombre</Th>
                             <Th>Fecha de nacimiento</Th>
                             <Th>Parentesco</Th>
@@ -196,22 +209,48 @@ export const List: React.FC = () => {
                     </Thead>
                     <Tbody>
                         {filteredFamiliares.map((familiar, index) => (
-                            <Tr key={index} onClick={() => handleRowClick(familiar)} style={{ cursor: 'pointer' }}>
-                                <Td>{familiar.ci}</Td>
-                                <Td>{familiar.name}</Td>
-                                <Td>{familiar.birthday}</Td>
-                                <Td>{familiar.relationship}</Td>
+                            <Tr key={index} style={{ cursor: 'pointer' }}>
+                                <Td onClick={() => handleRowClick(familiar)}>{familiar.person.ciRuc}</Td>
+                                <Td>{familiar.person.name}</Td>
+                                <Td>{new Date(familiar.person.birthDate).toLocaleDateString()}</Td>
+                                <Td>{familiar.familyType.name}</Td>
                                 <Td>
-                                    <EditIcon mr={2} cursor="pointer" onClick={(event) => handleEditClick(familiar, event)} />
-                                    <DeleteIcon cursor="pointer" onClick={(event) => handleDeleteClick(familiar.id, event)} />
+                                    <EditIcon
+                                        mr={2}
+                                        cursor="pointer"
+                                        onClick={(event) => handleEditClick(familiar, event)}
+                                    />
+                                    <DeleteIcon
+                                        cursor="pointer"
+                                        onClick={(event) => handleDeleteClick(familiar.id, event)}
+                                    />
                                 </Td>
                             </Tr>
                         ))}
                     </Tbody>
                 </Table>
             </TableContainer>
-            <ModalDetalles isOpen={isOpen} onClose={onClose} familiar={selectedFamiliar} />
-            <EditFamiliar isOpen={isEditOpen} onClose={onEditClose} familiar={selectedFamiliar} onChange={handleChange} onSave={handleSave} />
+            {selectedFamiliar && (
+                <ModalDetalles isOpen={isOpen} onClose={onClose} relative={selectedFamiliar} />
+            )}
+            {selectedFamiliar && (
+                <EditFamiliar
+                    isOpen={isEditOpen}
+                    onClose={onEditClose}
+                    relative={selectedFamiliar}
+                    onChange={handleChange}
+                    onSave={handleSave}
+                    familiarId={selectedFamiliar.id}
+                />
+            )}
         </Box>
     );
 };
+
+
+
+
+
+
+
+
