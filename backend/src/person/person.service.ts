@@ -1,7 +1,6 @@
 import {
-  BadRequestException,
   Injectable,
-  InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePersonDto } from './dto/create-person.dto';
@@ -83,11 +82,12 @@ export class PersonService {
           email: true,
           phone: true,
           address: true,
+          gender: true,
         },
       });
 
       if (!person) {
-        throw new BadRequestException(`Person: ${ciRuc} not found`);
+        throw new NotFoundException(`Person: ${ciRuc} not found`);
       }
       const isEmployee = await this.prismaService.employees.findFirst({
         where: {
