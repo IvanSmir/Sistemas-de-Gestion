@@ -6,7 +6,7 @@ import { Button, FormControl, FormLabel, Input, Select, FormErrorMessage, Flex }
 import Employee from "@/types/employee";
 import { getPerson } from '@/utils/person.http';
 import { useAuth } from '@/components/context/AuthProvider';
-
+import { useRouter } from 'next/navigation';
 interface FormEmployeeProps {
     register: UseFormRegister<Employee>;
     errors: FieldErrors<Employee>;
@@ -15,6 +15,7 @@ interface FormEmployeeProps {
 export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors }) => {
     const auth = useAuth();
     const [ruc, setRuc] = useState('');
+    const router = useRouter();
     const [isDisabled, setIsDisabled] = useState(true);
     const getErrorMessage = (error: any) => {
         if (error && typeof error.message === 'string') {
@@ -27,8 +28,16 @@ export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors }) 
             const { user } = auth;
             const token = user?.token || '';
             const employeeResponse = await getPerson(ruc, token);
+
             alert('Una persona con ese CI/RUC existe');
             console.log(employeeResponse);
+            if (employeeResponse.isEmployee) {
+                router.push(`/employees/${employeeResponse.idEmployee}`);
+            }
+            else {
+                setIsDisabled(false);
+            }
+
         } catch (error) {
             console.error('Error saving employee:', error);
             alert('no se encontro la persona con ese CI/RUC');
