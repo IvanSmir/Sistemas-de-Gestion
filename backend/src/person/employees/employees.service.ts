@@ -30,6 +30,7 @@ export class EmployeesService {
         phone: true,
         address: true,
         birthDate: true,
+        gender: true,
       },
     },
   };
