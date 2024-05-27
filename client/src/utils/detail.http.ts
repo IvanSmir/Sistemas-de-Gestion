@@ -21,6 +21,8 @@ export const getEmployeeId = async (id: string, token: string) => {
     }
 };
 
+
+
 export const updateEmployee = async (id: string, employeeData: any, token: string) => {
     try {
         const response = await fetch(`${API_URL}/${id}`, {
