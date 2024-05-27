@@ -1,8 +1,8 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL + "/family-members";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const getFamilyMembers = async (id: string) => {
   try {
-    const response = await fetch(`${API_URL}/employee/${id}`);
+    const response = await fetch(`${API_URL}/family-members/employee/${id}`);
     if (!response.ok) {
       throw new Error("Error al obtener familiares");
     }
@@ -15,7 +15,7 @@ export const getFamilyMembers = async (id: string) => {
 
 export const getFamilyMember = async (id: string) => {
   try {
-    const response = await fetch(`${API_URL}/${id}`);
+    const response = await fetch(`${API_URL}/family-members/${id}`);
     if (!response.ok) {
       throw new Error("Error al obtener el miembro de la familia");
     }
@@ -28,13 +28,53 @@ export const getFamilyMember = async (id: string) => {
   }
 };
 
+export const getFamilyTypes= async ( token: string) => {
+  try {
+      const response = await fetch(`${API_URL}/family-types`, {
+          method: "GET",
+          headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+          }
+      });
+
+      if (!response.ok) {
+          throw new Error("Error al obtener los tipos de familia");
+      }
+
+      const data = await response.json();
+      return data;
+  } catch (error: any) {
+      throw new Error((error as Error).message || "Error al obtener los tipos de familia");
+  }
+};
+export const getFamilyTypeId = async (id: string, token: string) => {
+  try {
+      const response = await fetch(`${API_URL}/family-types/${id}`, {
+          method: "GET",
+          headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+          }
+      });
+
+      if (!response.ok) {
+          throw new Error("Error al obtener el tipo de familia");
+      }
+
+      const data = await response.json();
+      return data;
+  } catch (error: any) {
+      throw new Error((error as Error).message || "Error al obtener el tipo de familia");
+  }
+};
 export const createFamilyMember = async (
   familyMemberData: any,
   token: string
 ) => {
   try {
     console.log("Token usado para crear:", token);
-    const response = await fetch(`${API_URL}`, {
+    const response = await fetch(`${API_URL}/family-members`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -58,7 +98,7 @@ export const updateFamilyMember = async (
 ) => {
   try {
     console.log("Token usado para actualizar:", token);
-    const response = await fetch(`${API_URL}/${familyMemberId}`, {
+    const response = await fetch(`${API_URL}/family-members/${familyMemberId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -85,7 +125,7 @@ export const deleteFamilyMember = async (
 ) => {
   try {
     console.log("Token usado para eliminar:", token);
-    const response = await fetch(`${API_URL}/${familyMemberId}`, {
+    const response = await fetch(`${API_URL}/family-members/${familyMemberId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
