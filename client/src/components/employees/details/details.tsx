@@ -122,11 +122,11 @@ export const EmployeeDetails = () => {
                         </Button>
                     </Link>
                     <Button
+                        onClick={handleEdit}
                     >
                         Editar
                     </Button>
                     <Button
-                        onClick={handleEdit}
                     >
                         Guardar
                     </Button>
@@ -170,14 +170,11 @@ export const EmployeeDetails = () => {
                                                 mb={4}
                                                 onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                                             />
-
-                                            <FormLabel htmlFor="cargo">Cargo:</FormLabel>
+                                            <FormLabel htmlFor="joinDate">Fecha Ingreso:</FormLabel>
                                             <Input
-
-                                                value={formData.cargo !== undefined ? formData.cargo : ''}
-                                                mb={4}
+                                                type="date"
+                                                value={formData.joinDate ? formData.joinDate.toISOString().split('T')[0] : ''}
                                                 readOnly={!isEditing}
-                                                onChange={(e) => setFormData({ ...formData, cargo: e.target.value })}
                                             />
                                         </Box>
 
@@ -192,10 +189,11 @@ export const EmployeeDetails = () => {
                                             />
                                             <FormLabel htmlFor="birthdate">Fecha Nacimiento:</FormLabel>
                                             <Input
-                                                value={formData.birthDate !== undefined ? formData.birthDate.toLocaleDateString() : ''}
+                                                type="date"
+                                                value={formData.birthDate ? formData.birthDate.toISOString().split('T')[0] : ''}
                                                 readOnly={!isEditing}
-                                                mb={4}
                                             />
+
                                         </Box>
 
                                         <Box>
@@ -208,11 +206,11 @@ export const EmployeeDetails = () => {
                                             />
                                             <FormLabel htmlFor="direction">Dirección:</FormLabel>
                                             <Input
-
                                                 value={formData.direction !== undefined ? formData.direction : ''}
                                                 readOnly={!isEditing}
                                             />
                                         </Box>
+
                                     </Flex>
 
                                     <Divider orientation='horizontal' w='75%' mb={4} />
@@ -220,39 +218,15 @@ export const EmployeeDetails = () => {
                                     <Tabs variant='soft-rounded' colorScheme='green'>
 
                                         <TabList>
-                                            <Tab _selected={{ color: 'white', bg: '#AA546D' }}>Datos Generales</Tab>
+                                            <Tab _selected={{ color: 'white', bg: '#AA546D' }}>Cargos y sueldos</Tab>
                                             <Tab _selected={{ color: 'white', bg: '#AA546D' }}>Familiares</Tab>
+                                            <Tab _selected={{ color: 'white', bg: '#AA546D' }}>Ingresos y egresos</Tab>
                                         </TabList>
 
                                         <TabPanels>
 
                                             <TabPanel>
-                                                <Flex >
-                                                    <Box mr={8}>
-                                                        <FormLabel htmlFor="joinDate">Fecha Ingreso:</FormLabel>
-                                                        <Input
-                                                            type="date"
-                                                            value={formData.joinDate !== undefined ? formData.joinDate.toLocaleDateString() : ''}
-                                                            readOnly={!isEditing}
-                                                        />
-                                                    </Box>
-                                                    <Box mr={8}>
-                                                        <FormLabel htmlFor="detalle">Detalle:</FormLabel>
-                                                        <Input
-
-                                                            value={formData.detalle !== undefined ? formData.detalle : ''}
-                                                            readOnly={!isEditing}
-                                                        />
-                                                    </Box>
-                                                    <Box>
-                                                        <FormLabel htmlFor="sueldoBase">Sueldo Base:</FormLabel>
-                                                        <Input
-
-                                                            value={formData.sueldoBase !== undefined ? formData.sueldoBase : ''}
-                                                            readOnly={!isEditing}
-                                                        />
-                                                    </Box>
-                                                </Flex>
+                                                <List /> {/* cambiar a los cargos*/}
                                             </TabPanel>
 
                                             <TabPanel>
