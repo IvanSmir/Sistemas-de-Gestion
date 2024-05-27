@@ -149,6 +149,32 @@ export class FamilyMembersService {
     }
   }
 
+  async findAllByEmployee(id: string, paginationDto: PaginationDto) {
+    const { page = 1, limit = 10 } = paginationDto;
+    try {
+      console.log('id', id);
+      if (!isUUID(id)) throw new BadRequestException('Invalid id');
+      const familyMembers = await this.prismaService.familyMembers.findMany({
+        where: {
+          isDeleted: false,
+          employeeId: id,
+        },
+        skip: page - 1,
+        take: limit,
+        select: this.selectOptions,
+      });
+      return {
+        data: familyMembers,
+        currentPage: page,
+        limit,
+        totalPages: Math.ceil(familyMembers.length / limit),
+        totalCount: familyMembers.length,
+      };
+    } catch (error) {
+      this.handleDbErrorService.handleDbError(error, 'Family Member', '');
+    }
+  }
+
   async update(
     id: string,
     updateFamilyMemberDto: UpdateFamilyMemberDto,

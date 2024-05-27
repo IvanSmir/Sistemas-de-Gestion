@@ -20,6 +20,7 @@ import { EditFamiliar } from "./Edit";
 import { getFamilyMembers, deleteFamilyMember, updateFamilyMember, getFamilyMember } from '@/utils/family.http';
 import Relative from "@/types/relative";
 import { useAuth } from "../context/AuthProvider";
+import { useParams } from "next/navigation";
 
 interface Person {
     ciRuc: string;
@@ -47,6 +48,7 @@ interface FamilyMembersResponse {
 }
 
 export const List: React.FC = () => {
+    const { id } = useParams();
     const [familiares, setFamiliares] = useState<FamilyMember[]>([]);
     const [filters, setFilters] = useState<{ ciRuc: string; ageRange: string }>({
         ciRuc: '',
@@ -62,7 +64,7 @@ export const List: React.FC = () => {
     useEffect(() => {
         const fetchFamiliares = async () => {
             try {
-                const familiaresData: FamilyMembersResponse = await getFamilyMembers();
+                const familiaresData: FamilyMembersResponse = await getFamilyMembers(id as string);
                 console.log('Familiares recibidos:', familiaresData);
                 setFamiliares(familiaresData.data);
                 setFilteredFamiliares(familiaresData.data);
@@ -72,7 +74,7 @@ export const List: React.FC = () => {
         };
 
         fetchFamiliares();
-    }, []);
+    }, [id]);
 
     useEffect(() => {
         const filtered = familiares.filter((familiar) => {
@@ -163,8 +165,8 @@ export const List: React.FC = () => {
         }
     };
 
-    
-    
+
+
 
     return (
         <Box backgroundColor={'white'} width={900} height={426} borderRadius="2xl" padding="8px" margin="auto" >

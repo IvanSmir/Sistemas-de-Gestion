@@ -95,7 +95,12 @@ export class PersonService {
         },
       });
       if (isEmployee) {
-        return { ...person, enterDate: isEmployee.enterDate, isEmployee: true };
+        return {
+          ...person,
+          enterDate: isEmployee.enterDate,
+          isEmployee: true,
+          idEmployee: isEmployee.id,
+        };
       }
       return {
         ...person,
