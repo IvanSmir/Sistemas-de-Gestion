@@ -11,6 +11,7 @@ import { HandleDbErrorService } from 'src/common/services/handle-db-error.servic
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { isUUID } from 'class-validator';
 import { join } from 'path';
+import { FindPersonDto } from './dto/find-person.dto';
 
 @Injectable()
 export class PersonService {
@@ -66,26 +67,25 @@ export class PersonService {
     }
   }
 
-  async findOne(ciRuc: string) {
+  async findOne(ciRuc: FindPersonDto) {
     try {
       let person;
-      if (ciRuc.length === 10 || ciRuc.length === 13) {
-        person = await this.prismaService.person.findUnique({
-          where: {
-            ciRuc: ciRuc,
-            isDeleted: false,
-          },
-          select: {
-            id: true,
-            ciRuc: true,
-            name: true,
-            birthDate: true,
-            email: true,
-            phone: true,
-            address: true,
-          },
-        });
-      }
+      person = await this.prismaService.person.findUnique({
+        where: {
+          ciRuc: ciRuc.ciRuc,
+          isDeleted: false,
+        },
+        select: {
+          id: true,
+          ciRuc: true,
+          name: true,
+          birthDate: true,
+          email: true,
+          phone: true,
+          address: true,
+        },
+      });
+
       if (!person) {
         throw new BadRequestException(`Person: ${ciRuc} not found`);
       }
@@ -102,7 +102,7 @@ export class PersonService {
         isEmployee: false,
       };
     } catch (error) {
-      this.handleDbErrorService.handleDbError(error, 'Person', ciRuc);
+      this.handleDbErrorService.handleDbError(error, 'Person', ciRuc.ciRuc);
     }
   }
 
