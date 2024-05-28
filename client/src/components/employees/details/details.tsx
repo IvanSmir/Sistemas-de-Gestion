@@ -7,6 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { getEmployeeId, updateEmployee } from '@/utils/detail.http';
 import { useAuth } from '@/components/context/AuthProvider';
 import Employee from "@/types/employee";
+import { EmployeeDetailsList } from './ListPositions';
 
 export const EmployeeDetails = () => {
     const { id } = useParams();
@@ -227,7 +228,7 @@ export const EmployeeDetails = () => {
                 </TabList>
                 <TabPanels>
                     <TabPanel>
-                        {/* <List /> cambiar a los cargos */}
+                        <EmployeeDetailsList />
                     </TabPanel>
                     <TabPanel>
                         <List
