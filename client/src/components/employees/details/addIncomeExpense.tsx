@@ -148,7 +148,7 @@ export const IncomeExpenseForm: React.FC<IncomeExpenseFormProps> = ({ isOpen, on
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader>Agregar Ingreso/Egreso</ModalHeader>
+                <ModalHeader>Agregar {isIncomeorExpense == 'income' ? 'Ingreso' : 'Egreso'}</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
                     <form onSubmit={handleSubmit(onSubmit)}>
