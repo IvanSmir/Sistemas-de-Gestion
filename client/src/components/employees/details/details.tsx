@@ -179,7 +179,7 @@ export const EmployeeDetails = () => {
                                     </Flex>
                                 )}
                             </Flex>
-                            <Flex>
+                            <Flex justifyContent={"space-evenly"} gap={4} mb={4}>
                                 <Box mb={8}>
                                     <Flex>
                                         <FormLabel fontSize="14px" htmlFor="ciRuc">Ruc/Ci:</FormLabel>
@@ -189,8 +189,8 @@ export const EmployeeDetails = () => {
                                             isReadOnly={true}
                                             mb={4}
                                         />
+                                        <FormErrorMessage>{errors.ciRuc && errors.ciRuc.message}</FormErrorMessage>
                                     </Flex>
-                                    <FormErrorMessage>{errors.ciRuc && errors.ciRuc.message}</FormErrorMessage>
                                     <Flex>
                                         <FormLabel fontSize="14px" htmlFor="enterDate">Fecha Ingreso:</FormLabel>
                                         <Input
@@ -199,12 +199,9 @@ export const EmployeeDetails = () => {
                                             {...register('enterDate', { required: 'La fecha de ingreso es obligatoria' })}
                                             isReadOnly={!isEditing}
                                         />
+                                        <FormErrorMessage>{errors.enterDate && errors.enterDate.message}</FormErrorMessage>
                                     </Flex>
-                                    <FormErrorMessage>{errors.enterDate && errors.enterDate.message}</FormErrorMessage>
-                                </Box>
-                                <Box mb={8}>
                                     <Flex>
-                                        <FormErrorMessage>{errors.name && errors.name.message}</FormErrorMessage>
                                         <FormLabel fontSize="14px" htmlFor="birthDate">Fecha Nacimiento:</FormLabel>
                                         <Input
                                             type="date"
@@ -212,20 +209,8 @@ export const EmployeeDetails = () => {
                                             {...register('birthDate', { required: 'La fecha de nacimiento es obligatoria' })}
                                             isReadOnly={!isEditing}
                                         />
+                                        <FormErrorMessage>{errors.birthDate && errors.birthDate.message}</FormErrorMessage>
                                     </Flex>
-                                    <FormErrorMessage>{errors.birthDate && errors.birthDate.message}</FormErrorMessage>
-                                </Box>
-                                <Box>
-                                    <Flex>
-                                        <FormLabel fontSize="14px" htmlFor="email">Correo:</FormLabel>
-                                        <Input
-                                            id="email"
-                                            {...register('email', { required: 'El correo es obligatorio' })}
-                                            isReadOnly={!isEditing}
-                                            mb={4}
-                                        />
-                                    </Flex>
-                                    <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
                                 </Box>
                                 <Box>
                                     <Flex>
@@ -235,8 +220,18 @@ export const EmployeeDetails = () => {
                                             {...register('address', { required: 'La dirección es obligatoria' })}
                                             isReadOnly={!isEditing}
                                         />
+                                        <FormErrorMessage>{errors.address && errors.address.message}</FormErrorMessage>
                                     </Flex>
-                                    <FormErrorMessage>{errors.address && errors.address.message}</FormErrorMessage>
+                                    <Flex marginTop={4}>
+                                        <FormLabel fontSize="14px" htmlFor="email">Correo:</FormLabel>
+                                        <Input
+                                            id="email"
+                                            {...register('email', { required: 'El correo es obligatorio' })}
+                                            isReadOnly={!isEditing}
+                                            mb={4}
+                                        />
+                                        <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
+                                    </Flex>
                                     <Flex>
                                         <FormLabel fontSize="14px" htmlFor="phone">Teléfono:</FormLabel>
                                         <Input
@@ -244,12 +239,13 @@ export const EmployeeDetails = () => {
                                             {...register('phone', { required: 'El teléfono es obligatorio' })}
                                             isReadOnly={!isEditing}
                                         />
+                                        <FormErrorMessage>{errors.phone && errors.phone.message}</FormErrorMessage>
                                     </Flex>
-                                    <FormErrorMessage>{errors.phone && errors.phone.message}</FormErrorMessage>
                                 </Box>
                             </Flex>
                             <EmployeeDetailsList />
                         </Box>
+
                     </Flex>
                 </form>
             </Flex>
