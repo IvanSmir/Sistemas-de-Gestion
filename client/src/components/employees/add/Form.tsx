@@ -7,14 +7,16 @@ import Employee from "@/types/employee";
 import { getPerson } from '@/utils/person.http';
 import { useAuth } from '@/components/context/AuthProvider';
 import { useRouter } from 'next/navigation';
+import { circIn } from 'framer-motion';
 interface FormEmployeeProps {
     register: UseFormRegister<Employee>;
     errors: FieldErrors<Employee>;
     setIsPerson: React.Dispatch<React.SetStateAction<boolean>>;
     setValue: UseFormSetValue<Employee>
+    setEmployeeCiRuc: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors, setIsPerson, setValue }) => {
+export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors, setIsPerson, setValue, setEmployeeCiRuc }) => {
     const toast = useToast();
     const auth = useAuth();
     const [ruc, setRuc] = useState('');
@@ -88,9 +90,13 @@ export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors, se
                 });
             }
             setIsDisabled(false);
+        } finally {
+            setEmployeeCiRuc(ruc);
         }
 
     };
+
+
     return (
         <form className="space-y-4">
 
