@@ -81,19 +81,12 @@ const AddEmployeePage = () => {
                 setCurrentStep((prevStep) => prevStep + 1);
             }
             if (!valid) {
-                console.log('Errores en el formulario de empleado:', errorsPosition);
+                console.log('Errores en el formulario de posición:', errorsPosition);
                 return;
             }
         } else if (currentStep === 2) {
-            const valid = await triggerRelative();
-            if (valid) {
+            setCurrentStep((prevStep) => prevStep + 1);
 
-                setCurrentStep((prevStep) => prevStep + 1);
-            }
-            if (!valid) {
-                console.log('Errores en el formulario de empleado:', errorsRelative);
-                return;
-            }
         }
         console.log('currentStep', currentStep);
         console.log('employee', employee);

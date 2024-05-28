@@ -134,7 +134,7 @@ export const EmployeeDetails = () => {
                                 id="name"
 
                                 {...register('name', { required: 'El nombre es obligatorio' })}
-                                readOnly={!isEditing}
+                                isReadOnly={!isEditing}
                                 fontWeight="bold"
                                 textAlign={{ lg: "center", base: "center", sm: "left", md: "left" }}
                                 className="input mb-4 disabled-dark:black"
@@ -148,8 +148,7 @@ export const EmployeeDetails = () => {
                                 <Select
                                     id="gender"
                                     {...register('gender', { required: 'El sexo es obligatorio' })}
-
-                                    disabled={!isEditing}
+                                    isReadOnly={!isEditing}
                                     mb={4}
                                     placeholder='Seleccione el sexo'
                                 >
@@ -193,7 +192,7 @@ export const EmployeeDetails = () => {
                                         <Input
                                             id="ciRuc"
                                             {...register('ciRuc', { required: 'El Ruc/Ci es obligatorio' })}
-                                            readOnly={true}
+                                            isReadOnly={true}
                                             mb={4}
                                         />
                                     </Flex>
@@ -208,7 +207,7 @@ export const EmployeeDetails = () => {
                                             id="enterDate"
 
                                             {...register('enterDate', { required: 'La fecha de ingreso es obligatoria' })}
-                                            readOnly={!isEditing}
+                                            isReadOnly={!isEditing}
                                         />
                                     </Flex>
                                     <FormErrorMessage>{errors.enterDate && errors.enterDate.message}</FormErrorMessage>
@@ -222,7 +221,7 @@ export const EmployeeDetails = () => {
                                             type="date"
                                             id="birthDate"
                                             {...register('birthDate', { required: 'La fecha de nacimiento es obligatoria' })}
-                                            readOnly={!isEditing}
+                                            isReadOnly={!isEditing}
                                         />
                                     </Flex>
                                     <FormErrorMessage>{errors.birthDate && errors.birthDate.message}</FormErrorMessage>
@@ -234,7 +233,7 @@ export const EmployeeDetails = () => {
                                         <Input
                                             id="email"
                                             {...register('email', { required: 'El correo es obligatorio' })}
-                                            readOnly={!isEditing}
+                                            isReadOnly={!isEditing}
                                             mb={4}
                                         />
 
@@ -245,7 +244,7 @@ export const EmployeeDetails = () => {
                                         <Input
                                             id="address"
                                             {...register('address', { required: 'La dirección es obligatoria' })}
-                                            readOnly={!isEditing}
+                                            isReadOnly={!isEditing}
                                         />
 
                                     </Flex>
