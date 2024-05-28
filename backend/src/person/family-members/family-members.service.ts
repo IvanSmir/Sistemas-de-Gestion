@@ -35,21 +35,25 @@ export class FamilyMembersService {
       },
     },
   };
+
   async create(createFamilyMemberDto: CreateFamilyMemberDto, user: Users) {
     try {
-      const { familyTypeId, employeeId, ...CreatePersonDto } =
+      const { familyTypeId, employeeId, ...createPersonDto } =
         createFamilyMemberDto;
-      const person = await this.personService.create(CreatePersonDto, user);
-      const familyMember = await this.prismaService.familyMembers.create({
-        data: {
-          familyTypeId,
-          employeeId,
-          personId: person.id,
-          userId: user.id,
-        },
-        select: this.selectOptions,
+      const result = await this.prismaService.$transaction(async (prisma) => {
+        const person = await this.personService.create(createPersonDto, user);
+        const familyMember = await prisma.familyMembers.create({
+          data: {
+            familyTypeId,
+            employeeId,
+            personId: person.id,
+            userId: user.id,
+          },
+          select: this.selectOptions,
+        });
+        return familyMember;
       });
-      return familyMember;
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(
         error,
@@ -69,7 +73,7 @@ export class FamilyMembersService {
         where: {
           isDeleted: false,
         },
-        skip: page - 1,
+        skip: (page - 1) * limit,
         take: limit,
         select: this.selectOptions,
       });
@@ -91,8 +95,8 @@ export class FamilyMembersService {
       if (isUUID(term)) {
         familyMember = await this.prismaService.familyMembers.findUnique({
           where: {
-            isDeleted: false,
             id: term,
+            isDeleted: false,
           },
           select: this.selectOptions,
         });
@@ -159,16 +163,22 @@ export class FamilyMembersService {
           isDeleted: false,
           employeeId: id,
         },
-        skip: page - 1,
+        skip: (page - 1) * limit,
         take: limit,
         select: this.selectOptions,
+      });
+      const totalCount = await this.prismaService.familyMembers.count({
+        where: {
+          isDeleted: false,
+          employeeId: id,
+        },
       });
       return {
         data: familyMembers,
         currentPage: page,
         limit,
-        totalPages: Math.ceil(familyMembers.length / limit),
-        totalCount: familyMembers.length,
+        totalPages: Math.ceil(totalCount / limit),
+        totalCount,
       };
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Family Member', '');
@@ -183,34 +193,37 @@ export class FamilyMembersService {
     const { familyTypeId, employeeId, ...updatePersonDto } =
       updateFamilyMemberDto;
     try {
-      let familyMember;
-      if (familyTypeId) {
-        familyMember = await this.prismaService.familyMembers.update({
-          where: {
-            id: id,
-            isDeleted: false,
-          },
-          data: {
-            familyTypeId,
-          },
-          select: this.selectOptions,
-        });
-      }
-      if (updatePersonDto) {
-        familyMember = await this.prismaService.familyMembers.update({
-          where: {
-            id: id,
-            isDeleted: false,
-          },
-          data: {
-            person: {
-              update: { ...updatePersonDto, userId: user.id },
+      const result = await this.prismaService.$transaction(async (prisma) => {
+        let familyMember;
+        if (familyTypeId) {
+          familyMember = await prisma.familyMembers.update({
+            where: {
+              id: id,
+              isDeleted: false,
             },
-          },
-          select: this.selectOptions,
-        });
-      }
-      return familyMember;
+            data: {
+              familyTypeId,
+            },
+            select: this.selectOptions,
+          });
+        }
+        if (updatePersonDto) {
+          familyMember = await prisma.familyMembers.update({
+            where: {
+              id: id,
+              isDeleted: false,
+            },
+            data: {
+              person: {
+                update: { ...updatePersonDto, userId: user.id },
+              },
+            },
+            select: this.selectOptions,
+          });
+        }
+        return familyMember;
+      });
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Family Member', id);
     }
@@ -218,18 +231,21 @@ export class FamilyMembersService {
 
   async remove(id: string, user: Users) {
     try {
-      const familyMember = await this.prismaService.familyMembers.update({
-        where: {
-          id,
-          isDeleted: false,
-        },
-        data: {
-          userId: user.id,
-          isDeleted: true,
-        },
-        select: this.selectOptions,
+      const result = await this.prismaService.$transaction(async (prisma) => {
+        const familyMember = await prisma.familyMembers.update({
+          where: {
+            id,
+            isDeleted: false,
+          },
+          data: {
+            userId: user.id,
+            isDeleted: true,
+          },
+          select: this.selectOptions,
+        });
+        return familyMember;
       });
-      return familyMember;
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Family Member', id);
     }
