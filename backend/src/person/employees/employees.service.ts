@@ -246,7 +246,8 @@ export class EmployeesService {
               const { isNew, ...familyMemberDto } = familyMember;
               await this.familyMembersService.create(
                 {
-                  ...familyMemberDto,
+                  ...familyMember,
+                  isNew: true,
                   employeeId: employee.id,
                 },
                 user,
