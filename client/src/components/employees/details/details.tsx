@@ -8,6 +8,7 @@ import { getEmployeeId, updateEmployee } from '@/utils/detail.http';
 import { useAuth } from '@/components/context/AuthProvider';
 import Employee from "@/types/employee";
 import { EmployeeDetailsList } from './ListPositions';
+import { FinanceDetailsList } from './TransactionsList';
 
 export const EmployeeDetails = () => {
     const { id } = useParams();
@@ -234,6 +235,9 @@ export const EmployeeDetails = () => {
                         <List
                             employeeCiRuc={employeeCiRuc}
                         />
+                    </TabPanel>
+                    <TabPanel>
+                        <FinanceDetailsList />
                     </TabPanel>
                 </TabPanels>
             </Tabs>
