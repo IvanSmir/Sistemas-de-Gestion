@@ -7,5 +7,6 @@ interface Relative {
   birthDate: Date;
   gender: string;
   familyTypeId: string;
+  isNew: boolean;
 }
 export default Relative;
