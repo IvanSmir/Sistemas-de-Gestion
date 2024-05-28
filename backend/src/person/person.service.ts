@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { Person, Users } from '@prisma/client';
@@ -21,13 +18,16 @@ export class PersonService {
 
   async create(createPersonDto: CreatePersonDto, user: Users) {
     try {
-      const person = await this.prismaService.person.create({
-        data: { ...createPersonDto, userId: user.id },
-      });
-      const { userId, createdAt, updatedAt, isDeleted, ...sanitizedPerson } =
-        person;
+      const result = await this.prismaService.$transaction(async (prisma) => {
+        const person = await prisma.person.create({
+          data: { ...createPersonDto, userId: user.id },
+        });
+        const { userId, createdAt, updatedAt, isDeleted, ...sanitizedPerson } =
+          person;
 
-      return sanitizedPerson;
+        return sanitizedPerson;
+      });
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(
         error,
@@ -68,8 +68,7 @@ export class PersonService {
 
   async findOne(ciRuc: string) {
     try {
-      let person;
-      person = await this.prismaService.person.findUnique({
+      let person = await this.prismaService.person.findUnique({
         where: {
           ciRuc: ciRuc,
           isDeleted: false,
@@ -113,11 +112,14 @@ export class PersonService {
 
   async update(id: string, updatePersonDto: UpdatePersonDto, user: Users) {
     try {
-      const person = await this.prismaService.person.update({
-        where: { id, isDeleted: false },
-        data: { ...updatePersonDto, userId: user.id },
+      const result = await this.prismaService.$transaction(async (prisma) => {
+        const person = await prisma.person.update({
+          where: { id, isDeleted: false },
+          data: { ...updatePersonDto, userId: user.id },
+        });
+        return person;
       });
-      return person;
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Person', id);
     }
@@ -125,11 +127,14 @@ export class PersonService {
 
   async remove(id: string, user: Users) {
     try {
-      await this.prismaService.person.update({
-        where: { id, isDeleted: false },
-        data: { isDeleted: true, userId: user.id },
+      const result = await this.prismaService.$transaction(async (prisma) => {
+        await prisma.person.update({
+          where: { id, isDeleted: false },
+          data: { isDeleted: true, userId: user.id },
+        });
+        return { message: 'Person deleted successfully' };
       });
-      return { message: 'Person deleted successfully' };
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Person', id);
     }
