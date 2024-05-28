@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
     Box,
     Flex,
@@ -39,21 +39,20 @@ export const EmployeeDetailsList: React.FC = () => {
     const auth = useAuth();
 
 
+    const fetchEmployeesDetails = useCallback(async () => {
+        try {
+            const { user } = auth;
+            const token = user?.token || '';
+            const data: EmployeeDetails[] = await getEmployeeDetails(id as string, token) as EmployeeDetails[];
+            setEmployeeDetails(data);
+        } catch (error) {
+            console.error('Error fetching employee data:', error);
+        }
+    }, [id, auth]);
 
     useEffect(() => {
-
-        const fetchEmployees = async () => {
-            try {
-                const { user } = auth;
-                const token = user?.token || '';
-                const data: EmployeeDetails[] = await getEmployeeDetails(id as string, token) as EmployeeDetails[];
-                setEmployeeDetails(data);
-            } catch (error) {
-                console.error('Error fetching employee data:', error);
-            }
-        };
-        fetchEmployees();
-    }, [auth, id]);
+        fetchEmployeesDetails();
+    }, [fetchEmployeesDetails]);
 
     const handleEditClick = (employee: EmployeeDetails, event: React.MouseEvent) => {
         event.stopPropagation();
