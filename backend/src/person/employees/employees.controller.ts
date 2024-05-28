@@ -22,7 +22,7 @@ import { Auth } from 'src/auth/decorators/auth.decorator';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { Users } from '@prisma/client';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
-import { createFullDto } from './dto/create-full.dto';
+import { CreateFullDto } from './dto/create-full.dto';
 
 @ApiTags('Employees')
 @Controller('employees')
@@ -93,10 +93,13 @@ export class EmployeesController {
   @Post('complete')
   @Auth()
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Complete an employee' })
+  @ApiOperation({ summary: 'Create a Complete an employee' })
   @ApiResponse({ status: 200, description: 'Employee completed successfully.' })
   @ApiResponse({ status: 404, description: 'Employee not found.' })
-  complete(@Body() createFullEmployeeDto, @GetUser() user: Users) {
+  complete(
+    @Body() createFullEmployeeDto: CreateFullDto,
+    @GetUser() user: Users,
+  ) {
     return this.employeesService.createFull(createFullEmployeeDto, user);
   }
 }
