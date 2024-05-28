@@ -22,6 +22,7 @@ export class FamilyMembersService {
     familyType: {
       select: {
         name: true,
+        id: true,
       },
     },
     person: {
@@ -32,26 +33,43 @@ export class FamilyMembersService {
         phone: true,
         address: true,
         birthDate: true,
+        gender: true,
       },
     },
   };
 
   async create(createFamilyMemberDto: CreateFamilyMemberDto, user: Users) {
     try {
-      const { familyTypeId, employeeId, ...createPersonDto } =
+      const { familyTypeId, employeeId, isNew, ...createPersonDto } =
         createFamilyMemberDto;
       const result = await this.prismaService.$transaction(async (prisma) => {
-        const person = await this.personService.create(createPersonDto, user);
-        const familyMember = await prisma.familyMembers.create({
-          data: {
-            familyTypeId,
-            employeeId,
-            personId: person.id,
-            userId: user.id,
-          },
-          select: this.selectOptions,
-        });
-        return familyMember;
+        if (isNew) {
+          const person = await this.personService.create(createPersonDto, user);
+          const familyMember = await prisma.familyMembers.create({
+            data: {
+              familyTypeId,
+              employeeId,
+              personId: person.id,
+              userId: user.id,
+            },
+            select: this.selectOptions,
+          });
+          return familyMember;
+        } else {
+          const person = await this.personService.findOne(
+            createPersonDto.ciRuc,
+          );
+          const familyMember = await prisma.familyMembers.create({
+            data: {
+              familyTypeId,
+              employeeId,
+              personId: person.id,
+              userId: user.id,
+            },
+            select: this.selectOptions,
+          });
+          return familyMember;
+        }
       });
       return result;
     } catch (error) {
