@@ -9,7 +9,7 @@ import { useAuth } from "@/components/context/AuthProvider";
 import Link from "next/link";
 
 interface PositionForm {
-    id?: number;
+    id?: string;
     name: string;
     description: string;
 
@@ -42,6 +42,7 @@ export const FormAddPosition: React.FC<FormAddPositionProps> = ({ isOpen, onClos
         const token = user?.token ?? "";
         if(position.description.trim().length > 0 && position.name.trim().length > 0){
             try {
+                console.log(position)
                 const savedPosition = await addPosition(position, token);
                 if(savedPosition) console.log(savedPosition)
                 onSave(savedPosition);
