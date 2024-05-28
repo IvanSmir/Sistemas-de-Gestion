@@ -16,9 +16,10 @@ export class IncomesService {
 
   private selectOptions = {
     id: true,
-    IncomeType: {
+    incomeType: {
       select: {
         name: true,
+        deductible: true,
       },
     },
     amount: true,
