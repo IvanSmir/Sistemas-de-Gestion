@@ -226,6 +226,8 @@ export const EmployeeDetails = () => {
                                         />
                                     </Flex>
                                     <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
+                                </Box>
+                                <Box>
                                     <Flex>
                                         <FormLabel fontSize="14px" htmlFor="address">Dirección:</FormLabel>
                                         <Input
