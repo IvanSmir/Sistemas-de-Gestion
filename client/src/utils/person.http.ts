@@ -14,6 +14,7 @@ export const getPerson = async (ciRuc: string, token: string) => {
             throw new Error("Error al obtener persona");
         }
 
+        
         const data = await response.json();
         return data;
     } catch (error: any) {

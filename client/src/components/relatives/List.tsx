@@ -21,6 +21,8 @@ import { getFamilyMembers, deleteFamilyMember, updateFamilyMember, getFamilyMemb
 import Relative from "@/types/relative";
 import { useAuth } from "../context/AuthProvider";
 import { useParams } from "next/navigation";
+import { Form } from "./add/Form";
+import { on } from "events";
 
 interface Person {
     ciRuc: string;
@@ -194,7 +196,12 @@ export const List: React.FC = () => {
                         <option value="mayores18">Mayores de Edad</option>
                     </Select>
                 </Flex>
-                <Button rounded={23} mr={5} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} gap={2} color='white'>
+
+                <Form
+                    isOpen={isOpen}
+                    onClose={onClose}
+                />
+                <Button onClick={onOpen} rounded={23} mr={5} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} gap={2} color='white'>
                     <AddIcon />Agregar Familiar
                 </Button>
             </Flex>

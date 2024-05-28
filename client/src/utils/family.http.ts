@@ -70,8 +70,10 @@ export const getFamilyTypeId = async (id: string, token: string) => {
 };
 export const createFamilyMember = async (
   familyMemberData: any,
+  id: string, 
   token: string
 ) => {
+  familyMemberData.employeeId = id; 
   try {
     console.log("Token usado para crear:", token);
     const response = await fetch(`${API_URL}/family-members`, {
