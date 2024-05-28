@@ -20,6 +20,9 @@ interface FormRelativeProps {
     employeeCiRuc: string;
 }
 
+const cedulaRegex = /^\d{1,3}(\.\d{3})*$/;
+const rucRegex = /^\d{1,8}-\d$/;
+
 export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelatives, onClose, register, errors, handleSubmit, setValue, employeeCiRuc }) => {
     const [familyTypes, setFamilyTypes] = useState<{ id: string, name: string }[]>([]);
     const [isPerson, setIsPerson] = useState(false);
@@ -45,6 +48,30 @@ export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelati
     };
 
     const isRuc = async () => {
+
+        if (ruc.trim() === '') {
+            toast({
+                title: 'Info',
+                description: 'El CI/RUC no puede estar vacío',
+                status: 'info',
+                duration: 1000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        if (!cedulaRegex.test(ruc) && !rucRegex.test(ruc)) {
+            toast({
+                title: 'Info',
+                description: 'El CI/RUC debe ser un número de cédula o RUC válido',
+                status: 'info',
+                duration: 1000,
+                isClosable: true,
+            });
+            return;
+        }
+
+
         if (employeeCiRuc === ruc) {
             toast({
                 title: 'Info',

@@ -14,7 +14,11 @@ interface FormEmployeeProps {
     setIsPerson: React.Dispatch<React.SetStateAction<boolean>>;
     setValue: UseFormSetValue<Employee>
     setEmployeeCiRuc: React.Dispatch<React.SetStateAction<string>>;
+
 }
+
+const cedulaRegex = /^\d{1,3}(\.\d{3})*$/;
+const rucRegex = /^\d{1,8}-\d$/;
 
 export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors, setIsPerson, setValue, setEmployeeCiRuc }) => {
     const toast = useToast();
@@ -32,6 +36,28 @@ export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors, se
         try {
             const { user } = auth;
             const token = user?.token || '';
+            if (ruc.trim() === '') {
+                toast({
+                    title: 'Info',
+                    description: 'El CI/RUC no puede estar vacío',
+                    status: 'info',
+                    duration: 1000,
+                    isClosable: true,
+                });
+                return;
+            }
+            if (!cedulaRegex.test(ruc) && !rucRegex.test(ruc)) {
+                toast({
+                    title: 'Info',
+                    description: 'El CI/RUC debe ser un número de cédula o RUC válido',
+                    status: 'info',
+                    duration: 1000,
+                    isClosable: true,
+                });
+                return;
+            }
+
+
             const employeeResponse = await getPerson(ruc, token);
 
             console.log(employeeResponse);

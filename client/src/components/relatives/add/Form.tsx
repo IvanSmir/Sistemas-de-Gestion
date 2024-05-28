@@ -41,6 +41,10 @@ interface ModalProps {
     fetchDataFamily: () => void;
 }
 
+
+const cedulaRegex = /^\d{1,3}(\.\d{3})*$/;
+const rucRegex = /^\d{1,8}-\d$/;
+
 export const Form: React.FC<ModalProps> = ({ isOpen, onClose, employeeCiRuc, relatives, fetchDataFamily }) => {
     const toast = useToast();
     const { id } = useParams();
@@ -61,6 +65,7 @@ export const Form: React.FC<ModalProps> = ({ isOpen, onClose, employeeCiRuc, rel
     const onSubmit = async (relative: Relative) => {
         console.log(FormData);
         try {
+
             const { user } = auth;
             const token = user?.token || '';
             console.log('relative', { ...relative });
@@ -124,6 +129,28 @@ export const Form: React.FC<ModalProps> = ({ isOpen, onClose, employeeCiRuc, rel
         console.log('ruc', ruc);
         console.log('employeeCiRuc', employeeCiRuc);
         console.log('relatives', relatives);
+        if (ruc.trim() === '') {
+            toast({
+                title: 'Info',
+                description: 'El CI/RUC no puede estar vacío',
+                status: 'info',
+                duration: 1000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        if (!cedulaRegex.test(ruc) && !rucRegex.test(ruc)) {
+            toast({
+                title: 'Info',
+                description: 'El CI/RUC debe ser un número de cédula o RUC válido',
+                status: 'info',
+                duration: 1000,
+                isClosable: true,
+            });
+            return;
+        }
+
         if (employeeCiRuc === ruc) {
             toast({
                 title: 'Info',
