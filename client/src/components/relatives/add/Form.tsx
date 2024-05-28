@@ -54,6 +54,7 @@ export const Form: React.FC<ModalProps> = ({ isOpen, onClose, employeeCiRuc, rel
     const { register, handleSubmit, setValue, formState: { errors } } = useForm<Relative>({ resolver: zodResolver(relativeSchema) });
     const [ruc, setRuc] = useState('');
     const [isDisabled, setIsDisabled] = useState(true);
+    const [isPerson, setIsPerson] = useState(false);
 
     const fetchData = useCallback(async () => {
         const { user } = auth;
@@ -77,7 +78,7 @@ export const Form: React.FC<ModalProps> = ({ isOpen, onClose, employeeCiRuc, rel
                 duration: null,
                 isClosable: true,
             });
-            const data = await createFamilyMember({ ...relative }, id as string, token);
+            const data = await createFamilyMember({ ...relative, isNew: !isPerson }, id as string, token);
             setIsDisabled(false);
             toast.closeAll();
             toast({
@@ -123,6 +124,7 @@ export const Form: React.FC<ModalProps> = ({ isOpen, onClose, employeeCiRuc, rel
         setValue('birthDate', '' as any);
         setValue('gender', '');
         setValue('isNew', true);
+        setIsPerson(false);
     }, [auth, setValue, fetchData]);
 
     const isRuc = async () => {
@@ -195,6 +197,7 @@ export const Form: React.FC<ModalProps> = ({ isOpen, onClose, employeeCiRuc, rel
             setValue('birthDate', personResponse.birthDate.split('T')[0]);
             setValue('gender', personResponse.gender);
             setValue('isNew', false);
+            setIsPerson(true);
 
         } catch (error: any) {
             if (error.message === 'Persona no encontrada') {
@@ -212,6 +215,7 @@ export const Form: React.FC<ModalProps> = ({ isOpen, onClose, employeeCiRuc, rel
                 setValue('birthDate', '' as any);
                 setValue('gender', '');
                 setValue('isNew', true);
+                setIsPerson(false);
             } else {
                 console.error('Error verifying CI/RUC:', error);
                 toast({
