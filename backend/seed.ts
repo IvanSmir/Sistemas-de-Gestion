@@ -158,7 +158,7 @@ async function main() {
   }
 
   // Crear EmployeeDetails (dos por empleado)
-  const salaryTypes = ['mínimo', 'base'];
+  const salaryTypes = ['minimum', 'base'];
   for (const employee of employees) {
     for (let i = 0; i < 2; i++) {
       const position = positions[Math.floor(Math.random() * positions.length)];
