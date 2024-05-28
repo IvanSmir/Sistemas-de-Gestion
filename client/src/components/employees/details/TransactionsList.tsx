@@ -105,12 +105,12 @@ export const FinanceDetailsList: React.FC = () => {
 
 
     return (
-        <Box backgroundColor={'white'} width={900} borderRadius="2xl" padding="8px" margin="auto">
+        <Box backgroundColor={'white'} borderRadius="2xl" padding="8px" >
 
             {/* Tabla de Ingresos */}
             <TableContainer mb={10}>
                 <Flex justifyContent="end" mb={6}>
-                    <Button onClick={handleAddIncomeClick} rounded={23} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} color='white'>
+                    <Button onClick={handleAddIncomeClick} rounded={23} fontSize={13} py={3} px={5} bgColor='gray.700' _hover={{ bgColor: "#gray.800" }} color='white' disabled={!isIncomeorExpense}>
                         <AddIcon />Agregar Ingreso
                     </Button>
                 </Flex>
@@ -141,7 +141,7 @@ export const FinanceDetailsList: React.FC = () => {
             {/* Tabla de Egresos */}
             <TableContainer>
                 <Flex justifyContent="end" mb={6}>
-                    <Button onClick={handleAddExpenseClick} rounded={23} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} color='white'>
+                    <Button onClick={handleAddExpenseClick} rounded={23} fontSize={13} py={3} px={5} bgColor='gray.700' _hover={{ bgColor: "#gray.800" }} color='white' disabled={!isIncomeorExpense}>
                         <AddIcon />Agregar egreso
                     </Button>
                 </Flex>

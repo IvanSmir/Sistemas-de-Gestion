@@ -68,7 +68,7 @@ export const EmployeeDetailsList: React.FC = () => {
     return (
         <Box backgroundColor={'white'} borderRadius="2xl" padding="8px" >
             <Flex justifyContent="end" mb={6} >
-                <Button onClick={onAddOpen} rounded={23} mr={5} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} gap={2} color='white'>
+                <Button onClick={onAddOpen} rounded={23} mr={5} fontSize={13} py={3} px={5} bgColor='gray.700' _hover={{ bgColor: "gray.800" }} gap={2} color='white' disabled={!isEditOpen}>
                     <AddIcon />Agregar Cargo
                 </Button>
             </Flex>

@@ -109,7 +109,7 @@ export const EmployeeDetails = () => {
     };
 
     return (
-        <Box >
+        <Box bg={"gray.200"} mb={6}>
             <Flex>
                 <Link href="/employees">
                     <Button onClick={handleBack}>
@@ -255,6 +255,7 @@ export const EmployeeDetails = () => {
 
 
                             </Flex>
+
                             <EmployeeDetailsList />
 
                         </Box>
@@ -266,8 +267,8 @@ export const EmployeeDetails = () => {
             <Divider orientation='horizontal' w='75%' mb={4} />
             <Tabs variant='soft-rounded' colorScheme='green'>
                 <TabList ml={4}>
-                    <Tab _selected={{ color: 'white', bg: 'gray.700' }}>Familiares</Tab>
-                    <Tab _selected={{ color: 'white', bg: 'gray.700' }}>Ingresos y egresos</Tab>
+                    <Tab _selected={{ color: 'white', bg: '#AA546D' }}>Familiares</Tab>
+                    <Tab _selected={{ color: 'white', bg: '#AA546D' }}>Ingresos y egresos</Tab>
                 </TabList>
                 <TabPanels>
                     <TabPanel>

@@ -249,28 +249,32 @@ export const Form: React.FC<ModalProps> = ({ isOpen, onClose, employeeCiRuc, rel
                             </Flex>
                             <FormErrorMessage>{errors.ciRuc && errors.ciRuc.message}</FormErrorMessage>
                         </FormControl>
-                        <FormControl isInvalid={!!errors.name}>
-                            <FormLabel htmlFor="name">Nombre:</FormLabel>
-                            <Input
-                                type="text"
-                                id="name"
-                                isDisabled={isDisabled}
-                                {...register('name')}
-                            />
-                            <FormErrorMessage>{errors.name && errors.name.message}</FormErrorMessage>
-                        </FormControl>
-                        <FormControl isInvalid={!!errors.gender}>
-                            <FormLabel htmlFor="gender">Genero:</FormLabel>
-                            <Select
-                                id="gender"
-                                isDisabled={isDisabled}
-                                {...register('gender')}
-                            >
-                                <option value="male">Hombre</option>
-                                <option value="female">Mujer</option>
-                            </Select>
-                            <FormErrorMessage>{errors.gender && errors.gender.message}</FormErrorMessage>
-                        </FormControl>
+                        <Flex>
+
+                            <FormControl isInvalid={!!errors.name}>
+                                <FormLabel htmlFor="name">Nombre:</FormLabel>
+                                <Input
+                                    type="text"
+                                    id="name"
+                                    isDisabled={isDisabled}
+                                    {...register('name')}
+                                />
+                                <FormErrorMessage>{errors.name && errors.name.message}</FormErrorMessage>
+                            </FormControl>
+                            <FormControl isInvalid={!!errors.gender}>
+                                <FormLabel htmlFor="gender">Genero:</FormLabel>
+                                <Select
+                                    id="gender"
+                                    isDisabled={isDisabled}
+                                    {...register('gender')}
+                                >
+                                    <option value="male">Hombre</option>
+                                    <option value="female">Mujer</option>
+                                </Select>
+                                <FormErrorMessage>{errors.gender && errors.gender.message}</FormErrorMessage>
+
+                            </FormControl>
+                        </Flex>
                         <FormControl isInvalid={!!errors.birthDate}>
                             <FormLabel htmlFor="birthDate">Fecha de nacimiento:</FormLabel>
                             <Input
@@ -281,26 +285,29 @@ export const Form: React.FC<ModalProps> = ({ isOpen, onClose, employeeCiRuc, rel
                             />
                             <FormErrorMessage>{errors.birthDate && errors.birthDate.message}</FormErrorMessage>
                         </FormControl>
-                        <FormControl isInvalid={!!errors.email}>
-                            <FormLabel htmlFor="email">Correo electrónico:</FormLabel>
-                            <Input
-                                type="email"
-                                id="email"
-                                isDisabled={isDisabled}
-                                {...register('email')}
-                            />
-                            <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
-                        </FormControl>
-                        <FormControl isInvalid={!!errors.phone}>
-                            <FormLabel htmlFor="phone">Teléfono:</FormLabel>
-                            <Input
-                                type="text"
-                                id="phone"
-                                isDisabled={isDisabled}
-                                {...register('phone')}
-                            />
-                            <FormErrorMessage>{errors.phone && errors.phone.message}</FormErrorMessage>
-                        </FormControl>
+                        <Flex>
+
+                            <FormControl isInvalid={!!errors.email}>
+                                <FormLabel htmlFor="email">Correo electrónico:</FormLabel>
+                                <Input
+                                    type="email"
+                                    id="email"
+                                    isDisabled={isDisabled}
+                                    {...register('email')}
+                                />
+                                <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
+                            </FormControl>
+                            <FormControl isInvalid={!!errors.phone}>
+                                <FormLabel htmlFor="phone">Teléfono:</FormLabel>
+                                <Input
+                                    type="text"
+                                    id="phone"
+                                    isDisabled={isDisabled}
+                                    {...register('phone')}
+                                />
+                                <FormErrorMessage>{errors.phone && errors.phone.message}</FormErrorMessage>
+                            </FormControl>
+                        </Flex>
                         <FormControl isInvalid={!!errors.address}>
                             <FormLabel htmlFor="address">Dirección:</FormLabel>
                             <Input
@@ -311,6 +318,8 @@ export const Form: React.FC<ModalProps> = ({ isOpen, onClose, employeeCiRuc, rel
                             />
                             <FormErrorMessage>{errors.address && errors.address.message}</FormErrorMessage>
                         </FormControl>
+
+
                         <FormControl isInvalid={!!errors.familyTypeId}>
                             <FormLabel htmlFor="familyTypeId">Tipo de familia:</FormLabel>
                             <Select

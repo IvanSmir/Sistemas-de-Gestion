@@ -154,7 +154,7 @@ export const List: React.FC<ListProps> = ({ employeeCiRuc }) => {
 
 
     return (
-        <Box backgroundColor={'white'} width={900} height={426} borderRadius="2xl" padding="8px" margin="auto" >
+        <Box backgroundColor={'white'} borderRadius="2xl" padding="8px" >
             <Flex justifyContent="space-between" mb={6} >
                 <Flex gap={2}>
                     <Input
@@ -188,7 +188,7 @@ export const List: React.FC<ListProps> = ({ employeeCiRuc }) => {
                     fetchDataFamily={fetchFamiliares}
 
                 />
-                <Button onClick={onAddOpen} rounded={23} mr={5} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} gap={2} color='white'>
+                <Button onClick={onAddOpen} rounded={23} mr={5} fontSize={13} py={3} px={5} bgColor='gray.700' _hover={{ bgColor: "gray.800" }} gap={2} color='white'>
                     <AddIcon />Agregar Familiar
                 </Button>
             </Flex>
