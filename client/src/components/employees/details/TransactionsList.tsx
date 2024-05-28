@@ -71,14 +71,14 @@ export const FinanceDetailsList: React.FC = () => {
 
     return (
         <Box backgroundColor={'white'} width={900} borderRadius="2xl" padding="8px" margin="auto">
-            <Flex justifyContent="space-between" mb={6}>
-                <Button rounded={23} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} color='white'>
-                    <AddIcon />Agregar
-                </Button>
-            </Flex>
 
             {/* Tabla de Ingresos */}
             <TableContainer mb={10}>
+                <Flex justifyContent="space-between" mb={6}>
+                    <Button rounded={23} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} color='white'>
+                        <AddIcon />Agregar Ingreso
+                    </Button>
+                </Flex>
                 <Table variant="simple" fontSize="14px">
                     <Thead>
                         <Tr>
@@ -105,6 +105,11 @@ export const FinanceDetailsList: React.FC = () => {
 
             {/* Tabla de Egresos */}
             <TableContainer>
+                <Flex justifyContent="space-between" mb={6}>
+                    <Button rounded={23} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} color='white'>
+                        <AddIcon />Agregar egreso
+                    </Button>
+                </Flex>
                 <Table variant="simple" fontSize="14px">
                     <Thead>
                         <Tr>
