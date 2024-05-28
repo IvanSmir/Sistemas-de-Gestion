@@ -24,6 +24,8 @@ export class EmployeeDetailsService {
     },
     startDate: true,
     endDate: true,
+    salaryType: true,
+    salary: true,
   };
 
   async create(createEmployeeDetailDto: CreateEmployeeDetailDto, user: Users) {
@@ -86,7 +88,11 @@ export class EmployeeDetailsService {
       }
       throw new BadRequestException('Invalid term');
     } catch (error) {
-      this.handleDbErrorService.handleDbError(error, 'EmployeeDetail', employeeId);
+      this.handleDbErrorService.handleDbError(
+        error,
+        'EmployeeDetail',
+        employeeId,
+      );
     }
   }
 
@@ -100,7 +106,8 @@ export class EmployeeDetailsService {
           },
           select: this.selectOptions,
         });
-        if (!employeeDetail) throw new BadRequestException('EmployeeDetail not found');
+        if (!employeeDetail)
+          throw new BadRequestException('EmployeeDetail not found');
         return employeeDetail;
       }
       throw new BadRequestException('Invalid term');
@@ -109,7 +116,11 @@ export class EmployeeDetailsService {
     }
   }
 
-  async update(id: string, updateEmployeeDetailDto: UpdateEmployeeDetailDto, user: Users) {
+  async update(
+    id: string,
+    updateEmployeeDetailDto: UpdateEmployeeDetailDto,
+    user: Users,
+  ) {
     try {
       if (!isUUID(id)) throw new BadRequestException('Invalid term');
       const result = await this.prisma.$transaction(async (prisma) => {
@@ -118,7 +129,8 @@ export class EmployeeDetailsService {
           data: { ...updateEmployeeDetailDto, userId: user.id },
           select: this.selectOptions,
         });
-        if (!employeeDetail) throw new BadRequestException('EmployeeDetail not found');
+        if (!employeeDetail)
+          throw new BadRequestException('EmployeeDetail not found');
         return employeeDetail;
       });
 
@@ -137,7 +149,8 @@ export class EmployeeDetailsService {
           data: { endDate: new Date(), userId: user.id, isActive: false },
           select: this.selectOptions,
         });
-        if (!employeeDetail) throw new BadRequestException('EmployeeDetail not found');
+        if (!employeeDetail)
+          throw new BadRequestException('EmployeeDetail not found');
         return employeeDetail;
       });
 
@@ -156,7 +169,8 @@ export class EmployeeDetailsService {
           data: { isDeleted: true, userId: user.id },
           select: this.selectOptions,
         });
-        if (!employeeDetail) throw new BadRequestException('EmployeeDetail not found');
+        if (!employeeDetail)
+          throw new BadRequestException('EmployeeDetail not found');
         return employeeDetail;
       });
 
