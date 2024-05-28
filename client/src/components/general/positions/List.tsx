@@ -18,32 +18,24 @@ import {
 } from "@chakra-ui/react";
 import { FormAddPosition } from "./add/Form";
 import Link from "next/link";
+import { deletePosition, getPositions } from "@/utils/position.utils";
+import { useAuth } from "@/components/context/AuthProvider";
 
 interface Position {
+    id: string,
     name: string,
     description: string
 }
 
 export const ListPositions: React.FC = () => {
-    const initialPositions: Position[] = [
-        {
-            name: "Administrador",
-            description: "Administrador de la aplicación"
-        },
-        {
-            name: "Empleado",
-            description: "Empleado de la aplicación"
-        },
-        {
-            name: "Supervisor",
-            description: "Supervisor de la aplicación"
-        },
-    ];
 
-    const [positions, setPositions] = useState<Position[]>(initialPositions);
+    const { user } = useAuth();
+
+    const [positions, setPositions] = useState<Position[]>([]);
     const [filters, setFilters] = useState<{ name: string }>({
         name: '',
     });
+    const [fetchTrigger, setFetchTrigger] = useState<boolean>(false)
 
     const [filteredPositions, setFilteredPositions] = useState<Position[]>([]);
     const { isOpen: isAddOpen, onOpen: onAddOpen, onClose: onAddClose } = useDisclosure();
@@ -51,15 +43,11 @@ export const ListPositions: React.FC = () => {
 
 
     useEffect(() => {
-
-        const filtered = positions.filter((position) => {
-            if (filters.name && !position.name.includes(filters.name)) {
-                return false;
-            }
-            return true;
-        });
-        setFilteredPositions(filtered);
-    }, [filters, positions]);
+        getPositions().then(a=>{
+            setFilteredPositions(a.data)
+            console.log(a.data)
+        })
+    }, [filters, fetchTrigger]);
 
     const handleNameFilter = (e: ChangeEvent<HTMLInputElement>) => {
         setFilters({ ...filters, name: e.target.value });
@@ -98,6 +86,18 @@ export const ListPositions: React.FC = () => {
         onAddClose();
     };
 
+    const handleDeleteClick = (id:string, e: React.MouseEvent) => {
+        e.stopPropagation()
+        if(confirm("Desea borrar la posicion???")){
+            if(!!user?.token){
+                deletePosition(id, user.token).then(d=>{
+                    alert("Se ha eliminado con exito")
+                    setFetchTrigger(!fetchTrigger)
+                }).catch(e=>alert("NO se ha podido eliminar"))
+            }
+        }
+    }
+
     return (
         <Box backgroundColor={'white'} top={160} left={300} width={900} height={426} borderRadius="2xl" padding="8px" margin="auto" >
             <Flex justifyContent="space-between" mb={6} >
@@ -118,7 +118,7 @@ export const ListPositions: React.FC = () => {
                     </Button>
                 </Link>
             </Flex>
-            <TableContainer>
+            <TableContainer className='overflow-y-auto'>
                 <Table variant="simple" fontSize="14px">
                     <Thead>
                         <Tr>
@@ -133,7 +133,7 @@ export const ListPositions: React.FC = () => {
                                 <Td>{position.description}</Td>
                                 <Td>
                                     <EditIcon mr={2} cursor="pointer" onClick={(event) => handleEditClick(position, event)} />
-                                    <DeleteIcon cursor="pointer" /* onClick={(event) => handleDeleteClick(position.id, event)} */ />
+                                    <DeleteIcon cursor="pointer" onClick={(event) => handleDeleteClick(position.id, event)} />
                                 </Td>
                             </Tr>
                         ))}
