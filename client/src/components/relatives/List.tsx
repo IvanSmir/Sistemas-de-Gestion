@@ -206,7 +206,7 @@ export const List: React.FC<ListProps> = ({ employeeCiRuc }) => {
                     <Tbody>
                         {filteredFamiliares.map((familiar, index) => (
                             <Tr key={index} >
-                                <Td style={{ cursor: 'pointer' }} onClick={() => handleRowClick(familiar)}>{familiar.person.ciRuc}</Td>
+                                <Td style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => handleRowClick(familiar)}>{familiar.person.ciRuc}</Td>
                                 <Td>{familiar.person.name}</Td>
                                 <Td>{new Date(familiar.person.birthDate).toLocaleDateString()}</Td>
                                 <Td>{familiar.familyType.name}</Td>
