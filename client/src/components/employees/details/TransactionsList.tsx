@@ -16,13 +16,17 @@ import { EditIcon, DeleteIcon, AddIcon } from "@chakra-ui/icons";
 import { getEmployeeExpenseDetails, getEmployeeIncomeDetails } from "@/utils/detail.http";
 import { useAuth } from "@/components/context/AuthProvider";
 import { useParams } from "next/navigation";
+import { IncomeExpenseForm } from "./addIncomeExpense";
+import { getExpenseTypes, getIncomeTypes } from "@/utils/finance.http";
 
 interface IncomeType {
     name: string;
+    id: string;
 }
 
 interface ExpenseType {
     name: string;
+    id: string;
 }
 
 interface IncomeDetails {
@@ -42,6 +46,12 @@ interface ExpenseDetails {
 export const FinanceDetailsList: React.FC = () => {
     const [incomes, setIncomes] = useState<IncomeDetails[]>([]);
     const [expenses, setExpenses] = useState<ExpenseDetails[]>([]);
+    const [expensesType, setExpensesType] = useState<ExpenseType[]>([]);
+    const [incomesType, setIncomesType] = useState<IncomeType[]>([]);
+    const [isIncomeorExpense, setIsIncomeorExpense] = useState('');
+    const { isOpen: isAddOpen, onOpen: onAddOpen, onClose: onAddClose } = useDisclosure();
+    const [types, setTypes] = useState<IncomeType[] | ExpenseType[]>([]);
+
     const auth = useAuth();
     const { id } = useParams();
 
@@ -62,12 +72,37 @@ export const FinanceDetailsList: React.FC = () => {
         } catch (error) {
             console.log(error);
         }
+        try {
+            const responseIncomeTypes = await getIncomeTypes(token);
+            const responseExpenseTypes = await getExpenseTypes(token);
+            setIncomesType(responseIncomeTypes);
+            setExpensesType(responseExpenseTypes);
+        } catch (error) {
+            console.log(error);
+        }
     }, [id, auth]);
+
 
 
     useEffect(() => {
         fetchFinanceDetails();
     }, [fetchFinanceDetails]);
+
+
+
+    const handleAddIncomeClick = () => {
+        setIsIncomeorExpense('income');
+        setTypes(incomesType);
+        onAddOpen();
+    };
+
+    const handleAddExpenseClick = () => {
+        setIsIncomeorExpense('expense');
+        setTypes(expensesType);
+        onAddOpen();
+    };
+
+
 
     return (
         <Box backgroundColor={'white'} width={900} borderRadius="2xl" padding="8px" margin="auto">
@@ -75,7 +110,7 @@ export const FinanceDetailsList: React.FC = () => {
             {/* Tabla de Ingresos */}
             <TableContainer mb={10}>
                 <Flex justifyContent="space-between" mb={6}>
-                    <Button rounded={23} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} color='white'>
+                    <Button onClick={handleAddIncomeClick} rounded={23} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} color='white'>
                         <AddIcon />Agregar Ingreso
                     </Button>
                 </Flex>
@@ -106,7 +141,7 @@ export const FinanceDetailsList: React.FC = () => {
             {/* Tabla de Egresos */}
             <TableContainer>
                 <Flex justifyContent="space-between" mb={6}>
-                    <Button rounded={23} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} color='white'>
+                    <Button onClick={handleAddExpenseClick} rounded={23} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} color='white'>
                         <AddIcon />Agregar egreso
                     </Button>
                 </Flex>
@@ -133,6 +168,14 @@ export const FinanceDetailsList: React.FC = () => {
                     </Tbody>
                 </Table>
             </TableContainer>
+
+            <IncomeExpenseForm
+                fetchData={fetchFinanceDetails}
+                isOpen={isAddOpen}
+                onClose={onAddClose}
+                isIncomeorExpense={isIncomeorExpense}
+                types={types}
+            />
         </Box>
     );
 };
