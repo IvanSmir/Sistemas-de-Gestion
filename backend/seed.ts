@@ -17,6 +17,14 @@ async function clearDatabase() {
   await prisma.users.deleteMany();
 }
 
+function generateParaguayanPhoneNumber() {
+  return `+5959${faker.string.numeric(8)}`;
+}
+
+function generateParaguayanCIRUC() {
+  return `${faker.string.numeric(1)}.${faker.string.numeric(3)}.${faker.string.numeric(3)}`;
+}
+
 async function main() {
   // Borrar todos los datos existentes
   await clearDatabase();
@@ -35,22 +43,42 @@ async function main() {
     users.push(user);
   }
 
-  // Crear posiciones
+  // Crear posiciones en español
+  const positionNames = [
+    'Gerente',
+    'Asistente',
+    'Analista',
+    'Desarrollador',
+    'Diseñador',
+    'Consultor',
+    'Director',
+    'Coordinador',
+    'Ejecutivo',
+    'Supervisor',
+  ];
+
   const positions = [];
-  for (let i = 0; i < 10; i++) {
-    // Crear más posiciones para asignar
+  for (const positionName of positionNames) {
     const position = await prisma.positions.create({
       data: {
-        name: faker.person.jobTitle(),
+        name: positionName,
         description: faker.lorem.sentence(),
-        userId: users[i % users.length].id,
+        userId: users[positions.length % users.length].id,
       },
     });
     positions.push(position);
   }
 
-  // Crear tipos de familia (únicos)
-  const familyTypesData = ['Father', 'Mother', 'Son', 'Daughter', 'Cousin'];
+  // Crear tipos de familia en español (únicos)
+  const familyTypesData = [
+    'Padre',
+    'Madre',
+    'Hijo',
+    'Hija',
+    'Primo',
+    'Esposo',
+    'Esposa',
+  ];
   const familyTypes = [];
   for (const familyTypeName of familyTypesData) {
     const familyType = await prisma.familyTypes.create({
@@ -103,9 +131,9 @@ async function main() {
       data: {
         name: faker.person.fullName(),
         address: faker.location.streetAddress(),
-        phone: faker.phone.number(),
+        phone: generateParaguayanPhoneNumber(),
         email: faker.internet.email(),
-        ciRuc: faker.string.uuid(),
+        ciRuc: generateParaguayanCIRUC(),
         birthDate: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }),
         gender: faker.person.sexType(),
         userId: users[i % users.length].id,
@@ -130,7 +158,7 @@ async function main() {
   }
 
   // Crear EmployeeDetails (dos por empleado)
-  const salaryTypes = ['minimum', 'base'];
+  const salaryTypes = ['mínimo', 'base'];
   for (const employee of employees) {
     for (let i = 0; i < 2; i++) {
       const position = positions[Math.floor(Math.random() * positions.length)];
