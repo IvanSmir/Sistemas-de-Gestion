@@ -39,26 +39,16 @@ export class ExpenseTypesService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { page, limit } = paginationDto;
-    const skip = (page - 1) * limit;
 
     try {
-      const totalCount = await this.prismaService.expenseTypes.count();
       const expenseTypes = await this.prismaService.expenseTypes.findMany({
         select: this.selectOptions,
         where: {
           isDeleted: false,
         },
-        skip,
-        take: limit,
+  
       });
-      return {
-        data: expenseTypes,
-        currentPage: page,
-        limit,
-        totalPages: Math.ceil(totalCount / limit),
-        totalCount,
-      };
+      return expenseTypes;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Expense Type', '');
     }
