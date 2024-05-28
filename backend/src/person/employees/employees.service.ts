@@ -7,7 +7,7 @@ import { PersonService } from 'src/person/person.service';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { HandleDbErrorService } from 'src/common/services/handle-db-error.service';
 import { isUUID } from 'class-validator';
-import { createFullDto } from './dto/create-full.dto';
+import { CreateFullDto } from './dto/create-full.dto';
 import { FamilyMembersService } from '../family-members/family-members.service';
 
 @Injectable()
@@ -38,17 +38,21 @@ export class EmployeesService {
   async create(createEmployeeDto: CreateEmployeeDto, user: Users) {
     try {
       const { enterDate, ...createPersonDto } = createEmployeeDto;
-      const person = await this.personService.create(createPersonDto, user);
-      const employee = await this.prismaService.employees.create({
-        data: {
-          enterDate: new Date(enterDate),
-          personId: person.id,
-          userId: user.id,
-        },
-        select: this.selectOptions,
+      const result = await this.prismaService.$transaction(async (prisma) => {
+        const person = await this.personService.create(createPersonDto, user);
+        const employee = await prisma.employees.create({
+          data: {
+            enterDate: new Date(enterDate),
+            personId: person.id,
+            userId: user.id,
+          },
+          select: this.selectOptions,
+        });
+
+        return employee;
       });
 
-      return employee;
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(
         error,
@@ -87,20 +91,20 @@ export class EmployeesService {
     }
   }
 
-  findOne(term: string) {
+  async findOne(term: string) {
     try {
       let employee;
       if (isUUID(term)) {
-        employee = this.prismaService.employees.findUnique({
+        employee = await this.prismaService.employees.findUnique({
           where: {
-            isDeleted: false,
             id: term,
+            isDeleted: false,
           },
           select: this.selectOptions,
         });
       }
       if (!employee) {
-        employee = this.prismaService.employees.findFirst({
+        employee = await this.prismaService.employees.findFirst({
           where: {
             isDeleted: false,
             person: {
@@ -111,10 +115,9 @@ export class EmployeesService {
         });
       }
       if (!employee) {
-        employee = this.prismaService.employees.findFirst({
+        employee = await this.prismaService.employees.findFirst({
           where: {
             isDeleted: false,
-
             person: {
               name: term,
             },
@@ -123,10 +126,9 @@ export class EmployeesService {
         });
       }
       if (!employee) {
-        employee = this.prismaService.employees.findFirst({
+        employee = await this.prismaService.employees.findFirst({
           where: {
             isDeleted: false,
-
             person: {
               email: term,
             },
@@ -135,10 +137,9 @@ export class EmployeesService {
         });
       }
       if (!employee) {
-        employee = this.prismaService.employees.findFirst({
+        employee = await this.prismaService.employees.findFirst({
           where: {
             isDeleted: false,
-
             person: {
               phone: term,
             },
@@ -157,86 +158,127 @@ export class EmployeesService {
   async update(id: string, updateEmployeeDto: UpdateEmployeeDto, user: Users) {
     const { enterDate, ...updatePersonDto } = updateEmployeeDto;
     try {
-      const employee = await this.prismaService.employees.update({
-        where: {
-          id,
-          isDeleted: false,
-        },
-        data: {
-          enterDate: new Date(enterDate),
-          person: {
-            update: { ...updatePersonDto, userId: user.id },
+      const result = await this.prismaService.$transaction(async (prisma) => {
+        const employee = await prisma.employees.update({
+          where: {
+            id,
+            isDeleted: false,
           },
-        },
-        select: this.selectOptions,
+          data: {
+            enterDate: new Date(enterDate),
+            person: {
+              update: { ...updatePersonDto, userId: user.id },
+            },
+          },
+          select: this.selectOptions,
+        });
+
+        return employee;
       });
-      return employee;
+
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Employee', id);
     }
   }
 
-  remove(id: string, user: Users) {
+  async remove(id: string, user: Users) {
     try {
-      const employee = this.prismaService.employees.update({
-        where: {
-          id,
-          isDeleted: false,
-        },
-        data: {
-          isDeleted: true,
-          userId: user.id,
-        },
+      const result = await this.prismaService.$transaction(async (prisma) => {
+        const employee = await prisma.employees.update({
+          where: {
+            id,
+            isDeleted: false,
+          },
+          data: {
+            isDeleted: true,
+            userId: user.id,
+          },
+        });
+
+        return { message: 'Employee deleted successfully' };
       });
-      return { message: 'Position deleted successfully' };
+
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Employee', id);
     }
   }
-
-  async createFull(createFullEmployeeDto: createFullDto, user: Users) {
+  async createFull(createFullEmployeeDto: CreateFullDto, user: Users) {
     try {
-      const { employee: employe, role, familyMembers } = createFullEmployeeDto;
-      const employee = await this.create(employe, user);
+      const {
+        employee: employe,
+        role,
+        familyMembers,
+        isNew,
+      } = createFullEmployeeDto;
 
-      const employeeDetail = await this.prismaService.employeeDetails.create({
-        data: {
-          startDate: new Date(),
-          employeeId: employee.id,
-          positionId: role.positionId,
-          userId: user.id,
+      const result = await this.prismaService.$transaction(
+        async (prisma) => {
+          let employee;
+          if (isNew) {
+            employee = await this.create(employe, user);
+          } else {
+            const person = await this.personService.findOne(employe.ciRuc);
+            employee = await prisma.employees.create({
+              data: {
+                enterDate: new Date(employe.enterDate),
+                personId: person.id,
+                userId: user.id,
+              },
+              select: this.selectOptions,
+            });
+          }
+
+          await prisma.employeeDetails.create({
+            data: {
+              startDate: new Date(),
+              employeeId: employee.id,
+              positionId: role.positionId,
+              userId: user.id,
+              salary: role.amount,
+              salaryType: role.salaryType,
+            },
+          });
+
+          for (const familyMember of familyMembers) {
+            if (familyMember.isNew) {
+              const { isNew, ...familyMemberDto } = familyMember;
+              await this.familyMembersService.create(
+                {
+                  ...familyMemberDto,
+                  employeeId: employee.id,
+                },
+                user,
+              );
+            } else {
+              const person = await this.personService.findOne(
+                familyMember.ciRuc,
+              );
+              await prisma.familyMembers.create({
+                data: {
+                  employeeId: employee.id,
+                  familyTypeId: familyMember.familyTypeId,
+                  personId: person.id,
+                  userId: user.id,
+                },
+              });
+            }
+          }
+
+          return employee;
         },
-      });
+        { timeout: 60000 },
+      ); // Aumentar el tiempo de espera a 60 segundos
 
-      const income = await this.prismaService.income.create({
-        data: {
-          date: new Date(),
-          employeeId: employee.id,
-          userId: user.id,
-          amount: role.amount,
-          active: true,
-          incomeTypeId: role.incomeTypeId,
-        },
-      });
-
-      const familyMembersPromises = familyMembers.map(async (familyMember) => {
-        await this.familyMembersService.create(
-          {
-            ...familyMember,
-            employeeId: employee.id,
-          },
-          user,
-        );
-      });
-
-      await Promise.all(familyMembersPromises);
-      return employee;
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(
         error,
         'Employee',
         createFullEmployeeDto.employee.ciRuc,
       );
+      throw error;
     }
   }
 }
