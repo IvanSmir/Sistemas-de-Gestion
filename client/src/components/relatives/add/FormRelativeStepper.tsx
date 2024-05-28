@@ -117,6 +117,7 @@ export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelati
             setValue('birthDate', personResponse.birthDate.split('T')[0]);
             setValue('gender', personResponse.gender);
             setValue('isNew', false);
+            setIsPerson(true);
 
         } catch (error: any) {
             if (error.message === 'Persona no encontrada') {
@@ -135,6 +136,7 @@ export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelati
                 setValue('birthDate', '' as any);
                 setValue('gender', '');
                 setValue('isNew', true);
+                setIsPerson(false);
             } else {
                 console.error('Error verifying CI/RUC:', error);
                 toast({
