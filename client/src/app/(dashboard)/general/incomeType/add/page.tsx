@@ -1,6 +1,6 @@
 'use client'
 
-import { IncomeType } from "@/components/general/incomes/IncomeType";
+import { IncomeType } from "@/components/general/incomes/incomeType";
 import { Button, useDisclosure } from "@chakra-ui/react";
 
 
