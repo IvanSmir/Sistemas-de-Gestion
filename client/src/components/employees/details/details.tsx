@@ -109,128 +109,167 @@ export const EmployeeDetails = () => {
     };
 
     return (
-        <Box p='10'>
+        <Box >
             <Flex>
                 <Link href="/employees">
                     <Button onClick={handleBack}>
                         Volver
                     </Button>
                 </Link>
-                {!isEditing && (
-                    <Button onClick={handleEdit}>
-                        Editar
-                    </Button>
-                )}
-                {isEditing && (
-                    <>
-                        <Button
-                            onClick={handleSubmit(handleSave)}
-                            isDisabled={!isDirty || !isValid}
-                        >
-                            Guardar
-                        </Button>
-                        <Button onClick={handleCancel}>
-                            Cancelar
-                        </Button>
-                    </>
-                )}
+
             </Flex>
-            <Flex p='10'>
+            <Flex bg={"gray.200"} p='10'>
                 <form onSubmit={handleSubmit(handleSave)}>
-                    <FormControl>
-                        <Flex direction={{ base: "column", md: "row" }}>
-                            <Box p='10'>
+
+                    <Flex direction={{ base: "column", md: "row" }} gap={4}>
+                        <Box bg={"white"} p={5} borderRadius="md" width="30%">
+                            <Box display={"flex"} justifyContent={"center"}>
                                 <Wrap>
                                     <WrapItem>
                                         <Avatar size='3xl' />
                                     </WrapItem>
                                 </Wrap>
                             </Box>
-                            <Box flex='2'>
-                                <Flex>
-                                    <Box mb={8}>
-                                        <FormLabel htmlFor="ciRuc">Ruc/Ci:</FormLabel>
+                            <Input
+                                id="name"
+
+                                {...register('name', { required: 'El nombre es obligatorio' })}
+                                readOnly={!isEditing}
+                                fontWeight="bold"
+                                textAlign={{ lg: "center", base: "center", sm: "left", md: "left" }}
+                                className="input mb-4 disabled-dark:black"
+
+                                mb={4}
+                            />
+                            <Flex>
+
+                                <FormLabel fontSize="14px" htmlFor="gender">Sexo:</FormLabel>
+
+                                <Select
+                                    id="gender"
+                                    {...register('gender', { required: 'El sexo es obligatorio' })}
+
+                                    disabled={!isEditing}
+                                    mb={4}
+                                    placeholder='Seleccione el sexo'
+                                >
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Femenino">Femenino</option>
+                                </Select>
+                            </Flex>
+                            <FormErrorMessage>{errors.gender && errors.gender.message}</FormErrorMessage>
+
+                        </Box>
+
+                        <Box bg={"white"} p={5} borderRadius="md" width="70%">
+                            <Flex justifyContent={"end"} mb={4}>
+                                {!isEditing && (
+                                    <Button bg={"gray.300"} onClick={handleEdit}>
+                                        Editar
+                                    </Button>
+                                )}
+                                {isEditing && (
+                                    <Flex gap={2}>
+                                        <Button
+                                            bg={"gray.300"}
+                                            onClick={handleSubmit(handleSave)}
+                                            isDisabled={!isDirty || !isValid}
+                                        >
+                                            Guardar
+                                        </Button>
+                                        <Button
+                                            bg={"gray.100"}
+                                            onClick={handleCancel}>
+                                            Cancelar
+                                        </Button>
+                                    </Flex>
+                                )}
+                            </Flex>
+                            <Flex>
+                                <Box mb={8}>
+
+                                    <Flex >
+                                        <FormLabel fontSize="14px" htmlFor="ciRuc">Ruc/Ci:</FormLabel>
                                         <Input
                                             id="ciRuc"
                                             {...register('ciRuc', { required: 'El Ruc/Ci es obligatorio' })}
-                                            disabled={true}
+                                            readOnly={true}
                                             mb={4}
                                         />
-                                        <FormErrorMessage>{errors.ciRuc && errors.ciRuc.message}</FormErrorMessage>
-                                        <FormLabel htmlFor="gender">Sexo:</FormLabel>
-                                        <Select
-                                            id="gender"
-                                            {...register('gender', { required: 'El sexo es obligatorio' })}
-                                            disabled={!isEditing}
-                                            mb={4}
-                                            placeholder='Seleccione el sexo'
-                                        >
-                                            <option value="Masculino">Masculino</option>
-                                            <option value="Femenino">Femenino</option>
-                                        </Select>
-                                        <FormErrorMessage>{errors.gender && errors.gender.message}</FormErrorMessage>
-                                        <FormLabel htmlFor="enterDate">Fecha Ingreso:</FormLabel>
+                                    </Flex>
+
+                                    <FormErrorMessage>{errors.ciRuc && errors.ciRuc.message}</FormErrorMessage>
+
+
+                                    <Flex>
+                                        <FormLabel fontSize="14px" htmlFor="enterDate">Fecha Ingreso:</FormLabel>
                                         <Input
                                             type="date"
                                             id="enterDate"
+
                                             {...register('enterDate', { required: 'La fecha de ingreso es obligatoria' })}
-                                            disabled={!isEditing}
+                                            readOnly={!isEditing}
                                         />
-                                        <FormErrorMessage>{errors.enterDate && errors.enterDate.message}</FormErrorMessage>
-                                    </Box>
-                                    <Box mb={8}>
-                                        <FormLabel htmlFor="name">Nombre:</FormLabel>
-                                        <Input
-                                            id="name"
-                                            {...register('name', { required: 'El nombre es obligatorio' })}
-                                            disabled={!isEditing}
-                                            mb={4}
-                                        />
+                                    </Flex>
+                                    <FormErrorMessage>{errors.enterDate && errors.enterDate.message}</FormErrorMessage>
+                                </Box>
+                                <Box mb={8}>
+                                    <Flex>
+
                                         <FormErrorMessage>{errors.name && errors.name.message}</FormErrorMessage>
-                                        <FormLabel htmlFor="birthDate">Fecha Nacimiento:</FormLabel>
+                                        <FormLabel fontSize="14px" htmlFor="birthDate">Fecha Nacimiento:</FormLabel>
                                         <Input
                                             type="date"
                                             id="birthDate"
                                             {...register('birthDate', { required: 'La fecha de nacimiento es obligatoria' })}
-                                            disabled={!isEditing}
+                                            readOnly={!isEditing}
                                         />
-                                        <FormErrorMessage>{errors.birthDate && errors.birthDate.message}</FormErrorMessage>
-                                    </Box>
-                                    <Box>
-                                        <FormLabel htmlFor="email">Correo:</FormLabel>
+                                    </Flex>
+                                    <FormErrorMessage>{errors.birthDate && errors.birthDate.message}</FormErrorMessage>
+                                </Box>
+                                <Box>
+                                    <Flex>
+
+                                        <FormLabel fontSize="14px" htmlFor="email">Correo:</FormLabel>
                                         <Input
                                             id="email"
                                             {...register('email', { required: 'El correo es obligatorio' })}
-                                            disabled={!isEditing}
+                                            readOnly={!isEditing}
                                             mb={4}
                                         />
-                                        <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
-                                        <FormLabel htmlFor="address">Dirección:</FormLabel>
+
+                                    </Flex>
+                                    <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
+                                    <Flex>
+                                        <FormLabel fontSize="14px" htmlFor="address">Dirección:</FormLabel>
                                         <Input
                                             id="address"
                                             {...register('address', { required: 'La dirección es obligatoria' })}
-                                            disabled={!isEditing}
+                                            readOnly={!isEditing}
                                         />
-                                        <FormErrorMessage>{errors.address && errors.address.message}</FormErrorMessage>
-                                    </Box>
-                                </Flex>
 
-                            </Box>
-                        </Flex>
-                    </FormControl>
+                                    </Flex>
+                                    <FormErrorMessage>{errors.address && errors.address.message}</FormErrorMessage>
+                                </Box>
+
+
+
+                            </Flex>
+                            <EmployeeDetailsList />
+
+                        </Box>
+
+                    </Flex>
+
                 </form>
             </Flex>
             <Divider orientation='horizontal' w='75%' mb={4} />
             <Tabs variant='soft-rounded' colorScheme='green'>
-                <TabList>
-                    <Tab _selected={{ color: 'white', bg: '#AA546D' }}>Cargos y sueldos</Tab>
-                    <Tab _selected={{ color: 'white', bg: '#AA546D' }}>Familiares</Tab>
-                    <Tab _selected={{ color: 'white', bg: '#AA546D' }}>Ingresos y egresos</Tab>
+                <TabList ml={4}>
+                    <Tab _selected={{ color: 'white', bg: 'gray.700' }}>Familiares</Tab>
+                    <Tab _selected={{ color: 'white', bg: 'gray.700' }}>Ingresos y egresos</Tab>
                 </TabList>
                 <TabPanels>
-                    <TabPanel>
-                        <EmployeeDetailsList />
-                    </TabPanel>
                     <TabPanel>
                         <List
                             employeeCiRuc={employeeCiRuc}

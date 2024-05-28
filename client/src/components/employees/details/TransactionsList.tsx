@@ -109,7 +109,7 @@ export const FinanceDetailsList: React.FC = () => {
 
             {/* Tabla de Ingresos */}
             <TableContainer mb={10}>
-                <Flex justifyContent="space-between" mb={6}>
+                <Flex justifyContent="end" mb={6}>
                     <Button onClick={handleAddIncomeClick} rounded={23} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} color='white'>
                         <AddIcon />Agregar Ingreso
                     </Button>
@@ -140,7 +140,7 @@ export const FinanceDetailsList: React.FC = () => {
 
             {/* Tabla de Egresos */}
             <TableContainer>
-                <Flex justifyContent="space-between" mb={6}>
+                <Flex justifyContent="end" mb={6}>
                     <Button onClick={handleAddExpenseClick} rounded={23} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} color='white'>
                         <AddIcon />Agregar egreso
                     </Button>

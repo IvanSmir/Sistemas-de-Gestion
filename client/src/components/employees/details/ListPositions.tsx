@@ -66,8 +66,8 @@ export const EmployeeDetailsList: React.FC = () => {
     };
 
     return (
-        <Box backgroundColor={'white'} width={900} height={426} borderRadius="2xl" padding="8px" margin="auto" >
-            <Flex justifyContent="space-between" mb={6} >
+        <Box backgroundColor={'white'} borderRadius="2xl" padding="8px" >
+            <Flex justifyContent="end" mb={6} >
                 <Button onClick={onAddOpen} rounded={23} mr={5} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} gap={2} color='white'>
                     <AddIcon />Agregar Cargo
                 </Button>
