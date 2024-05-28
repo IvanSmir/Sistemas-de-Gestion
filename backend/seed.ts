@@ -37,7 +37,8 @@ async function main() {
 
   // Crear posiciones
   const positions = [];
-  for (let i = 0; i < 10; i++) { // Crear más posiciones para asignar
+  for (let i = 0; i < 10; i++) {
+    // Crear más posiciones para asignar
     const position = await prisma.positions.create({
       data: {
         name: faker.person.jobTitle(),
@@ -96,7 +97,8 @@ async function main() {
 
   // Crear personas
   const persons = [];
-  for (let i = 0; i < 50; i++) { // Crear más personas para empleados y familiares
+  for (let i = 0; i < 50; i++) {
+    // Crear más personas para empleados y familiares
     const person = await prisma.person.create({
       data: {
         name: faker.person.fullName(),
@@ -114,7 +116,8 @@ async function main() {
 
   // Crear empleados
   const employees = [];
-  for (let i = 0; i < 10; i++) { // Crear más empleados
+  for (let i = 0; i < 10; i++) {
+    // Crear más empleados
     const person = persons[i];
     const employee = await prisma.employees.create({
       data: {
@@ -127,6 +130,7 @@ async function main() {
   }
 
   // Crear EmployeeDetails (dos por empleado)
+  const salaryTypes = ['minimum', 'base'];
   for (const employee of employees) {
     for (let i = 0; i < 2; i++) {
       const position = positions[Math.floor(Math.random() * positions.length)];
@@ -138,6 +142,9 @@ async function main() {
           endDate: faker.date.future(),
           userId: employee.userId,
           isActive: faker.datatype.boolean(),
+          salary: parseFloat(faker.finance.amount({ min: 300, max: 2000 })),
+          salaryType:
+            salaryTypes[Math.floor(Math.random() * salaryTypes.length)],
         },
       });
     }
@@ -147,10 +154,12 @@ async function main() {
   const assignedFamilyMembers = new Set<string>(); // Global set to track assigned person IDs
   for (const employee of employees) {
     for (let i = 0; i < 2; i++) {
-      const familyType = familyTypes[Math.floor(Math.random() * familyTypes.length)];
+      const familyType =
+        familyTypes[Math.floor(Math.random() * familyTypes.length)];
       let person;
       do {
-        person = persons[10 + Math.floor(Math.random() * (persons.length - 10))];
+        person =
+          persons[10 + Math.floor(Math.random() * (persons.length - 10))];
       } while (assignedFamilyMembers.has(person.id));
       assignedFamilyMembers.add(person.id);
       await prisma.familyMembers.create({
@@ -167,7 +176,8 @@ async function main() {
   // Crear ingresos (dos por empleado)
   for (const employee of employees) {
     for (let i = 0; i < 2; i++) {
-      const incomeType = incomeTypes[Math.floor(Math.random() * incomeTypes.length)];
+      const incomeType =
+        incomeTypes[Math.floor(Math.random() * incomeTypes.length)];
       await prisma.income.create({
         data: {
           employeeId: employee.id,
@@ -184,7 +194,8 @@ async function main() {
   // Crear gastos (dos por empleado)
   for (const employee of employees) {
     for (let i = 0; i < 2; i++) {
-      const expenseType = expenseTypes[Math.floor(Math.random() * expenseTypes.length)];
+      const expenseType =
+        expenseTypes[Math.floor(Math.random() * expenseTypes.length)];
       await prisma.expenses.create({
         data: {
           employeeId: employee.id,
