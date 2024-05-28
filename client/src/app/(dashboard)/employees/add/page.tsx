@@ -147,7 +147,7 @@ const AddEmployeePage = () => {
     };
 
     return (
-        <div className='flex flex-col w-full justify-center items-center bg-white'>
+        <div className='flex flex-col w-full items-center bg-white'>
             <div className='w-[70vw]'>
                 <StepperFunc currentIndex={currentStep} />
             </div>
@@ -181,13 +181,13 @@ const AddEmployeePage = () => {
                 )}
                 <div className='w-[55%] bottom-32 flex gap-14 justify-end fixed'>
                     {currentStep > 0 && (
-                        <Button onClick={handleBackStep}>Atrás</Button>
+                        <Button color={"white"} bg={"gray.200"} onClick={handleBackStep}>Atrás</Button>
                     )}
                     {currentStep < 3 && (
-                        <Button onClick={handleNextStep}>Siguiente</Button>
+                        <Button _hover={{ bgColor: "#c1738e" }} color={"white"} bg={"#AA546D"} onClick={handleNextStep}>Siguiente</Button>
                     )}
                     {currentStep === 3 && (
-                        <Button onClick={handleSave}>Guardar</Button>
+                        <Button _hover={{ bgColor: "#c1738e" }} color={"white"} bg={"#AA546D"} onClick={handleSave}>Guardar</Button>
                     )}
                 </div>
             </div>
