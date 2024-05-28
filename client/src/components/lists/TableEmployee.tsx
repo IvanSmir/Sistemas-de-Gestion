@@ -30,36 +30,9 @@ export const TableEmployee: React.FC<TableEmployeeProps> = ({ data, columnMappin
     };
 
     return (
-        <Box width={{ base: "100%", sm: "90%", md: "80%", lg: "100%", xl: "100%", "2xl": "100%" }} >
+        <Box marginTop={6} width={{ base: "100%", sm: "90%", md: "80%", lg: "100%", xl: "100%", "2xl": "100%" }} >
             <Box backgroundColor="white" borderRadius="2xl" padding="8px">
-                <Flex justifyContent="space-between" mb={6} flexWrap="wrap">
-                    <Flex gap={2} flexWrap="wrap">
-                        <Input
-                            placeholder="Número de cédula"
-                            value={filters.ci}
-                            onChange={handleCiFilter}
-                            rounded={15}
-                            background="white"
-                            color="gray.600"
-                            _hover={{ bg: "gray.100" }}
-                            flex="1"
-                            minWidth={{ base: "200px", sm: "220px", md: "240px", lg: "260px", xl: "280px", "2xl": "300px" }}
-                        />
-                        <Select
-                            onChange={handleAgeRangeFilter}
-                            value={filters.ageRange}
-                            rounded={15}
-                            background="white"
-                            color="gray.600"
-                            _hover={{ bg: "gray.100" }}
-                            flex="1"
-                            minWidth={{ base: "200px", sm: "220px", md: "240px", lg: "260px", xl: "280px", "2xl": "300px" }}
-                        >
-                            <option value="">Todos</option>
-                            <option value="menores18">Menores de Edad</option>
-                            <option value="mayores18">Mayores de Edad</option>
-                        </Select>
-                    </Flex>
+                <Flex justifyContent="end" mb={6} flexWrap="wrap">
                     <Link href="/employees/add">
                         <Button
                             rounded={23}
@@ -97,8 +70,8 @@ export const TableEmployee: React.FC<TableEmployeeProps> = ({ data, columnMappin
                                         </Td>
                                     ))}
                                     <Td>
-                                        <Link href={`/employees/${datum.id}`}>
-                                            detalles
+                                        <Link className='text-blue-500' href={`/employees/${datum.id}`}>
+                                            Detalles
                                         </Link>
                                     </Td>
                                 </Tr>
