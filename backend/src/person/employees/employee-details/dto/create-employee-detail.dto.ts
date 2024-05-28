@@ -1,6 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsDate, IsUUID } from 'class-validator';
+import { IsBoolean, IsDate, IsEnum, IsNumber, IsUUID } from 'class-validator';
+
+enum SalaryType {
+  MINIMUM = 'minimum',
+  BASE = 'base',
+}
 
 export class CreateEmployeeDetailDto {
   @IsUUID()
@@ -27,6 +32,22 @@ export class CreateEmployeeDetailDto {
   })
   @Transform(({ value }) => new Date(value))
   startDate: Date;
+
+  @IsEnum(SalaryType)
+  @ApiProperty({
+    type: Boolean,
+    description: 'Whether the salary is minimum or base',
+    example: SalaryType.BASE,
+  })
+  salaryType: string;
+
+  @IsNumber()
+  @ApiProperty({
+    type: Number,
+    description: 'The salary of the employee',
+    example: 100,
+  })
+  salary: number;
 
   @IsDate()
   @ApiProperty({
