@@ -1,5 +1,5 @@
 'use client'
-import { Income } from '@/components/general/incomes/Income';
+import { Income } from '@/components/general/incomes/income';
 import { Button, useDisclosure } from '@chakra-ui/react';
 import React from 'react'
 
