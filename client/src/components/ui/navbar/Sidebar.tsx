@@ -12,7 +12,7 @@ interface LinkItemProps {
 const LinkItems: Array<LinkItemProps> = [
     { name: 'Inicio', icon: FiHome, href: '/' },
     { name: 'Funcionarios', icon: FiUsers, href: '/employees' },
-    { name: 'Cargos', icon: FiCompass, href: '/cargos' },
+    { name: 'Cargos', icon: FiCompass, href: '/general/positions' },
     { name: 'Settings', icon: FiSettings, href: '/settings' },
 ];
 
