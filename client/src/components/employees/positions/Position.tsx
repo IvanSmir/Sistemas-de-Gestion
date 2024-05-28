@@ -7,7 +7,7 @@ import PositionEmployee from "@/types/positionEmployee";
 import { FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form";
 
 const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
-const SALARIO_MINIMO = 1000;
+const SALARIO_MINIMO = 2680373;
 
 interface FormPositionProps {
     register: UseFormRegister<PositionEmployee>;
@@ -30,7 +30,7 @@ export const FormPosition: React.FC<FormPositionProps> = ({ register, errors, se
 
     useEffect(() => {
         if (salaryType === "minimum") {
-            setValue('amount', SALARIO_MINIMO); 
+            setValue('amount', SALARIO_MINIMO);
         }
     }, [salaryType, setValue]);
 
