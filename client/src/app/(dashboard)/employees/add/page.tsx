@@ -14,7 +14,7 @@ import { dataEmployeeSchema } from '@/validations/dataEmployeeSchema';
 import { employeeSchema } from '@/validations/employeeSchema';
 import { positionSchema } from '@/validations/positionSchema';
 import { relativeSchema } from '@/validations/relativeSchema';
-import { Button, Toast } from '@chakra-ui/react';
+import { Button, Toast, useToast } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -23,6 +23,7 @@ import { useForm } from 'react-hook-form';
 const AddEmployeePage = () => {
     const auth = useAuth();
     const router = useRouter();
+    const toast = useToast();
     const [currentStep, setCurrentStep] = useState(0);
     const [employee, setEmployee] = useState<Employee>({
         name: '',
@@ -37,21 +38,23 @@ const AddEmployeePage = () => {
     });
     const [positionEmployee, setPositionEmployee] = useState<PositionEmployee>({
         positionId: '',
-        incomeTypeId: '',
+        salaryType: '',
         amount: 0
     });
     const [relatives, setRelatives] = useState<Relative[]>([]);
     const [isPerson, setIsPerson] = useState(false);
+    const [employeeCiRuc, setEmployeeCiRuc] = useState('');
+
 
     const { register, handleSubmit, formState: { errors }, trigger, setValue } = useForm<Employee>({
         resolver: zodResolver(employeeSchema)
     });
 
-    const { register: registerPosition, handleSubmit: handleSubmitPosition, formState: { errors: errorsPosition }, trigger: triggerPosition } = useForm<PositionEmployee>({
+    const { register: registerPosition, handleSubmit: handleSubmitPosition, formState: { errors: errorsPosition }, trigger: triggerPosition, setValue: setValuePosition } = useForm<PositionEmployee>({
         resolver: zodResolver(positionSchema)
     });
 
-    const { register: registerRelative, handleSubmit: handleSubmitRelative, formState: { errors: errorsRelative }, trigger: triggerRelative } = useForm<Relative>({
+    const { register: registerRelative, handleSubmit: handleSubmitRelative, formState: { errors: errorsRelative }, trigger: triggerRelative, setValue: setValueRelative } = useForm<Relative>({
         resolver: zodResolver(relativeSchema)
     });
 
@@ -102,27 +105,51 @@ const AddEmployeePage = () => {
     };
 
     const handleSave = async () => {
+        toast.closeAll();
+
         const employeeData = {
             employee,
+            isNew: !isPerson,
             role: positionEmployee,
-            familyMembers: relatives
+            familyMembers: relatives,
         };
         console.log('employeeData', employeeData);
 
         try {
             const { user } = auth;
             const token = user?.token || '';
-            const employeeResponse = await completeEmployee(employeeData, token);
-            router.push('/employees');
+            toast({
+                title: 'Guardando empleado',
+                description: 'Por favor espere...',
+                status: 'loading',
+                duration: null,
+                isClosable: true,
+            });
+
+            const promise = await completeEmployee(employeeData, token);
+            toast.closeAll();
+
+            toast({
+                title: 'Empleado guardado',
+                description: 'Empleado guardado con éxito',
+                status: 'success',
+                duration: 5000,
+                isClosable: true,
+            });
+
+            router.push('/employees ');
         } catch (error: any) {
+            toast.closeAll();
             console.error('Error saving employee:', error);
-            Toast({
+            toast({
                 title: 'Error',
-                description: error.message,
+                description: error?.message,
                 status: 'error',
                 duration: 5000,
                 isClosable: true,
             });
+
+            console.error('Error saving employee:', error);
         }
     };
 
@@ -138,12 +165,14 @@ const AddEmployeePage = () => {
                         errors={errors}
                         setIsPerson={setIsPerson}
                         setValue={setValue}
+                        setEmployeeCiRuc={setEmployeeCiRuc}
                     />
                 )}
                 {currentStep === 1 && (
                     <FormPosition
                         register={registerPosition}
                         errors={errorsPosition}
+                        setValue={setValuePosition}
                     />
                 )}
                 {currentStep === 2 && (
@@ -153,6 +182,8 @@ const AddEmployeePage = () => {
                         register={registerRelative}
                         handleSubmit={handleSubmitRelative}
                         errors={errorsRelative}
+                        setValue={setValueRelative}
+                        employeeCiRuc={employeeCiRuc}
                     />
                 )}
                 <div className='w-[55%] bottom-32 flex gap-14 justify-end fixed'>
