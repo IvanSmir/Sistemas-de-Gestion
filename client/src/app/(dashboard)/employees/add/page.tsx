@@ -14,7 +14,7 @@ import { dataEmployeeSchema } from '@/validations/dataEmployeeSchema';
 import { employeeSchema } from '@/validations/employeeSchema';
 import { positionSchema } from '@/validations/positionSchema';
 import { relativeSchema } from '@/validations/relativeSchema';
-import { Button } from '@chakra-ui/react';
+import { Button, Toast } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -41,8 +41,9 @@ const AddEmployeePage = () => {
         amount: 0
     });
     const [relatives, setRelatives] = useState<Relative[]>([]);
+    const [isPerson, setIsPerson] = useState(false);
 
-    const { register, handleSubmit, formState: { errors }, trigger } = useForm<Employee>({
+    const { register, handleSubmit, formState: { errors }, trigger, setValue } = useForm<Employee>({
         resolver: zodResolver(employeeSchema)
     });
 
@@ -112,11 +113,16 @@ const AddEmployeePage = () => {
             const { user } = auth;
             const token = user?.token || '';
             const employeeResponse = await completeEmployee(employeeData, token);
-            alert('Employee saved successfully!');
             router.push('/employees');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving employee:', error);
-            alert('Failed to save employee.');
+            Toast({
+                title: 'Error',
+                description: error.message,
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
         }
     };
 
@@ -130,6 +136,8 @@ const AddEmployeePage = () => {
                     <FormEmployee
                         register={register}
                         errors={errors}
+                        setIsPerson={setIsPerson}
+                        setValue={setValue}
                     />
                 )}
                 {currentStep === 1 && (
