@@ -4,8 +4,9 @@ interface Relative {
   phone: string;
   email: string;
   ciRuc: string;
-  birthDate: Date;
+  birthDate: Date | string;
   gender: string;
   familyTypeId: string;
+  isNew: boolean;
 }
 export default Relative;

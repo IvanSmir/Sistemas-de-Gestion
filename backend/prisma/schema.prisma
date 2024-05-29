@@ -6,12 +6,16 @@
 
 generator client {
   provider = "prisma-client-js"
+  
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  
 }
+
+
 
 model Users {
   id              String            @id @default(uuid())
@@ -52,7 +56,7 @@ model Person {
   name         String
   address      String
   phone        String
-  email        String         @unique
+  email        String
   ciRuc        String         @unique
   birthDate    DateTime
   gender       String
@@ -113,6 +117,8 @@ model EmployeeDetails {
   employeeId String
   position   Positions @relation(fields: [positionId], references: [id])
   positionId String
+  salary     Float
+  salaryType String
   startDate  DateTime
   endDate    DateTime?
   createdAt  DateTime  @default(now())

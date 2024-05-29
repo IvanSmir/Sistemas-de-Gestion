@@ -38,3 +38,23 @@ export const completeEmployee = async (employeeData: any, token: string) => {
     throw new Error((error as Error).message || "Error al guardar empleado");
   }
 };
+
+export const getIsEmployee = async (id: string, token: string) => {
+  try {
+    const response = await fetch(`${API_URL}/person/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al obtener empleado");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    throw new Error((error as Error).message || "Error al obtener empleado");
+  }
+};

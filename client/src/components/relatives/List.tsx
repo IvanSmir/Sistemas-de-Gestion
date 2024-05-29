@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, useCallback } from "react";
 import { EditIcon, DeleteIcon, AddIcon } from "@chakra-ui/icons";
 import {
     Box,
@@ -16,10 +16,13 @@ import {
     useDisclosure
 } from "@chakra-ui/react";
 import { ModalDetalles } from "./ModalDetalles";
-import { EditFamiliar } from "./Edit";
+import { EditForm } from "./Edit";
 import { getFamilyMembers, deleteFamilyMember, updateFamilyMember, getFamilyMember } from '@/utils/family.http';
 import Relative from "@/types/relative";
 import { useAuth } from "../context/AuthProvider";
+import { useParams } from "next/navigation";
+import { Form } from "./add/Form";
+import { on } from "events";
 
 interface Person {
     ciRuc: string;
@@ -28,15 +31,19 @@ interface Person {
     phone: string;
     address: string;
     birthDate: string;
+    gender: string;
 }
 
 interface FamilyMember extends Relative {
     id: string;
     familyType: {
         name: string;
-    };
+        id: string;
+    }
     person: Person;
 }
+
+
 
 interface FamilyMembersResponse {
     data: FamilyMember[];
@@ -46,7 +53,12 @@ interface FamilyMembersResponse {
     totalCount: number;
 }
 
-export const List: React.FC = () => {
+interface ListProps {
+    employeeCiRuc: string;
+};
+
+export const List: React.FC<ListProps> = ({ employeeCiRuc }) => {
+    const { id } = useParams();
     const [familiares, setFamiliares] = useState<FamilyMember[]>([]);
     const [filters, setFilters] = useState<{ ciRuc: string; ageRange: string }>({
         ciRuc: '',
@@ -56,23 +68,24 @@ export const List: React.FC = () => {
     const [selectedFamiliar, setSelectedFamiliar] = useState<FamilyMember | null>(null);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
+    const { isOpen: isAddOpen, onOpen: onAddOpen, onClose: onAddClose } = useDisclosure();
 
     const auth = useAuth();
 
-    useEffect(() => {
-        const fetchFamiliares = async () => {
-            try {
-                const familiaresData: FamilyMembersResponse = await getFamilyMembers();
-                console.log('Familiares recibidos:', familiaresData);
-                setFamiliares(familiaresData.data);
-                setFilteredFamiliares(familiaresData.data);
-            } catch (error) {
-                console.error('Error al obtener los familiares:', error);
-            }
-        };
+    const fetchFamiliares = useCallback(async () => {
+        try {
+            const familiaresData: FamilyMembersResponse = await getFamilyMembers(id as string);
+            console.log('Familiares recibidos:', familiaresData);
+            setFamiliares(familiaresData.data);
+            setFilteredFamiliares(familiaresData.data);
+        } catch (error) {
+            console.error('Error al obtener los familiares:', error);
+        }
+    }, [id]);
 
+    useEffect(() => {
         fetchFamiliares();
-    }, []);
+    }, [id, fetchFamiliares]);
 
     useEffect(() => {
         const filtered = familiares.filter((familiar) => {
@@ -135,39 +148,13 @@ export const List: React.FC = () => {
         }
     };
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        if (selectedFamiliar) {
-            const { name, value } = e.target;
-            setSelectedFamiliar({ ...selectedFamiliar, person: { ...selectedFamiliar.person, [name]: value } });
-        }
-    };
 
-    const handleSave = async () => {
-        if (selectedFamiliar) {
-            try {
-                const { user } = auth;
-                const token = user?.token || '';
-                const updatedData = {
-                    familyType: selectedFamiliar.familyType.name,
-                    ...selectedFamiliar.person,
-                };
-                await updateFamilyMember(selectedFamiliar.id, updatedData, token);
-                setFamiliares(familiares.map(familiar =>
-                    familiar.id === selectedFamiliar.id ? { ...selectedFamiliar, person: updatedData } : familiar
-                ));
-                onEditClose();
-            } catch (error) {
-                console.error('Error al guardar los cambios:', error);
-                alert('No tienes autorización para realizar esta acción.');
-            }
-        }
-    };
 
-    
-    
+
+
 
     return (
-        <Box backgroundColor={'white'} width={900} height={426} borderRadius="2xl" padding="8px" margin="auto" >
+        <Box backgroundColor={'white'} borderRadius="2xl" padding="8px" >
             <Flex justifyContent="space-between" mb={6} >
                 <Flex gap={2}>
                     <Input
@@ -192,7 +179,16 @@ export const List: React.FC = () => {
                         <option value="mayores18">Mayores de Edad</option>
                     </Select>
                 </Flex>
-                <Button rounded={23} mr={5} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} gap={2} color='white'>
+
+                <Form
+                    isOpen={isAddOpen}
+                    onClose={onAddClose}
+                    relatives={familiares}
+                    employeeCiRuc={employeeCiRuc}
+                    fetchDataFamily={fetchFamiliares}
+
+                />
+                <Button onClick={onAddOpen} rounded={23} mr={5} fontSize={13} py={3} px={5} bgColor='gray.700' _hover={{ bgColor: "gray.800" }} gap={2} color='white'>
                     <AddIcon />Agregar Familiar
                 </Button>
             </Flex>
@@ -209,8 +205,8 @@ export const List: React.FC = () => {
                     </Thead>
                     <Tbody>
                         {filteredFamiliares.map((familiar, index) => (
-                            <Tr key={index} style={{ cursor: 'pointer' }}>
-                                <Td onClick={() => handleRowClick(familiar)}>{familiar.person.ciRuc}</Td>
+                            <Tr key={index} >
+                                <Td style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => handleRowClick(familiar)}>{familiar.person.ciRuc}</Td>
                                 <Td>{familiar.person.name}</Td>
                                 <Td>{new Date(familiar.person.birthDate).toLocaleDateString()}</Td>
                                 <Td>{familiar.familyType.name}</Td>
@@ -234,13 +230,11 @@ export const List: React.FC = () => {
                 <ModalDetalles isOpen={isOpen} onClose={onClose} relative={selectedFamiliar} />
             )}
             {selectedFamiliar && (
-                <EditFamiliar
+                <EditForm
                     isOpen={isEditOpen}
                     onClose={onEditClose}
-                    relative={selectedFamiliar}
-                    onChange={handleChange}
-                    onSave={handleSave}
-                    familiarId={selectedFamiliar.id}
+                    familyMember={selectedFamiliar}
+                    fetchDataFamily={fetchFamiliares}
                 />
             )}
         </Box>

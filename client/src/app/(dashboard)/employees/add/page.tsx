@@ -14,7 +14,7 @@ import { dataEmployeeSchema } from '@/validations/dataEmployeeSchema';
 import { employeeSchema } from '@/validations/employeeSchema';
 import { positionSchema } from '@/validations/positionSchema';
 import { relativeSchema } from '@/validations/relativeSchema';
-import { Button } from '@chakra-ui/react';
+import { Button, Toast, useToast } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -23,6 +23,7 @@ import { useForm } from 'react-hook-form';
 const AddEmployeePage = () => {
     const auth = useAuth();
     const router = useRouter();
+    const toast = useToast();
     const [currentStep, setCurrentStep] = useState(0);
     const [employee, setEmployee] = useState<Employee>({
         name: '',
@@ -37,20 +38,23 @@ const AddEmployeePage = () => {
     });
     const [positionEmployee, setPositionEmployee] = useState<PositionEmployee>({
         positionId: '',
-        incomeTypeId: '',
+        salaryType: '',
         amount: 0
     });
     const [relatives, setRelatives] = useState<Relative[]>([]);
+    const [isPerson, setIsPerson] = useState(false);
+    const [employeeCiRuc, setEmployeeCiRuc] = useState('');
 
-    const { register, handleSubmit, formState: { errors }, trigger } = useForm<Employee>({
+
+    const { register, handleSubmit, formState: { errors }, trigger, setValue } = useForm<Employee>({
         resolver: zodResolver(employeeSchema)
     });
 
-    const { register: registerPosition, handleSubmit: handleSubmitPosition, formState: { errors: errorsPosition }, trigger: triggerPosition } = useForm<PositionEmployee>({
+    const { register: registerPosition, handleSubmit: handleSubmitPosition, formState: { errors: errorsPosition }, trigger: triggerPosition, setValue: setValuePosition } = useForm<PositionEmployee>({
         resolver: zodResolver(positionSchema)
     });
 
-    const { register: registerRelative, handleSubmit: handleSubmitRelative, formState: { errors: errorsRelative }, trigger: triggerRelative } = useForm<Relative>({
+    const { register: registerRelative, handleSubmit: handleSubmitRelative, formState: { errors: errorsRelative }, trigger: triggerRelative, setValue: setValueRelative } = useForm<Relative>({
         resolver: zodResolver(relativeSchema)
     });
 
@@ -77,19 +81,12 @@ const AddEmployeePage = () => {
                 setCurrentStep((prevStep) => prevStep + 1);
             }
             if (!valid) {
-                console.log('Errores en el formulario de empleado:', errorsPosition);
+                console.log('Errores en el formulario de posición:', errorsPosition);
                 return;
             }
         } else if (currentStep === 2) {
-            const valid = await triggerRelative();
-            if (valid) {
+            setCurrentStep((prevStep) => prevStep + 1);
 
-                setCurrentStep((prevStep) => prevStep + 1);
-            }
-            if (!valid) {
-                console.log('Errores en el formulario de empleado:', errorsRelative);
-                return;
-            }
         }
         console.log('currentStep', currentStep);
         console.log('employee', employee);
@@ -101,27 +98,56 @@ const AddEmployeePage = () => {
     };
 
     const handleSave = async () => {
+        toast.closeAll();
+
         const employeeData = {
             employee,
+            isNew: !isPerson,
             role: positionEmployee,
-            familyMembers: relatives
+            familyMembers: relatives,
         };
         console.log('employeeData', employeeData);
 
         try {
             const { user } = auth;
             const token = user?.token || '';
-            const employeeResponse = await completeEmployee(employeeData, token);
-            alert('Employee saved successfully!');
-            router.push('/employees');
-        } catch (error) {
+            toast({
+                title: 'Guardando empleado',
+                description: 'Por favor espere...',
+                status: 'loading',
+                duration: null,
+                isClosable: true,
+            });
+
+            const promise = await completeEmployee(employeeData, token);
+            toast.closeAll();
+
+            toast({
+                title: 'Empleado guardado',
+                description: 'Empleado guardado con éxito',
+                status: 'success',
+                duration: 5000,
+                isClosable: true,
+            });
+
+            router.push('/employees ');
+        } catch (error: any) {
+            toast.closeAll();
             console.error('Error saving employee:', error);
-            alert('Failed to save employee.');
+            toast({
+                title: 'Error',
+                description: error?.message,
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
+
+            console.error('Error saving employee:', error);
         }
     };
 
     return (
-        <div className='flex flex-col w-full justify-center items-center bg-white'>
+        <div className='flex flex-col w-full items-center bg-white'>
             <div className='w-[70vw]'>
                 <StepperFunc currentIndex={currentStep} />
             </div>
@@ -130,12 +156,16 @@ const AddEmployeePage = () => {
                     <FormEmployee
                         register={register}
                         errors={errors}
+                        setIsPerson={setIsPerson}
+                        setValue={setValue}
+                        setEmployeeCiRuc={setEmployeeCiRuc}
                     />
                 )}
                 {currentStep === 1 && (
                     <FormPosition
                         register={registerPosition}
                         errors={errorsPosition}
+                        setValue={setValuePosition}
                     />
                 )}
                 {currentStep === 2 && (
@@ -145,17 +175,19 @@ const AddEmployeePage = () => {
                         register={registerRelative}
                         handleSubmit={handleSubmitRelative}
                         errors={errorsRelative}
+                        setValue={setValueRelative}
+                        employeeCiRuc={employeeCiRuc}
                     />
                 )}
                 <div className='w-[55%] bottom-32 flex gap-14 justify-end fixed'>
                     {currentStep > 0 && (
-                        <Button onClick={handleBackStep}>Atrás</Button>
+                        <Button color={"white"} bg={"gray.200"} onClick={handleBackStep}>Atrás</Button>
                     )}
                     {currentStep < 3 && (
-                        <Button onClick={handleNextStep}>Siguiente</Button>
+                        <Button _hover={{ bgColor: "#c1738e" }} color={"white"} bg={"#AA546D"} onClick={handleNextStep}>Siguiente</Button>
                     )}
                     {currentStep === 3 && (
-                        <Button onClick={handleSave}>Guardar</Button>
+                        <Button _hover={{ bgColor: "#c1738e" }} color={"white"} bg={"#AA546D"} onClick={handleSave}>Guardar</Button>
                     )}
                 </div>
             </div>

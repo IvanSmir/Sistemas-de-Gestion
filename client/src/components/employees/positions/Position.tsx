@@ -4,36 +4,37 @@ import Image from "next/image";
 import { useEffect, useState } from 'react';
 import { Button, FormControl, FormLabel, Input, Select, FormErrorMessage } from '@chakra-ui/react';
 import PositionEmployee from "@/types/positionEmployee";
-import { FieldErrors, UseFormRegister } from "react-hook-form";
+import { FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form";
 
-
-const ApiUrl = process.env.NEXT_PUBLIC_API_URL
+const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
+const SALARIO_MINIMO = 2680373;
 
 interface FormPositionProps {
     register: UseFormRegister<PositionEmployee>;
     errors: FieldErrors<PositionEmployee>;
+    setValue: UseFormSetValue<PositionEmployee>;
 }
 
-export const FormPosition: React.FC<FormPositionProps> = ({ register, errors }) => {
+export const FormPosition: React.FC<FormPositionProps> = ({ register, errors, setValue }) => {
     const [positions, setPositions] = useState<{ id: string, name: string }[]>([]);
-    const [wageTypes, setWageTypes] = useState<{ id: string, name: string }[]>([]);
+    const [salaryType, setSalaryType] = useState<string>("");
 
     useEffect(() => {
         const fetchPositions = async () => {
             const response = await fetch(`${ApiUrl}/positions?limit=1000&page=1`);
             const data = await response.json();
             setPositions(data.data);
-        }
-        const fetchWageTypes = async () => {
-            const response = await fetch(`${ApiUrl}/income-types?limit=1000&page=1`);
-            const data = await response.json();
-            setWageTypes(data.data);
-        }
+        };
         fetchPositions();
-        fetchWageTypes();
     }, []);
-    return (
 
+    useEffect(() => {
+        if (salaryType === "minimum") {
+            setValue('amount', SALARIO_MINIMO);
+        }
+    }, [salaryType, setValue]);
+
+    return (
         <form>
             <div className="flex gap-4">
                 <div className="flex-1">
@@ -51,18 +52,17 @@ export const FormPosition: React.FC<FormPositionProps> = ({ register, errors }) 
                             </Select>
                             <FormErrorMessage>{errors.positionId?.message}</FormErrorMessage>
                         </FormControl>
-                        <FormControl isInvalid={!!errors.incomeTypeId}>
-                            <FormLabel htmlFor="incomeTypeId">Tipos de sueldo:</FormLabel>
+                        <FormControl isInvalid={!!errors.salaryType}>
+                            <FormLabel htmlFor="salaryType">Tipos de sueldo:</FormLabel>
                             <Select
-                                id="incomeTypeId"
+                                id="salaryType"
                                 placeholder='Seleccione el tipo de sueldo'
-                                {...register('incomeTypeId')}
+                                {...register('salaryType', { onChange: (e) => setSalaryType(e.target.value) })}
                             >
-                                {wageTypes.map((type) => (
-                                    <option key={type.id} value={type.id}>{type.name}</option>
-                                ))}
+                                <option value="minimum">Salario Minimo</option>
+                                <option value="base">Salario Base</option>
                             </Select>
-                            <FormErrorMessage>{errors.incomeTypeId?.message}</FormErrorMessage>
+                            <FormErrorMessage>{errors.salaryType?.message}</FormErrorMessage>
                         </FormControl>
                     </div>
                     <div className="flex justify-center w-[100%]">
@@ -74,6 +74,7 @@ export const FormPosition: React.FC<FormPositionProps> = ({ register, errors }) 
                                     type="number"
                                     id="amount"
                                     {...register('amount')}
+                                    disabled={salaryType === "minimum"}
                                 />
                                 <FormErrorMessage>{errors.amount?.message}</FormErrorMessage>
                             </FormControl>

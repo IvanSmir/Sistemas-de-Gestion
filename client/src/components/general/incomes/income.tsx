@@ -1,112 +1,117 @@
 'use client'
-import React, { ChangeEvent, FormEvent, useState, useEffect } from "react";
-import { InputGroup, Switch, FormControl, FormLabel, Center, Input, Button, IconButton, Menu, MenuButton, MenuItem, MenuList, InputRightElement, Box, } from "@chakra-ui/react";
-import { CloseIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import React, { ChangeEvent, FormEvent, useState } from "react";
+import {
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalCloseButton,
+    ModalBody,
+    ModalFooter,
+    Button,
+    FormControl,
+    FormLabel,
+    Input,
+    Select,
+    Flex,
+    Box,
+    Text,
+    Switch,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem
+} from "@chakra-ui/react";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
-interface FormValues {
+interface Income {
     name: string;
     description: string;
+}
+
+interface ModalProps {
+
+    isOpen: boolean;
+    onClose: () => void;
 
 }
 
-export const Income: React.FC = () => {
-
-    const [formData, setFormData] = useState<FormValues>(
+export const Income: React.FC<ModalProps> = ({ isOpen, onClose }) => {
+    const [formData, setFormData] = useState<Income>(
         {
             name: "",
             description: "",
 
+
+
         }
     );
+
+
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const target = e.target;
-
-        setFormData({ ...formData, [target.name]: target.value });
+        let value = target.value;
+        setFormData({ ...formData, [target.name]: value });
     };
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setFormData(formData);
-        try {
+        console.log(formData);
 
 
-        } catch (error) {
-            console.log(error);
-        }
     };
-
-
 
     return (
+        <Modal isOpen={isOpen} onClose={onClose} size={'2xl'} isCentered>
+            <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(4px)" />
+            <ModalContent minW={"50vw"}>
+                <ModalCloseButton />
+                <ModalBody>
 
-        <form className="bg-[#F3F3F3] h-full relative" onSubmit={handleSubmit}>
+                    <Flex justify="center" align="center" minH="50vh">
+                        <Box bg="white" p={5} borderRadius="md" width="70%">
+                            <Text fontSize='24px' mb={6} textAlign="center" color="#AA546D">Ingreso</Text>
+                            <form>
+                                <FormControl >
+                                    <FormLabel htmlFor="incomeType">Tipo de Ingreso:</FormLabel>
+                                    <Select
+                                        id="incomeType"
+                                        name="incomeType"
+                                        borderRadius="sm"
+                                    >
+                                        <option value="extra">Horas extras</option>
+                                        <option value="aaaaa">aaaaa</option>
+                                        <option value="xxxxx">xxxxx</option>
+                                    </Select>
+                                </FormControl>
 
-            <div className="absolute h-auto min-h-[80vh] max-h-[80vh] rounded-md bg-white w-[50%] p-5 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                <div>
-                    <InputGroup m={2}>
-                        <InputRightElement mx={5} >
-                            <IconButton variant='outline' aria-label='Cerrar' border='none' icon={<CloseIcon />}></IconButton>
-                        </InputRightElement>
-                    </InputGroup>
-                    <div mr-8>
-                        <h1 className='text-4xl' >Ingreso</h1>
-                    </div>
-                    <Box w={400} m={15}>
-
-                        <label className="block  font-size={13} pt-5 font-medium text-gray-700" htmlFor="tipo">
-                            Tipo de Ingreso:
-                            <Menu  >
-                                <MenuButton m={5} p={5} w={220} as={Button} rightIcon={<ChevronDownIcon />}>
-                                    Tipo de Ingresos
-                                </MenuButton>
-                                <MenuList>
-                                    <MenuItem>Horas Extras</MenuItem>
-                                    <MenuItem>Comision</MenuItem>
-                                    <MenuItem>xxxxxxxx</MenuItem>
-                                    <MenuItem>aaaaaaa</MenuItem>
-                                    <MenuItem>bbbbbbb</MenuItem>
-                                </MenuList>
-                            </Menu>
-                        </label>
-
-                        <label className="block font-size={14} pt-5  font-medium text-gray-700" htmlFor="monto">
-                            Monto:*
-                            <InputGroup>
-
-                                <Input className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" size='sm'
-                                    type='text'
-                                    placeholder=''
-                                    id="description"
-                                    onChange={handleChange}
-                                    name="description"
-                                />
-                            </InputGroup>
-
-                        </label>
-                        <FormControl display='flex' alignItems='center' mt={15} pt={5}>
-                            <FormLabel htmlFor='deducible' mb='0'>
-                                Deducible:
-                            </FormLabel>
-                            <Switch id='email-alerts' />
-                        </FormControl>
+                                <FormControl >
 
 
-                        <div  >
-                            <Center>
-                                <Button background='#EBEBEB' size='sm' _hovertext-white w={137} h={42} font-bold p={4} mt={5} rounded-full type="submit">
-                                    Guardar
-                                </Button>
-                            </Center>
+                                    <FormLabel htmlFor="amount">Monto:</FormLabel>
+                                    <Input
+                                        type="number"
+                                        id="amount"
+                                        name="amount"
+                                        borderRadius="sm"
+                                        w={'100%'}
+                                    />
+                                </FormControl>
 
-                        </div>
-                    </Box>
-                </div>
-            </div>
+                                <ModalFooter
+                                >
+                                    <Button variant="ghost" onClick={onClose} mr={3}>
+                                        Cancelar
+                                    </Button>
+                                    <Button color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} type="submit" mr={3}>
+                                        Guardar
+                                    </Button>
+                                </ModalFooter>
+                            </form>
+                        </Box>
+                    </Flex>
+                </ModalBody>
 
-        </form>
-
-
+            </ModalContent>
+        </Modal>
     );
-
 };
-
-export default Income
