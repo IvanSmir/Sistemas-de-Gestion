@@ -1,69 +1,50 @@
 'use client'
-import { PhoneIcon } from '@chakra-ui/icons'
-import { AbsoluteCenter, As, AspectRatio, Avatar, Box, Button, Center, Container, Divider, Fade, Flex, FormControl, FormLabel, Grid, GridItem, Input, Link, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Spacer, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, useToast, VStack, Wrap, WrapItem } from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react'
-import { List } from '@/components/relatives/List'
-import router from 'next/router'
-import { useParams, useRouter } from 'next/navigation'
-import { getEmployeeId, updateEmployee } from '@/utils/detail.http'
-import { useAuth } from '@/components/context/AuthProvider'
-import employee from '@/types/employee'
-import positionEmployee from '@/types/positionEmployee'
+import React, { useEffect, useState } from 'react';
+import { useForm, UseFormRegister, FieldErrors, UseFormHandleSubmit, UseFormSetValue } from 'react-hook-form';
+import { Avatar, Box, Button, Divider, Flex, FormControl, FormLabel, Input, Link, Select, Tabs, TabList, TabPanel, TabPanels, Tab, useToast, Wrap, WrapItem, FormErrorMessage } from '@chakra-ui/react';
+import { List } from '@/components/relatives/List';
+import { useParams, useRouter } from 'next/navigation';
+import { getEmployeeId, updateEmployee } from '@/utils/detail.http';
+import { useAuth } from '@/components/context/AuthProvider';
+import Employee from "@/types/employee";
+import { EmployeeDetailsList } from './ListPositions';
+import { FinanceDetailsList } from './TransactionsList';
 
 export const EmployeeDetails = () => {
-    const {id} = useParams();
+    const { id } = useParams();
     const toast = useToast();
     const auth = useAuth();
-    console.log(id)
-    
-
-    const [formData, setFormData] = useState(
-        {
-            name: "",
-            email: "",
-            image: "",
-            gender: "",
-            direction: "",
-            phone: "",
-            ruc: "",
-            joinDate: new Date(),
-            birthdate: new Date(),
-            cargo: "",
-            detalle: "",
-            sueldoBase: ""
-        }
-    );
+    const router = useRouter();
+    const { register, handleSubmit, setValue, formState: { errors, isDirty, isValid } } = useForm<Employee>({
+        mode: 'onChange',
+    });
 
     const [isEditing, setIsEditing] = useState(false);
-    
-    useEffect(()=>{
+    const [employeeCiRuc, setEmployeeCiRuc] = useState('');
 
-        const fetchEmployee = async()=>{
-            try{
-                const {user} = auth;
-                if(user?.token){
-                const token = user.token; 
-                const employeeId = typeof id === "string" ? id : ""
-                const data = await getEmployeeId(employeeId,token);
-                setFormData({
-                    name: data.name || "",
-                    email: data.email || "",
-                    image: data.image || "",
-                    gender: data.gender || "",
-                    direction: data.direction || "",
-                    phone: data.phone || "",
-                    ruc: data.ruc || "",
-                    joinDate: data.joinDate ? new Date(data.joinDate) : new Date(),
-                    birthdate: data.birthdate ? new Date(data.birthdate) : new Date(),
-                    cargo: data.cargo || "",
-                    detalle: data.detalle || "",
-                    sueldoBase: data.sueldoBase || ""
-                    });
-                }else {
+    useEffect(() => {
+        const fetchEmployee = async () => {
+            try {
+                const { user } = auth;
+                if (user?.token) {
+                    const token = user.token;
+                    const employeeId = typeof id === "string" ? id : "";
+                    const data = await getEmployeeId(employeeId, token);
+                    setValue('name', data.person.name || '');
+                    setValue('email', data.person.email || '');
+                    setValue('gender', data.person.gender === 'male' ? 'Masculino' : 'Femenino');
+                    setValue('address', data.person.address || '');
+                    setValue('phone', data.person.phone || '');
+                    setValue('ciRuc', data.person.ciRuc || '');
+                    setEmployeeCiRuc(data.person.ciRuc);
+                    setValue('enterDate', data.enterDate ? data.enterDate.split('T')[0] : '');
+                    setValue('birthDate', data.person.birthDate ? data.person.birthDate.split('T')[0] : '');
+                } else {
                     throw new Error('Token is missing');
                 }
-            }catch (error) {
+            } catch (error) {
                 const err = error as Error;
+                toast.closeAll();
                 toast({
                     title: "Error",
                     description: err.message,
@@ -75,200 +56,215 @@ export const EmployeeDetails = () => {
         };
 
         fetchEmployee();
-    }, [id, toast, auth]);
-
-    useEffect(() => {
-        console.log(formData);
-    }, [formData]);
+    }, [id, toast, auth, setValue]);
 
     const handleEdit = () => {
         setIsEditing(true);
     }
+
     const handleCancel = () => {
         setIsEditing(false);
     }
+
     const handleBack = () => {
-        router.back()
+        router.back();
     }
 
-
-    const handleSave = async () => {
-        const employeeData = {
-            ...formData,
-        };
-        console.log('employeeData', employeeData);
+    const handleSave = async (data: Employee) => {
+        toast.closeAll();
 
         try {
             const { user } = auth;
             const token = user?.token || '';
-            const employeeId = typeof id === "string" ? id : ""
-            const employeeResponse = await updateEmployee(employeeId,employeeData, token);
-            alert('Employee saved successfully!');
-            router.push('/employees');
-            console.log(employeeResponse);
+            const employeeId = typeof id === "string" ? id : "";
+            data.gender = data.gender === 'Masculino' ? 'male' : 'female';
+            toast({
+                title: 'Guardando empleado',
+                description: 'Por favor espere...',
+                status: 'loading',
+                duration: null,
+                isClosable: true,
+            });
+
+            await updateEmployee(employeeId, data, token);
+            toast.closeAll();
+
+            toast({
+                title: 'Success',
+                description: 'Employee saved successfully!',
+                status: 'success',
+                duration: 5000,
+                isClosable: true,
+            });
+            setIsEditing(false);
         } catch (error) {
             console.error('Error saving employee:', error);
-            alert('Failed to save employee.');
+            toast({
+                title: 'Error',
+                description: 'Failed to save employee.',
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
         }
     };
+
     return (
-        <>
-        <Box  p='10'> 
+        <Box bg={"gray.200"} mb={6}>
             <Flex>
-                <Link href="/funcionarios">
-                    <Button
-                    >
+                <Link href="/employees">
+                    <Button onClick={handleBack}>
                         Volver
                     </Button>
                 </Link>
-                <Button
-                >
-                    Editar
-                </Button>
-                <Button
-                    onClick={handleEdit}
-                >
-                    Guardar
-                </Button>
-                <Button
-                    onClick={handleCancel}
-                    disabled={!isEditing}
-                >
-                    Cancelar
-                </Button>
+
             </Flex>
-            <Flex  p='10'>
-                    <form>
-                        <FormControl >
-                            <Flex direction={{ base: "column", md: "row" }} >
-                                <Box p='10'>
-                                    
-                                    <Wrap>
-                                        <WrapItem>
-                                            <Avatar size='3xl'  />
-                                        </WrapItem>
-                                    </Wrap>
+            <Flex bg={"gray.200"} p='10'>
+                <form onSubmit={handleSubmit(handleSave)}>
 
-                                </Box>
+                    <Flex direction={{ base: "column", md: "row" }} gap={4}>
+                        <Box bg={"white"} p={5} borderRadius="md" width="30%">
+                            <Box display={"flex"} justifyContent={"center"}>
+                                <Wrap>
+                                    <WrapItem>
+                                        <Avatar size='3xl' />
+                                    </WrapItem>
+                                </Wrap>
+                            </Box>
+                            <Input
+                                id="name"
+                                {...register('name', { required: 'El nombre es obligatorio' })}
+                                isReadOnly={!isEditing}
+                                fontWeight="bold"
+                                textAlign={{ lg: "center", base: "center", sm: "left", md: "left" }}
+                                className="input mb-4 disabled-dark:black"
+                                mb={4}
+                            />
+                            <Flex>
+                                <FormLabel fontSize="14px" htmlFor="gender">Sexo:</FormLabel>
+                                <Select
+                                    id="gender"
+                                    {...register('gender', { required: 'El sexo es obligatorio' })}
+                                    isReadOnly={!isEditing}
+                                    mb={4}
+                                    placeholder='Seleccione el sexo'
+                                >
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Femenino">Femenino</option>
+                                </Select>
+                            </Flex>
+                            <FormErrorMessage>{errors.gender && errors.gender.message}</FormErrorMessage>
+                        </Box>
 
-                                <Box flex='2' >
-                                    <Flex  >
-                                        <Box mb={8}>
-                                            <FormLabel htmlFor="ruc">Ruc/Ci:</FormLabel>
-                                            <Input
-                                                
-                                                value={formData.ruc !== undefined ? formData.ruc : ''}
-                                                readOnly={!isEditing}
-                                                mb={4}
-                                                onChange={(e) => setFormData({ ...formData, ruc: e.target.value })}
-                                            />
-                                            <FormLabel htmlFor="gender">Sexo:</FormLabel>
-                                            <Input
-                                                
-                                                value={formData.gender !== undefined ? formData.gender : ''}
-                                                readOnly={!isEditing}
-                                                mb={4}
-                                                onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                                            />
-
-                                            <FormLabel htmlFor="cargo">Cargo:</FormLabel>
-                                            <Input
-                                            
-                                                value={formData.cargo !== undefined ? formData.cargo : ''}
-                                                mb={4}
-                                                readOnly={!isEditing}
-                                                onChange={(e) => setFormData({ ...formData, cargo: e.target.value })}
-                                            />
-                                        </Box>
-
-                                        <Box mb={8}>
-                                            <FormLabel htmlFor="name">Nombre:</FormLabel>
-                                            <Input
-                                                
-                                                value={formData.name !== undefined ? formData.name : ''}
-                                                mb={4}
-                                                readOnly={!isEditing}
-                                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            />
-                                            <FormLabel htmlFor="birthdate">Fecha Nacimiento:</FormLabel>
-                                            <Input
-                                                value={formData.birthdate !== undefined ? formData.birthdate.toLocaleDateString() : ''}
-                                                readOnly={!isEditing}
-                                                mb={4}
-                                                
-                                            />
-                                        </Box>
-
-                                        <Box>
-                                            <FormLabel htmlFor="email">Correo:</FormLabel>
-                                            <Input
-                                                
-                                                value={formData.email !== undefined ? formData.email : ''}
-                                                readOnly={!isEditing}
-                                                mb={4}
-                                            />
-                                            <FormLabel htmlFor="direction">Dirección:</FormLabel>
-                                            <Input
-                                                
-                                                value={formData.direction !== undefined ? formData.direction : ''}
-                                                readOnly={!isEditing}
-                                            />
-                                        </Box>
+                        <Box bg={"white"} p={5} borderRadius="md" width="70%">
+                            <Flex justifyContent={"end"} mb={4}>
+                                {!isEditing && (
+                                    <Button bg={"gray.300"} onClick={handleEdit}>
+                                        Editar
+                                    </Button>
+                                )}
+                                {isEditing && (
+                                    <Flex gap={2}>
+                                        <Button
+                                            bg={"gray.300"}
+                                            onClick={handleSubmit(handleSave)}
+                                            isDisabled={!isDirty || !isValid}
+                                        >
+                                            Guardar
+                                        </Button>
+                                        <Button
+                                            bg={"gray.100"}
+                                            onClick={handleCancel}>
+                                            Cancelar
+                                        </Button>
                                     </Flex>
-
-                                    <Divider orientation='horizontal' w='75%' mb={4} />
-
-                                    <Tabs variant='soft-rounded' colorScheme='green'>
-
-                                        <TabList>
-                                            <Tab _selected={{ color: 'white', bg: '#AA546D' }}>Datos Generales</Tab>
-                                            <Tab _selected={{ color: 'white', bg: '#AA546D' }}>Familiares</Tab>
-                                        </TabList>
-
-                                        <TabPanels>
-
-                                            <TabPanel>
-                                                <Flex >
-                                                    <Box mr={8}>
-                                                        <FormLabel htmlFor="joinDate">Fecha Ingreso:</FormLabel>
-                                                        <Input
-                                                            type="date"
-                                                            
-                                                            value={formData.joinDate !== undefined ? formData.joinDate.toLocaleDateString() : ''}
-                                                            readOnly={!isEditing}
-                                                        />
-                                                    </Box>
-                                                    <Box mr={8}>
-                                                        <FormLabel htmlFor="detalle">Detalle:</FormLabel>
-                                                        <Input
-                                                            
-                                                            value={formData.detalle !== undefined ? formData.detalle : ''}
-                                                            readOnly={!isEditing}
-                                                        />
-                                                    </Box>
-                                                    <Box>
-                                                        <FormLabel htmlFor="sueldoBase">Sueldo Base:</FormLabel>
-                                                        <Input
-                                                            
-                                                            value={formData.sueldoBase !== undefined ? formData.sueldoBase : ''}
-                                                            readOnly={!isEditing}
-                                                        />
-                                                    </Box>
-                                                </Flex>
-                                            </TabPanel>
-
-                                            <TabPanel>
-                                                <List />
-                                            </TabPanel>
-
-                                        </TabPanels>
-                                    </Tabs>
+                                )}
+                            </Flex>
+                            <Flex justifyContent={"space-evenly"} gap={4} mb={4}>
+                                <Box mb={8}>
+                                    <Flex>
+                                        <FormLabel fontSize="14px" htmlFor="ciRuc">Ruc/Ci:</FormLabel>
+                                        <Input
+                                            id="ciRuc"
+                                            {...register('ciRuc', { required: 'El Ruc/Ci es obligatorio' })}
+                                            isReadOnly={true}
+                                            mb={4}
+                                        />
+                                        <FormErrorMessage>{errors.ciRuc && errors.ciRuc.message}</FormErrorMessage>
+                                    </Flex>
+                                    <Flex>
+                                        <FormLabel fontSize="14px" htmlFor="enterDate">Fecha Ingreso:</FormLabel>
+                                        <Input
+                                            type="date"
+                                            id="enterDate"
+                                            {...register('enterDate', { required: 'La fecha de ingreso es obligatoria' })}
+                                            isReadOnly={!isEditing}
+                                        />
+                                        <FormErrorMessage>{errors.enterDate && errors.enterDate.message}</FormErrorMessage>
+                                    </Flex>
+                                    <Flex>
+                                        <FormLabel fontSize="14px" htmlFor="birthDate">Fecha Nacimiento:</FormLabel>
+                                        <Input
+                                            type="date"
+                                            id="birthDate"
+                                            {...register('birthDate', { required: 'La fecha de nacimiento es obligatoria' })}
+                                            isReadOnly={!isEditing}
+                                        />
+                                        <FormErrorMessage>{errors.birthDate && errors.birthDate.message}</FormErrorMessage>
+                                    </Flex>
+                                </Box>
+                                <Box>
+                                    <Flex>
+                                        <FormLabel fontSize="14px" htmlFor="address">Dirección:</FormLabel>
+                                        <Input
+                                            id="address"
+                                            {...register('address', { required: 'La dirección es obligatoria' })}
+                                            isReadOnly={!isEditing}
+                                        />
+                                        <FormErrorMessage>{errors.address && errors.address.message}</FormErrorMessage>
+                                    </Flex>
+                                    <Flex marginTop={4}>
+                                        <FormLabel fontSize="14px" htmlFor="email">Correo:</FormLabel>
+                                        <Input
+                                            id="email"
+                                            {...register('email', { required: 'El correo es obligatorio' })}
+                                            isReadOnly={!isEditing}
+                                            mb={4}
+                                        />
+                                        <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
+                                    </Flex>
+                                    <Flex>
+                                        <FormLabel fontSize="14px" htmlFor="phone">Teléfono:</FormLabel>
+                                        <Input
+                                            id="phone"
+                                            {...register('phone', { required: 'El teléfono es obligatorio' })}
+                                            isReadOnly={!isEditing}
+                                        />
+                                        <FormErrorMessage>{errors.phone && errors.phone.message}</FormErrorMessage>
+                                    </Flex>
                                 </Box>
                             </Flex>
-                        </FormControl>
-                    </form>
-                </Flex>
-            </Box>
-        </>
-    )
+                            <EmployeeDetailsList />
+                        </Box>
+
+                    </Flex>
+                </form>
+            </Flex>
+            <Divider orientation='horizontal' w='75%' mb={4} />
+            <Tabs variant='soft-rounded' colorScheme='green'>
+                <TabList ml={4}>
+                    <Tab _selected={{ color: 'white', bg: '#AA546D' }}>Familiares</Tab>
+                    <Tab _selected={{ color: 'white', bg: '#AA546D' }}>Ingresos y egresos</Tab>
+                </TabList>
+                <TabPanels>
+                    <TabPanel>
+                        <List employeeCiRuc={employeeCiRuc} />
+                    </TabPanel>
+                    <TabPanel>
+                        <FinanceDetailsList />
+                    </TabPanel>
+                </TabPanels>
+            </Tabs>
+        </Box>
+    );
 }

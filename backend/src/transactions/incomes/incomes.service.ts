@@ -16,9 +16,10 @@ export class IncomesService {
 
   private selectOptions = {
     id: true,
-    IncomeType: {
+    incomeType: {
       select: {
         name: true,
+        deductible: true,
       },
     },
     amount: true,
@@ -77,9 +78,6 @@ export class IncomesService {
   }
 
   async findAllByEmployee(id: string, paginationDto: PaginationDto) {
-    const { page, limit } = paginationDto;
-    const skip = limit * (page - 1);
-    const take = limit;
     try {
       if (!isUUID(id)) throw new BadRequestException('Invalid id');
       const incomes = await this.prismaService.income.findMany({
@@ -88,8 +86,6 @@ export class IncomesService {
           isDeleted: false,
           active: true,
         },
-        skip,
-        take,
         select: this.selectOptions,
       });
       return incomes;

@@ -57,6 +57,20 @@ export class FamilyMembersController {
     return this.familyMembersService.findAll(paginationDto);
   }
 
+  @Get('/employee/:id')
+  @ApiOperation({ summary: 'Get family members by employee ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Family members retrieved successfully.',
+  })
+  @ApiResponse({ status: 404, description: 'Employee not found.' })
+  findByEmployeeId(
+    @Param('id') id: string,
+    @Query() paginationDto: PaginationDto,
+  ) {
+    return this.familyMembersService.findAllByEmployee(id, paginationDto);
+  }
+
   @Get(':term')
   @ApiOperation({ summary: 'Get a family member by term' })
   @ApiResponse({
@@ -67,7 +81,7 @@ export class FamilyMembersController {
   findOne(@Param('term') term: string) {
     return this.familyMembersService.findOne(term);
   }
-
+  
   @Patch(':id')
   @Auth()
   @ApiBearerAuth()

@@ -16,7 +16,7 @@ export class ExpensesService {
 
   private selectOptions = {
     id: true,
-    ExpenseType: {
+    expenseType: {
       select: {
         name: true,
       },
@@ -76,9 +76,7 @@ export class ExpensesService {
   }
 
   async findAllByEmployee(id: string, paginationDto: PaginationDto) {
-    const { page, limit } = paginationDto;
-    const skip = limit * (page - 1);
-    const take = limit;
+
     try {
       if (!isUUID(id)) throw new BadRequestException('Invalid id');
       const expenses = await this.prismaService.expenses.findMany({
@@ -87,8 +85,6 @@ export class ExpensesService {
           isDeleted: false,
           active: true,
         },
-        skip,
-        take,
         select: this.selectOptions,
       });
       return expenses;

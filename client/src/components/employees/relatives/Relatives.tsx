@@ -1,11 +1,11 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Modal, ModalBody, ModalContent, ModalOverlay, useDisclosure } from '@chakra-ui/react';
 import { FormRelative } from '@/components/relatives/add/FormRelativeStepper';
 import { TablePerson } from '@/components/lists/TablePerson';
 import Relative from '@/types/relative';
-import { Field, FieldErrors, UseFormHandleSubmit, UseFormRegister } from 'react-hook-form';
+import { FieldErrors, UseFormHandleSubmit, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 
 const columnMapping = {
     'Nombre Completo': 'fullName',
@@ -22,7 +22,7 @@ const transformRelatives = (relatives: Relative[]) => {
     return relatives.map(relative => ({
         ...relative,
         fullName: `${relative.name}`,
-        birthDateFormatted: relative.birthDate.toLocaleDateString('es-ES')
+        birthDateFormatted: new Date(relative.birthDate).toLocaleDateString('es-ES')
     }));
 };
 
@@ -32,11 +32,25 @@ interface FormRelativeProps {
     register: UseFormRegister<Relative>;
     errors: FieldErrors<Relative>;
     handleSubmit: UseFormHandleSubmit<Relative>;
+    setValue: UseFormSetValue<Relative>;
+    employeeCiRuc: string;
 }
 
-export const ModalRelative: React.FC<FormRelativeProps> = ({ relative, setRelative, register, errors, handleSubmit }) => {
+export const ModalRelative: React.FC<FormRelativeProps> = ({ relative, setRelative, register, errors, handleSubmit, setValue, employeeCiRuc }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const transformedData = transformRelatives(relative);
+    const [filteredRelatives, setFilteredRelatives] = useState<Relative[]>([]);
+
+    useEffect(() => {
+        const filtered = relative.filter((relative) => {
+            if (employeeCiRuc === relative.ciRuc) {
+                return false;
+            }
+            return true;
+        });
+        setFilteredRelatives(filtered);
+    }, [employeeCiRuc, relative]);
+
+    const transformedData = transformRelatives(filteredRelatives);
 
     return (
         <>
@@ -53,6 +67,8 @@ export const ModalRelative: React.FC<FormRelativeProps> = ({ relative, setRelati
                             setRelatives={setRelative}
                             onClose={onClose}
                             handleSubmit={handleSubmit}
+                            setValue={setValue}
+                            employeeCiRuc={employeeCiRuc}
                         />
                     </ModalBody>
                 </ModalContent>

@@ -6,7 +6,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { HandleDbErrorService } from 'src/common/services/handle-db-error.service';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { isUUID } from 'class-validator';
-import { da } from '@faker-js/faker';
 
 @Injectable()
 export class EmployeeDetailsService {
@@ -25,18 +24,25 @@ export class EmployeeDetailsService {
     },
     startDate: true,
     endDate: true,
+    salaryType: true,
+    salary: true,
   };
+
   async create(createEmployeeDetailDto: CreateEmployeeDetailDto, user: Users) {
     try {
-      const employeeDetail = await this.prisma.employeeDetails.create({
-        data: {
-          ...createEmployeeDetailDto,
-          userId: user.id,
-        },
-        select: this.selectOptions,
+      const result = await this.prisma.$transaction(async (prisma) => {
+        const employeeDetail = await prisma.employeeDetails.create({
+          data: {
+            ...createEmployeeDetailDto,
+            userId: user.id,
+          },
+          select: this.selectOptions,
+        });
+
+        return employeeDetail;
       });
 
-      return employeeDetail;
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'EmployeeDetail', '');
     }
@@ -117,14 +123,18 @@ export class EmployeeDetailsService {
   ) {
     try {
       if (!isUUID(id)) throw new BadRequestException('Invalid term');
-      const employeeDetail = await this.prisma.employeeDetails.update({
-        where: { id, isDeleted: false },
-        data: { ...updateEmployeeDetailDto, userId: user.id },
-        select: this.selectOptions,
+      const result = await this.prisma.$transaction(async (prisma) => {
+        const employeeDetail = await prisma.employeeDetails.update({
+          where: { id, isDeleted: false },
+          data: { ...updateEmployeeDetailDto, userId: user.id },
+          select: this.selectOptions,
+        });
+        if (!employeeDetail)
+          throw new BadRequestException('EmployeeDetail not found');
+        return employeeDetail;
       });
-      if (!employeeDetail)
-        throw new BadRequestException('EmployeeDetail not found');
-      return employeeDetail;
+
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'EmployeeDetail', id);
     }
@@ -133,14 +143,18 @@ export class EmployeeDetailsService {
   async deactivate(id: string, user: Users) {
     try {
       if (!isUUID(id)) throw new BadRequestException('Invalid term');
-      const employeeDetail = await this.prisma.employeeDetails.update({
-        where: { id, isDeleted: false },
-        data: { endDate: new Date(), userId: user.id, isActive: false },
-        select: this.selectOptions,
+      const result = await this.prisma.$transaction(async (prisma) => {
+        const employeeDetail = await prisma.employeeDetails.update({
+          where: { id, isDeleted: false },
+          data: { endDate: new Date(), userId: user.id, isActive: false },
+          select: this.selectOptions,
+        });
+        if (!employeeDetail)
+          throw new BadRequestException('EmployeeDetail not found');
+        return employeeDetail;
       });
-      if (!employeeDetail)
-        throw new BadRequestException('EmployeeDetail not found');
-      return employeeDetail;
+
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'EmployeeDetail', id);
     }
@@ -149,14 +163,18 @@ export class EmployeeDetailsService {
   async remove(id: string, user: Users) {
     try {
       if (!isUUID(id)) throw new BadRequestException('Invalid term');
-      const employeeDetail = await this.prisma.employeeDetails.update({
-        where: { id, isDeleted: false },
-        data: { isDeleted: true, userId: user.id },
-        select: this.selectOptions,
+      const result = await this.prisma.$transaction(async (prisma) => {
+        const employeeDetail = await prisma.employeeDetails.update({
+          where: { id, isDeleted: false },
+          data: { isDeleted: true, userId: user.id },
+          select: this.selectOptions,
+        });
+        if (!employeeDetail)
+          throw new BadRequestException('EmployeeDetail not found');
+        return employeeDetail;
       });
-      if (!employeeDetail)
-        throw new BadRequestException('EmployeeDetail not found');
-      return employeeDetail;
+
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'EmployeeDetail', id);
     }

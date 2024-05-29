@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsUUID } from 'class-validator';
+import { IsBoolean, IsOptional, IsUUID } from 'class-validator';
 import { CreatePersonDto } from 'src/person/dto/create-person.dto';
 
 export class CreateFamilyMemberDto extends CreatePersonDto {
@@ -16,4 +16,12 @@ export class CreateFamilyMemberDto extends CreatePersonDto {
     example: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
   })
   employeeId: string;
+
+  @IsOptional()
+  @ApiProperty({
+    description: 'Whether the person is new on the system',
+    example: true,
+  })
+  @IsBoolean()
+  isNew: boolean;
 }
