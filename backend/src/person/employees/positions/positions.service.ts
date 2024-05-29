@@ -18,14 +18,17 @@ export class PositionsService {
     private readonly handleDbErrorService: HandleDbErrorService,
   ) {}
 
-  create(createPositionDto: CreatePositionDto, user: Users) {
+  async create(createPositionDto: CreatePositionDto, user: Users) {
     try {
-      return this.prismaService.positions.create({
-        data: {
-          ...createPositionDto,
-          userId: user.id,
-        },
+      const result = await this.prismaService.$transaction(async (prisma) => {
+        return await prisma.positions.create({
+          data: {
+            ...createPositionDto,
+            userId: user.id,
+          },
+        });
       });
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(
         error,
@@ -99,19 +102,23 @@ export class PositionsService {
 
   async update(id: string, updatePositionDto: UpdatePositionDto, user: Users) {
     try {
-      const updatePosition = await this.prismaService.positions.update({
-        where: {
-          id,
-          isDeleted: false,
-        },
-        data: { ...updatePositionDto, userId: user.id },
-        select: {
-          id: true,
-          name: true,
-          description: true,
-        },
+      const result = await this.prismaService.$transaction(async (prisma) => {
+        const updatePosition = await prisma.positions.update({
+          where: {
+            id,
+            isDeleted: false,
+          },
+          data: { ...updatePositionDto, userId: user.id },
+          select: {
+            id: true,
+            name: true,
+            description: true,
+          },
+        });
+        return updatePosition;
       });
-      return updatePosition;
+
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(
         error,
@@ -123,31 +130,23 @@ export class PositionsService {
 
   async remove(id: string, user: Users) {
     try {
-      await this.prismaService.positions.update({
-        where: {
-          id,
-          isDeleted: false,
-        },
-        data: {
-          isDeleted: true,
-          userId: user.id,
-        },
+      const result = await this.prismaService.$transaction(async (prisma) => {
+        await prisma.positions.update({
+          where: {
+            id,
+            isDeleted: false,
+          },
+          data: {
+            isDeleted: true,
+            userId: user.id,
+          },
+        });
+        return { message: 'Position deleted successfully' };
       });
-      return { message: 'Position deleted successfully' };
+
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Position', id);
     }
   }
-
-  // private handleDbError(error: any) {
-  //   if (error.code === 'P2002') {
-  //     throw new BadRequestException('Position already exists');
-  //   }
-  //   if (error.code === 'P2025') {
-  //     throw new BadRequestException('Position not found');
-  //   }
-  //   throw new InternalServerErrorException(
-  //     'An error occurred while processing the request, please try again later.',
-  //   );
-  // }
 }

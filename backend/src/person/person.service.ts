@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { Person, Users } from '@prisma/client';
@@ -10,6 +6,8 @@ import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { HandleDbErrorService } from 'src/common/services/handle-db-error.service';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { isUUID } from 'class-validator';
+import { join } from 'path';
+import { FindPersonDto } from './dto/find-person.dto';
 
 @Injectable()
 export class PersonService {
@@ -20,13 +18,16 @@ export class PersonService {
 
   async create(createPersonDto: CreatePersonDto, user: Users) {
     try {
-      const person = await this.prismaService.person.create({
-        data: { ...createPersonDto, userId: user.id },
-      });
-      const { userId, createdAt, updatedAt, isDeleted, ...sanitizedPerson } =
-        person;
+      const result = await this.prismaService.$transaction(async (prisma) => {
+        const person = await prisma.person.create({
+          data: { ...createPersonDto, userId: user.id },
+        });
+        const { userId, createdAt, updatedAt, isDeleted, ...sanitizedPerson } =
+          person;
 
-      return sanitizedPerson;
+        return sanitizedPerson;
+      });
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(
         error,
@@ -65,39 +66,60 @@ export class PersonService {
     }
   }
 
-  async findOne(term: string) {
+  async findOne(ciRuc: string) {
     try {
-      let person: Person;
-      if (term.length === 10 || term.length === 13) {
-        person = await this.prismaService.person.findUnique({
-          where: {
-            ciRuc: term,
-            isDeleted: false,
-          },
-        });
-      } else if (isUUID(term)) {
-        person = await this.prismaService.person.findUnique({
-          where: {
-            id: term,
-            isDeleted: false,
-          },
-        });
-      } else {
-        throw new BadRequestException('Invalid term');
+      let person = await this.prismaService.person.findUnique({
+        where: {
+          ciRuc: ciRuc,
+          isDeleted: false,
+        },
+        select: {
+          id: true,
+          ciRuc: true,
+          name: true,
+          birthDate: true,
+          email: true,
+          phone: true,
+          address: true,
+          gender: true,
+        },
+      });
+
+      if (!person) {
+        throw new NotFoundException(`Person: ${ciRuc} not found`);
       }
-      return person;
+      const isEmployee = await this.prismaService.employees.findFirst({
+        where: {
+          personId: person.id,
+        },
+      });
+      if (isEmployee) {
+        return {
+          ...person,
+          enterDate: isEmployee.enterDate,
+          isEmployee: true,
+          idEmployee: isEmployee.id,
+        };
+      }
+      return {
+        ...person,
+        isEmployee: false,
+      };
     } catch (error) {
-      this.handleDbErrorService.handleDbError(error, 'Person', term);
+      this.handleDbErrorService.handleDbError(error, 'Person', ciRuc);
     }
   }
 
   async update(id: string, updatePersonDto: UpdatePersonDto, user: Users) {
     try {
-      const person = await this.prismaService.person.update({
-        where: { id, isDeleted: false },
-        data: { ...updatePersonDto, userId: user.id },
+      const result = await this.prismaService.$transaction(async (prisma) => {
+        const person = await prisma.person.update({
+          where: { id, isDeleted: false },
+          data: { ...updatePersonDto, userId: user.id },
+        });
+        return person;
       });
-      return person;
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Person', id);
     }
@@ -105,28 +127,16 @@ export class PersonService {
 
   async remove(id: string, user: Users) {
     try {
-      await this.prismaService.person.update({
-        where: { id, isDeleted: false },
-        data: { isDeleted: true, userId: user.id },
+      const result = await this.prismaService.$transaction(async (prisma) => {
+        await prisma.person.update({
+          where: { id, isDeleted: false },
+          data: { isDeleted: true, userId: user.id },
+        });
+        return { message: 'Person deleted successfully' };
       });
-      return { message: 'Person deleted successfully' };
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Person', id);
     }
   }
-
-  // private handleDbError(e: any) {
-  //   console.error(e);
-  //   if (e.code === 'P2002') {
-  //     throw new BadRequestException('The provided CI/RUC is already in use');
-  //   }
-
-  //   if (e.code === 'P2025') {
-  //     throw new BadRequestException('The provided user does not exist');
-  //   }
-
-  //   throw new InternalServerErrorException(
-  //     'An error occurred while processing the request, please try again later.',
-  //   );
-  // }
 }
