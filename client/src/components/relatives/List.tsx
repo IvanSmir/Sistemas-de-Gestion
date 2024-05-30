@@ -23,6 +23,7 @@ import { useAuth } from "../context/AuthProvider";
 import { useParams } from "next/navigation";
 import { Form } from "./add/Form";
 import { on } from "events";
+import ModalEliminar from "./ModalEliminar";
 
 interface Person {
     ciRuc: string;
@@ -69,6 +70,8 @@ export const List: React.FC<ListProps> = ({ employeeCiRuc }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
     const { isOpen: isAddOpen, onOpen: onAddOpen, onClose: onAddClose } = useDisclosure();
+    const [isModalOpen, setModalOpen] = useState(false);
+
 
     const auth = useAuth();
 
@@ -134,6 +137,29 @@ export const List: React.FC<ListProps> = ({ employeeCiRuc }) => {
         onEditOpen();
     };
 
+    const handleDeleteClick = (familiar: FamilyMember, event: React.MouseEvent) => {
+        event.stopPropagation();
+        setSelectedFamiliar(familiar); 
+        setModalOpen(true); // Abre el modal de eliminación
+    };
+    
+    const confirmDelete = async (id: string) => {
+        try {
+            const { user } = auth;
+            const token = user?.token || ''; // Obteniendo el token desde el contexto de autenticación
+            console.log("Token usado para eliminar:", token); // Verificar token
+            await deleteFamilyMember(id, token);
+            setFamiliares(familiares.filter(familiar => familiar.id !== id));
+            setModalOpen(false);
+        } catch (error) {
+            console.error('Error al eliminar el familiar:', error);
+            alert('No tienes autorización para realizar esta acción.');
+        }
+    };
+    
+
+
+    /*
     const handleDeleteClick = async (id: string, event: React.MouseEvent) => {
         event.stopPropagation();
         try {
@@ -147,9 +173,7 @@ export const List: React.FC<ListProps> = ({ employeeCiRuc }) => {
             alert('No tienes autorización para realizar esta acción.');
         }
     };
-
-
-
+*/
 
 
 
@@ -218,7 +242,7 @@ export const List: React.FC<ListProps> = ({ employeeCiRuc }) => {
                                     />
                                     <DeleteIcon
                                         cursor="pointer"
-                                        onClick={(event) => handleDeleteClick(familiar.id, event)}
+                                        onClick={(event) => handleDeleteClick(familiar, event)}
                                     />
                                 </Td>
                             </Tr>
@@ -237,6 +261,11 @@ export const List: React.FC<ListProps> = ({ employeeCiRuc }) => {
                     fetchDataFamily={fetchFamiliares}
                 />
             )}
+            <ModalEliminar
+                isOpen={isModalOpen}
+                onClose={() => setModalOpen(false)}
+                onConfirm={() => confirmDelete(selectedFamiliar?.id || '')}
+            />
         </Box>
     );
 };
