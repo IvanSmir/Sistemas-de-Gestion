@@ -21,13 +21,14 @@ import {
     ModalCloseButton,
     ModalBody,
     ModalHeader,
-    ModalFooter
+    ModalFooter,
+    useToast
 } from "@chakra-ui/react";
 import { FormAddPosition } from "./add/Form";
 import Link from "next/link";
-import { deletePosition, editPosition, getPositions } from "@/utils/position.utils";
+import { deletePosition, editPosition, getPosition, getPositions } from "@/utils/position.utils";
 import { useAuth } from "@/components/context/AuthProvider";
-
+import { useForm } from "react-hook-form";
 interface Position {
     id: string,
     name: string,
@@ -36,8 +37,9 @@ interface Position {
 
 export const ListPositions: React.FC = () => {
 
+    const toast = useToast()
     const { user } = useAuth();
-
+    const {register} = useForm()
     const [positions, setPositions] = useState<Position[]>([]);
     const [selectedPos, setSelectedPos] = useState<Position | null>(null)
     const [baseSelectedPos, setBaseSelectedPos] = useState<Position | null>(null)
@@ -49,23 +51,22 @@ export const ListPositions: React.FC = () => {
     const [fetchTrigger, setFetchTrigger] = useState<boolean>(false)
 
     const [filteredPositions, setFilteredPositions] = useState<Position[]>([]);
-    const { isOpen: isAddOpen, onOpen: onAddOpen, onClose: onAddClose } = useDisclosure();
-
-
 
     useEffect(() => {
         getPositions(currentPage).then(a => {
             setFilteredPositions(a.data)
             setTotalPages(a.totalPages)
         })
+        if(filters.name.trim().length > 0){
+            getPosition(filters.name)
+                .then(e=>{
+                    if(e) setFilteredPositions([e])
+                })
+        }
     }, [filters, fetchTrigger, currentPage]);
 
     const handleNameFilter = (e: ChangeEvent<HTMLInputElement>) => {
         setFilters({ ...filters, name: e.target.value });
-    };
-
-    const handleAddPosition = () => {
-        onAddOpen();
     };
 
     const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
@@ -77,19 +78,26 @@ export const ListPositions: React.FC = () => {
         onEditOpen();
     };
 
-    const handleSave = (newPosition: Position) => {
-        setPositions([...positions, newPosition]);
-        onAddClose();
-    };
-
     const handleDeleteClick = (id: string, e: React.MouseEvent) => {
         e.stopPropagation()
         if (confirm("Desea borrar el cargo???")) {
             if (!!user?.token) {
                 deletePosition(id, user.token).then(d => {
-                    alert("Se ha eliminado con exito")
                     setFetchTrigger(!fetchTrigger)
-                }).catch(e => alert("No se ha podido eliminar"))
+                    toast({
+                        title: 'Eliminado',
+                        description: 'Se ha eliminado correctamente',
+                        status: 'success',
+                        duration: 5000,
+                        isClosable: true,
+                    });
+                }).catch(e => {toast({
+                    title: 'Guardado',
+                    description: 'Error al borrar el Cargo',
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });})
             }
         }
     }
@@ -104,6 +112,33 @@ export const ListPositions: React.FC = () => {
         if(confirm("Desea editar el cargo?")){
             if(selectedPos && user){
                 if(selectedPos?.name !== baseSelectedPos?.name || selectedPos?.description !== baseSelectedPos?.description){
+                    if(selectedPos?.name.trim().length<3){
+                        return toast({
+                            title: 'Error',
+                            description: 'El nombre debe ser mayor a 3 caracteres',
+                            status: 'error',
+                            duration: 5000,
+                            isClosable: true,
+                        });
+                    }
+                    if(selectedPos?.name.trim().length > 25){
+                        return toast({
+                            title: 'Error',
+                            description: 'El nombre debe ser menor a 25 caracteres',
+                            status: 'error',
+                            duration: 5000,
+                            isClosable: true,
+                        });
+                    }
+                    if(selectedPos?.description.trim().length>50){
+                        return toast({
+                            title: 'Error',
+                            description: 'La descripcion debe ser menor a 50 caracteres',
+                            status: 'error',
+                            duration: 5000,
+                            isClosable: true,
+                        });
+                    }
                     editPosition(selectedPos.id, {
                         name: selectedPos.name,
                         description: selectedPos.description
@@ -111,10 +146,22 @@ export const ListPositions: React.FC = () => {
                         .then(e=>{
                             handleCloseModal()
                             setFetchTrigger(!fetchTrigger)
-                            alert("editado con exito")
+                            toast({
+                                title: 'Success',
+                                description: 'Se ha editado con exito',
+                                status: 'success',
+                                duration: 5000,
+                                isClosable: true,
+                            });
                         })
                 }else{
-                    alert("no hubo ni un cambio")
+                    toast({
+                        title: 'Error',
+                        description: 'No hubo cambios',
+                        status: 'error',
+                        duration: 5000,
+                        isClosable: true,
+                    });
                 }
             }
         }
@@ -133,6 +180,7 @@ export const ListPositions: React.FC = () => {
                             background='white'
                             color='gray.600'
                             _hover={{ bg: "gray.100" }}
+                            
                         />
                     </Flex>
                     <Link href="positions/add">
@@ -146,6 +194,7 @@ export const ListPositions: React.FC = () => {
                         <Thead>
                             <Tr>
                                 <Th>Nombre</Th>
+                                
                                 <Th>Descripcion</Th>
                             </Tr>
                         </Thead>
@@ -153,6 +202,7 @@ export const ListPositions: React.FC = () => {
                             {filteredPositions.map((position, index) => (
                                 <Tr key={index} onClick={() => {}} >
                                     <Td>{position.name}</Td>
+                                   
                                     <Td>{position.description}</Td>
                                     <Td>
                                         <EditIcon mr={2} cursor="pointer" onClick={(event) => handleEditClick(position, event)} />
@@ -176,6 +226,7 @@ export const ListPositions: React.FC = () => {
                         <Input
                             placeholder="Nombre"
                             value={selectedPos?.name ?? ""}
+                            {...register('name')} 
                             onChange={(e)=>setSelectedPos({
                                 name: e.target.value, 
                                 description: selectedPos?.description ?? '',
@@ -190,6 +241,7 @@ export const ListPositions: React.FC = () => {
                         <Input
                             placeholder="Descripcion"
                             value={selectedPos?.description ?? ""}
+                            {...register('descripcion')} 
                             onChange={(e)=>setSelectedPos({
                                 description: e.target.value, 
                                 name: selectedPos?.name ?? '',

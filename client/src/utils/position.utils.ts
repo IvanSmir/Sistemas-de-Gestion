@@ -15,6 +15,20 @@ export const getPositions = async (page: number = 1) => {
   }
 };
 
+export const getPosition = async (term:string = "") => {
+  try {
+    const response = await fetch(`${API_URL}/${term}`);
+
+    if (!response.ok) {
+      return null
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+  }
+};
+
 export const deletePosition = async (id: string, token: string) => {
   if(!id){
     return
