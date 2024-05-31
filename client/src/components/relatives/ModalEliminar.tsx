@@ -28,7 +28,7 @@ const ModalEliminar: React.FC<DeleteConfirmationModalProps> = ({
                 <ModalHeader>Confirmar Eliminación</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                    ¿Estás seguro que deseas eliminar este? Esta acción no se puede deshacer.
+                    ¿Estás seguro que deseas eliminar? Esta acción no se puede deshacer.
                 </ModalBody>
 
                 <ModalFooter>
