@@ -2,11 +2,14 @@
 import { useRouter } from 'next/navigation';
 import Image from "next/image";
 import { ChangeEvent, FormEvent, useState } from 'react';
-import { Box, Button, Flex, FormControl, FormLabel, Input, Select, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, FormControl, FormLabel, Input, Select, Text, useToast } from '@chakra-ui/react';
 import Position from "@/types/position";
 import { addPosition } from "@/utils/position.utils";
 import { useAuth } from "@/components/context/AuthProvider";
 import Link from "next/link";
+import { useForm, SubmitHandler } from "react-hook-form";
+import Relative from "@/types/relative";
+import { formSchema } from '@/validations/formSchema';
 
 interface PositionForm {
     id?: string;
@@ -23,7 +26,11 @@ interface FormAddPositionProps {
 }
 export const FormAddPosition: React.FC<FormAddPositionProps> = ({ isOpen, onClose, onChange, onSave }) => {
     const router = useRouter();
+    const toast = useToast();
+    const [error, setError] = useState<string | null>(null);
+    const auth = useAuth();
     const { user } = useAuth();
+    const {register} = useForm()
     const [position, setPosition] = useState<PositionForm>(
         {
             name: "",
@@ -40,21 +47,57 @@ export const FormAddPosition: React.FC<FormAddPositionProps> = ({ isOpen, onClos
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         const token = user?.token ?? "";
-        if(position.description.trim().length > 0 && position.name.trim().length > 0){
+        if(position.description.trim().length <= 50 && position.name.trim().length > 3 && position.name.trim().length <= 25){
             try {
-                console.log(position)
                 const savedPosition = await addPosition(position, token);
                 if(savedPosition) console.log(savedPosition)
                 onSave(savedPosition);
-                alert('Se ha guardado correctamente');
+                toast({
+                    title: 'Guardado',
+                    description: 'Se ha guardado correctamente',
+                    status: 'success',
+                    duration: 5000,
+                    isClosable: true,
+                });
                 router.push('/general/positions');
                 
             } catch (error) {
-                console.error("Error al guardar el cargo:", error);
+                toast({
+                    title: 'Error',
+                    description: 'Error al cargar el cargo',
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
             }
         }else{
-           
-            console.error("Ingrese todos los datos")
+            if(position.name.trim().length < 3){
+                toast({
+                    title: 'Error',
+                    description: 'El nombre del cargo necesita por lo menos 3 caracteres',
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
+            if(position.name.trim().length > 25){
+                toast({
+                    title: 'Error',
+                    description: 'El nombre puede tener hasta 25 caracteres',
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
+            if(position.description.trim().length > 50){
+                toast({
+                    title: 'Error',
+                    description: 'La descripcion puede tener hasta 50 caracteres',
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
         }
     };
 
@@ -63,14 +106,14 @@ export const FormAddPosition: React.FC<FormAddPositionProps> = ({ isOpen, onClos
             <Box bg="white" p={5} borderRadius="md" boxShadow="md" width="90%">
                 <Text fontSize='24px' mb={6} textAlign="center" color="#AA546D"> Agregar Cargo</Text>
 
-                <form >
+                <form onSubmit={()=>{}}>
 
                     <FormControl>
                         <FormLabel htmlFor="name" >Nombre:</FormLabel>
                         <Input
                             type="text"
                             id="name"
-                            name="name"
+                            {...register('name')} 
                             onChange={handleChange}
                             value={position.name}
                         />
@@ -80,7 +123,7 @@ export const FormAddPosition: React.FC<FormAddPositionProps> = ({ isOpen, onClos
                         <Input
                             type="text"
                             id="description"
-                            name="description"
+                            {...register('description')} 
                             onChange={handleChange}
                             value={position.description}
                         />
