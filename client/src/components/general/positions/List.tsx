@@ -52,6 +52,8 @@ export const ListPositions: React.FC = () => {
 
     const [filteredPositions, setFilteredPositions] = useState<Position[]>([]);
 
+    const [deleteId, setDeleteId] = useState<string>("")
+
     useEffect(() => {
         getPositions(currentPage).then(a => {
             setFilteredPositions(a.data)
@@ -70,6 +72,8 @@ export const ListPositions: React.FC = () => {
     };
 
     const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
+    const { isOpen: isEditConfirmOpen, onOpen: onEditConfirmOpen, onClose: onEditConfirmClose } = useDisclosure();
+    const { isOpen: isDeleteConfirmOpen, onOpen: onDeleteConfirmOpen, onClose: onDeleteConfirmClose } = useDisclosure();
 
     const handleEditClick = (position: Position, event: React.MouseEvent) => {
         event.stopPropagation();
@@ -78,11 +82,11 @@ export const ListPositions: React.FC = () => {
         onEditOpen();
     };
 
-    const handleDeleteClick = (id: string, e: React.MouseEvent) => {
+    const handleDeleteClick = (e: React.MouseEvent) => {
         e.stopPropagation()
-        if (confirm("Desea borrar el cargo???")) {
+        
             if (!!user?.token) {
-                deletePosition(id, user.token).then(d => {
+                deletePosition(deleteId, user.token).then(d => {
                     setFetchTrigger(!fetchTrigger)
                     toast({
                         title: 'Eliminado',
@@ -91,15 +95,16 @@ export const ListPositions: React.FC = () => {
                         duration: 5000,
                         isClosable: true,
                     });
+                    onDeleteConfirmClose()
                 }).catch(e => {toast({
-                    title: 'Guardado',
+                    title: 'Error',
                     description: 'Error al borrar el Cargo',
                     status: 'error',
                     duration: 5000,
                     isClosable: true,
                 });})
             }
-        }
+        
     }
 
     const handleCloseModal = () =>{
@@ -109,7 +114,7 @@ export const ListPositions: React.FC = () => {
     }
 
     const handleEditPosition = () => {
-        if(confirm("Desea editar el cargo?")){
+        onEditConfirmClose()
             if(selectedPos && user){
                 if(selectedPos?.name !== baseSelectedPos?.name || selectedPos?.description !== baseSelectedPos?.description){
                     if(selectedPos?.name.trim().length<3){
@@ -164,7 +169,6 @@ export const ListPositions: React.FC = () => {
                     });
                 }
             }
-        }
     }   
 
     return (
@@ -206,7 +210,10 @@ export const ListPositions: React.FC = () => {
                                     <Td>{position.description}</Td>
                                     <Td>
                                         <EditIcon mr={2} cursor="pointer" onClick={(event) => handleEditClick(position, event)} />
-                                        <DeleteIcon cursor="pointer" onClick={(event) => handleDeleteClick(position.id, event)} />
+                                        <DeleteIcon cursor="pointer" onClick={()=>{
+                                            setDeleteId(position.id)
+                                            onDeleteConfirmOpen()
+                                        }} />
                                     </Td>
                                 </Tr>
                             ))}
@@ -259,8 +266,48 @@ export const ListPositions: React.FC = () => {
                             <Button variant="ghost" onClick={onEditClose} mr={3}>
                                 Cancelar
                             </Button>
+                            <Button color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} mr={3} onClick={onEditConfirmOpen}>
+                                Guardar
+                            </Button>
+                        </Flex>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+            <Modal isOpen={isEditConfirmOpen} onClose={onEditConfirmClose} size="2xl" isCentered>
+                <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(4px)" />
+                <ModalContent>
+                    <ModalHeader>Confirmar la Edicion</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        <p>¿Desea editar este cargo?</p>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Flex>
+                            <Button variant="ghost" onClick={onEditConfirmClose} mr={3}>
+                                Cancelar
+                            </Button>
                             <Button color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} mr={3} onClick={handleEditPosition}>
                                 Guardar
+                            </Button>
+                        </Flex>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+            <Modal isOpen={isDeleteConfirmOpen} onClose={onDeleteConfirmClose} size="2xl" isCentered>
+                <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(4px)" />
+                <ModalContent>
+                    <ModalHeader>Confirmar el borrado</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        <p>¿Desea borrar este cargo?</p>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Flex>
+                            <Button variant="ghost" onClick={onDeleteConfirmClose} mr={3}>
+                                Cancelar
+                            </Button>
+                            <Button color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} mr={3} onClick={handleDeleteClick}>
+                                Borrar
                             </Button>
                         </Flex>
                     </ModalFooter>
