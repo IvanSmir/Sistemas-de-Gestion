@@ -47,7 +47,7 @@ export const FormAddPosition: React.FC<FormAddPositionProps> = ({ isOpen, onClos
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         const token = user?.token ?? "";
-        if(position.description.trim().length <= 50 && position.name.trim().length > 3 && position.name.trim().length <= 25){
+        if(position.description.trim().length <= 100 && position.name.trim().length > 3 && position.name.trim().length <= 50){
             try {
                 const savedPosition = await addPosition(position, token);
                 if(savedPosition) console.log(savedPosition)
@@ -80,19 +80,19 @@ export const FormAddPosition: React.FC<FormAddPositionProps> = ({ isOpen, onClos
                     isClosable: true,
                 });
             }
-            if(position.name.trim().length > 25){
+            if(position.name.trim().length > 50){
                 toast({
                     title: 'Error',
-                    description: 'El nombre puede tener hasta 25 caracteres',
+                    description: 'El nombre puede tener hasta 50 caracteres',
                     status: 'error',
                     duration: 5000,
                     isClosable: true,
                 });
             }
-            if(position.description.trim().length > 50){
+            if(position.description.trim().length > 100){
                 toast({
                     title: 'Error',
-                    description: 'La descripcion puede tener hasta 50 caracteres',
+                    description: 'La descripcion puede tener hasta 100 caracteres',
                     status: 'error',
                     duration: 5000,
                     isClosable: true,

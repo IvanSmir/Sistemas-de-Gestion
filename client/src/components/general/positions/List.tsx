@@ -126,19 +126,19 @@ export const ListPositions: React.FC = () => {
                             isClosable: true,
                         });
                     }
-                    if(selectedPos?.name.trim().length > 25){
+                    if(selectedPos?.name.trim().length > 50){
                         return toast({
                             title: 'Error',
-                            description: 'El nombre debe ser menor a 25 caracteres',
+                            description: 'El nombre debe ser menor a 50 caracteres',
                             status: 'error',
                             duration: 5000,
                             isClosable: true,
                         });
                     }
-                    if(selectedPos?.description.trim().length>50){
+                    if(selectedPos?.description.trim().length>100){
                         return toast({
                             title: 'Error',
-                            description: 'La descripcion debe ser menor a 50 caracteres',
+                            description: 'La descripcion debe ser menor a 100 caracteres',
                             status: 'error',
                             duration: 5000,
                             isClosable: true,
