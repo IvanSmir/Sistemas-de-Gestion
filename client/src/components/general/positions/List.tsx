@@ -55,15 +55,16 @@ export const ListPositions: React.FC = () => {
     const [deleteId, setDeleteId] = useState<string>("")
 
     useEffect(() => {
-        getPositions(currentPage).then(a => {
-            setFilteredPositions(a.data)
-            setTotalPages(a.totalPages)
-        })
         if(filters.name.trim().length > 0){
             getPosition(filters.name)
                 .then(e=>{
                     if(e) setFilteredPositions([e])
                 })
+        }else{
+            getPositions(currentPage).then(a => {
+                setFilteredPositions(a.data)
+                setTotalPages(a.totalPages)
+            })
         }
     }, [filters, fetchTrigger, currentPage]);
 
@@ -76,6 +77,7 @@ export const ListPositions: React.FC = () => {
     const { isOpen: isDeleteConfirmOpen, onOpen: onDeleteConfirmOpen, onClose: onDeleteConfirmClose } = useDisclosure();
 
     const handleEditClick = (position: Position, event: React.MouseEvent) => {
+        console.log(position)
         event.stopPropagation();
         setSelectedPos(position);
         setBaseSelectedPos(position)
@@ -109,8 +111,8 @@ export const ListPositions: React.FC = () => {
 
     const handleCloseModal = () =>{
         onEditClose()
-        setSelectedPos(null)
-        setBaseSelectedPos(null)
+        setSelectedPos({id: "", name: "", description: ""})
+        setBaseSelectedPos({id: "", name: "", description: ""})
     }
 
     const handleEditPosition = () => {
@@ -203,15 +205,15 @@ export const ListPositions: React.FC = () => {
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {filteredPositions.map((position, index) => (
+                            {filteredPositions.map((p, index) => (
                                 <Tr key={index} onClick={() => {}} >
-                                    <Td>{position.name}</Td>
+                                    <Td>{p.name}</Td>
                                    
-                                    <Td>{position.description}</Td>
+                                    <Td>{p.description}</Td>
                                     <Td>
-                                        <EditIcon mr={2} cursor="pointer" onClick={(event) => handleEditClick(position, event)} />
+                                        <EditIcon mr={2} cursor="pointer" onClick={(event) => handleEditClick({id: p.id, description: p.description, name: p.name}, event)} />
                                         <DeleteIcon cursor="pointer" onClick={()=>{
-                                            setDeleteId(position.id)
+                                            setDeleteId(p.id)
                                             onDeleteConfirmOpen()
                                         }} />
                                     </Td>
@@ -233,7 +235,6 @@ export const ListPositions: React.FC = () => {
                         <Input
                             placeholder="Nombre"
                             value={selectedPos?.name ?? ""}
-                            {...register('name')} 
                             onChange={(e)=>setSelectedPos({
                                 name: e.target.value, 
                                 description: selectedPos?.description ?? '',
@@ -248,7 +249,6 @@ export const ListPositions: React.FC = () => {
                         <Input
                             placeholder="Descripcion"
                             value={selectedPos?.description ?? ""}
-                            {...register('descripcion')} 
                             onChange={(e)=>setSelectedPos({
                                 description: e.target.value, 
                                 name: selectedPos?.name ?? '',
