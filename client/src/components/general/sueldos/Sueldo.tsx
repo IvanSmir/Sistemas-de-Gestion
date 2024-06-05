@@ -1,6 +1,6 @@
 'use client'
 import React, { useCallback, useState } from 'react'
-import { Button, IconButton, Input, Heading, InputGroup, Box, InputLeftElement } from '@chakra-ui/react'
+import { Button, IconButton, Input, Heading, InputGroup, Box, InputLeftElement, useToast } from '@chakra-ui/react'
 import { DeleteIcon, EditIcon, SearchIcon } from '@chakra-ui/icons'
 import { Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableContainer, } from '@chakra-ui/react'
 import { Tag, TagLabel, TagLeftIcon, TagRightIcon } from '@chakra-ui/react'
@@ -8,12 +8,32 @@ import { text } from 'stream/consumers'
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import SueldoPDF from './SueldoPDF'; 
 import Link from 'next/link';
+import { useForm } from "react-hook-form";
+import { useAuth } from "@/components/context/AuthProvider";
 
 const Sueldo = () => {
+
+    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+    const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const selected = new Date(event.target.value);
+        // Comprobar si la fecha seleccionada es anterior a la fecha actual
+        if (selected < new Date()) {
+            toast({
+                title: 'Error',
+                description: 'La fecha no puede ser anterior a hoy.',
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
+            return;
+        }
+        setSelectedDate(selected);
+    };
     
     const sueldo = [
         {
-            _id: 1,
+            _id: "1",
 
             concepto: "Sueldo",
             ingreso: "2500000",
@@ -21,20 +41,20 @@ const Sueldo = () => {
 
         },
         {
-            _id: 2,   
+            _id: "2",   
             concepto: "Bonificacion",
             ingreso: "50000",
             egreso: "0",
         },
         {
-            _id: 3,
+            _id: "3",
             concepto: "Adelanto",
             ingreso: "0",
             egreso: "700000",
         
         },
         {
-            _id: 2,
+            _id: "4",
 
             concepto: "Retiro",
             ingreso: "0",
@@ -42,6 +62,24 @@ const Sueldo = () => {
 
         },
     ]
+   // const [date, setDate] = useState(new Date().toLocaleDateString());
+    const [isClosed, setIsClosed] = useState(false);
+    const toast = useToast();
+    
+    const handleClosure = () => {
+        if (sueldo.length > 0) {
+            setIsClosed(true);
+        } else {
+               toast({
+                        title: 'Error',
+                        description: 'No hay ingresos y egresos registrados.',
+                        status: 'error',
+                        duration: 5000,
+                        isClosable: true,
+                    });
+        }
+    }
+
 
     return (
         <>
@@ -51,10 +89,10 @@ const Sueldo = () => {
                     <div className="flex gap-2">
                     <Button fontSize={12} borderRadius='full' background='pink.100' onClick={()=>{
                         console.log("bonificacion")
-                    }}>Bonificacion</Button>
+                    }}>Volver</Button>
                     <Button fontSize={12} borderRadius='full' background='pink.200' onClick={()=>{
                         console.log("general sueldo")
-                    }}>Generar sueldo</Button>
+                    }}>Cierre-sueldo</Button>
                     
                 </div>
 
@@ -63,7 +101,11 @@ const Sueldo = () => {
                 <h1 className=" text-2xl">Detalle de Sueldo</h1>
                 <div className="flex  items-center gap-3">
                     <span>Fecha:</span>
-                    <Input placeholder='Select Date and Time' width={200} size='md' type='datetime-local' />
+                    <Input placeholder='Select Date and Time' width={200} size='md' type='datetime-local'
+                        value={selectedDate.toISOString().substring(0, 16)} // Mostrar la fecha seleccionada
+                        onChange={handleDateChange}
+                        max={new Date().toISOString().substring(0, 16)} 
+                        />
                 </div>
             </div>
             <div className="px-5 flex flex-col gap-2 mb-2">
@@ -139,9 +181,19 @@ const Sueldo = () => {
                 </div>
             </div>
             <div className="flex justify-end px-20 mt-2 mb-5">
-                <PDFDownloadLink document={<SueldoPDF sueldo={sueldo} />} fileName="sueldo.pdf">
-                    {({ loading }) => (loading ? <Button>Cargando...</Button> : <Button>Descargar PDF</Button>)}
-                </PDFDownloadLink>
+            {!isClosed && (
+                            <Button backgroundColor={'#e4b1bc'} onClick={handleClosure}>Cerrar Proceso</Button>
+                        )}
+                        {isClosed && (
+                            <PDFDownloadLink
+                                document={<SueldoPDF sueldo={sueldo} currentDate={selectedDate}/>}
+                                fileName="sueldo.pdf"
+                            >
+                                {({ blob, url, loading, error }) =>
+                                    loading ? 'Cargando documento...' : <Button backgroundColor={'#e4b1bc'}>Generar PDF</Button>
+                                }
+                            </PDFDownloadLink>
+                        )}
             </div>
                 </Box>
             </Box>
@@ -152,3 +204,5 @@ const Sueldo = () => {
 };
 
 export default Sueldo
+
+
