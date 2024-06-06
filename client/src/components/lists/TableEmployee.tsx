@@ -4,7 +4,7 @@ import React, { ChangeEvent, useState } from 'react'
 import Pagination from './Pagination'
 import Link from 'next/link';
 import VerifiedModal from '../general/salaries/VerifiedModal';
-
+import Period from "@/types/period";
 // Definimos los tipos para las props
 type TableEmployeeProps = {
     data: { id: string;[key: string]: any }[]; // Cada dato tiene un ID y valores dinámicos
@@ -33,9 +33,7 @@ export const TableEmployee: React.FC<TableEmployeeProps> = ({ data, columnMappin
         setFilters({ ...filters, ci: e.target.value });
     };
 
-    const handleAgeRangeFilter = (e: ChangeEvent<HTMLSelectElement>) => {
-        setFilters({ ...filters, ageRange: e.target.value });
-    };
+
 
     const handleOperation = (operationType: string) => {
         setConfirmOperation(false);
