@@ -112,13 +112,25 @@ export const ListIncomeTypes: React.FC = () => {
     };
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value, type } = e.target;
+        const updatedValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
+    
         if (selectedIncome) {
             setSelectedIncome({
                 ...selectedIncome,
-                [e.target.name]: e.target.value,
+                [name]: updatedValue,
+            });
+        }
+        
+        if (newIncomeType) {
+            setNewIncomeType({
+                ...newIncomeType,
+                [name]: updatedValue,
             });
         }
     };
+    
+    
 
     return (
         <Box backgroundColor={'white'} width={1000} borderRadius="2xl" padding="8px" margin="auto">

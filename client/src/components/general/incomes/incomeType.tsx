@@ -45,18 +45,23 @@ export const IncomeType: React.FC<ModalProps> = ({ isOpen, onClose, onChange, on
 
     useEffect(() => {
         if (initialData) {
-            setIncomeType(initialData);
+            setIncomeType({
+                id: initialData.id,
+                name: initialData.name,
+                deductible: initialData.deductible
+            });
         } else {
             setIncomeType({ name: "", deductible: false });
         }
     }, [initialData]);
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const target = e.target;
-        const value = target.type === 'checkbox' ? (target as HTMLInputElement).checked : target.value;
-        setIncomeType({ ...income, [target.name]: value });
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const { name, value, type, checked } = e.target;
+        const updatedValue = type === 'checkbox' ? checked : value;
+        setIncomeType({ ...income, [name]: updatedValue });
         onChange(e);
     };
+
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
