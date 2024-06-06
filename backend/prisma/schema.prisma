@@ -207,6 +207,7 @@ model PayrollItems {
   payrollDetailId String
   isIncome        Boolean
   amount          Float
+  description     String?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   user            Users          @relation(fields: [userId], references: [id])
