@@ -4,26 +4,25 @@ import React from 'react';
 
 interface PeriodProps {
     period: {
-        name: string;
-        description: string;
-        completed: boolean;
+        periodStart: string,
+        periodEnd: string,
+        isEnded: boolean,
+        totalAmount: number,
     };
-
-
 }
 
-export const Period: React.FC<PeriodProps> = ({ period }) => {
+export const PeriodCard: React.FC<PeriodProps> = ({ period }) => {
     return (
         <Card>
             <CardHeader>
-                <Heading size='md'>{period.name}</Heading>
+                <Heading size='md'>{period.periodStart} - {period.periodStart}</Heading>
             </CardHeader>
             <CardBody>
-                <Text>{period.description}</Text>
+                <Text>{period.totalAmount}</Text>
             </CardBody>
             <CardFooter>
                 <Link href={`/general/salaries/id`}>
-                    {period.completed ? (
+                    {period.isEnded ? (
                         <Button>Ver Detalles</Button>
                     ) : (
                         <Button>Generar Salario</Button>
