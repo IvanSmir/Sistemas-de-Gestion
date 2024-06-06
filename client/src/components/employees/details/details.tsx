@@ -44,6 +44,7 @@ export const EmployeeDetails = () => {
                 }
             } catch (error) {
                 const err = error as Error;
+                toast.closeAll();
                 toast({
                     title: "Error",
                     description: err.message,
