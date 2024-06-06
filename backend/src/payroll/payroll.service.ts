@@ -34,6 +34,9 @@ export class PayrollService {
           isEnded: true,
           DetailsWithoutVerification: true,
         },
+        orderBy: {
+          createdAt: 'desc',
+        },
       });
       return payrolls;
     } catch (error) {
