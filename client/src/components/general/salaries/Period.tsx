@@ -22,7 +22,7 @@ export const Period: React.FC<PeriodProps> = ({ period }) => {
                 <Text>{period.description}</Text>
             </CardBody>
             <CardFooter>
-                <Link href={`/general/salaries/periods`}>
+                <Link href={`/general/salaries/id`}>
                     {period.completed ? (
                         <Button>Ver Detalles</Button>
                     ) : (
