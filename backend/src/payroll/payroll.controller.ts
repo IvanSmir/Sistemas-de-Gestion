@@ -133,4 +133,70 @@ export class PayrollController {
   ) {
     return this.payrollService.verifyPayrollDetails(user, periodDetailsId);
   }
+
+  @Post(':id/familyBonification')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Calculate family bonus' })
+  @ApiResponse({
+    status: 200,
+    description: 'Family bonus calculated successfully.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  calculateFamilyBonification(
+    @Param('id', ParseUUIDPipe) id: string,
+    @GetUser() user: Users,
+  ) {
+    return this.payrollService.calculateBonificationForAllEmployees(user);
+  }
+
+  @Post(':id/ips')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Calculate IPS' })
+  @ApiResponse({
+    status: 200,
+    description: 'IPS calculated successfully.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  calculateIps(@Param('id', ParseUUIDPipe) id: string, @GetUser() user: Users) {
+    return this.payrollService.calculateIpsForAllEmployees(user);
+  }
+
+  @Post(':id/ips/:payrollDetailId')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create IPS payment' })
+  @ApiResponse({
+    status: 200,
+    description: 'IPS payment created successfully.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  createIpsPayment(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('payrollDetailId', ParseUUIDPipe) payrollDetailId: string,
+    @GetUser() user: Users,
+  ) {
+    return this.payrollService.createOrUpdateIPS(payrollDetailId, user);
+  }
+
+  @Post(':id/bonusFamiliar/:payrollDetailId')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create Bonus Familiar payment' })
+  @ApiResponse({
+    status: 200,
+    description: 'Bonus Familiar payment created successfully.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  createBonusFamiliarPayment(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('payrollDetailId', ParseUUIDPipe) payrollDetailId: string,
+    @GetUser() user: Users,
+  ) {
+    return this.payrollService.createOrUpdateBonificationFamiliar(
+      payrollDetailId,
+      user,
+    );
+  }
 }
