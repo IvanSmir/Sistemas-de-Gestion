@@ -105,7 +105,7 @@ export class PayrollService {
       // Creación de ítems de nómina para salarios
       const salaries = await this.prismaService.employeeDetails.findMany({
         where: { employeeId, isActive: true },
-        select: { salary: true },
+        select: { salary: true, position: { select: { name: true } } },
       });
 
       const payrollItemsSalariesPromises = salaries.map(async (salary) => {
@@ -115,6 +115,7 @@ export class PayrollService {
             userId: user.id,
             isIncome: true,
             amount: salary.salary,
+            description: 'Salario de' + salary.position.name,
           },
         });
         PaymentTotal += salary.salary;
@@ -143,6 +144,7 @@ export class PayrollService {
             userId: user.id,
             isIncome: true,
             amount: income.amount,
+            description: income.incomeType.name,
           },
         });
         PaymentTotal += income.amount;
@@ -159,7 +161,7 @@ export class PayrollService {
       // Creación de ítems de nómina para gastos
       const expenses = await this.prismaService.expenses.findMany({
         where: { employeeId, active: true },
-        select: { amount: true },
+        select: { amount: true, expenseType: { select: { name: true } } },
       });
 
       const payrollItemsExpensesPromises = expenses.map(async (expense) => {
@@ -169,6 +171,7 @@ export class PayrollService {
             userId: user.id,
             isIncome: false,
             amount: expense.amount,
+            description: expense.expenseType.name,
           },
         });
         PaymentTotal -= expense.amount;
@@ -252,6 +255,7 @@ export class PayrollService {
           userId: user.id,
           isIncome: false,
           amount: ipsAmount,
+          description: 'IPS',
           isIps: true,
         },
       });
@@ -340,6 +344,7 @@ export class PayrollService {
           userId: user.id,
           isIncome: true,
           amount: BonificationAmount,
+          description: 'Bonificación Familiar',
           isBonification: true,
         },
       });
@@ -605,6 +610,35 @@ export class PayrollService {
       );
 
       return { salaryPayment, salaryPaymentBank };
+    } catch (error) {
+      this.handleDbErrorService.handleDbError(error, 'Payroll', '');
+    }
+  }
+
+  async findPayrollDetails(id: string, payrollDetailId: string) {
+    try {
+      const payrollDetails = await this.prismaService.payrollDetails.findUnique(
+        {
+          where: { id: payrollDetailId },
+          select: {
+            id: true,
+            periodId: true,
+            employeeId: true,
+            userId: true,
+            amount: true,
+            payrollItems: {
+              select: {
+                id: true,
+                payrollDetailId: true,
+                isIncome: true,
+                amount: true,
+              },
+            },
+          },
+        },
+      );
+
+      return payrollDetails;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Payroll', '');
     }

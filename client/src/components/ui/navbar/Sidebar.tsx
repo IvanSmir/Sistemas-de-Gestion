@@ -1,18 +1,33 @@
-'use client'
-import { Box, BoxProps, Flex, useColorModeValue, Text, CloseButton } from "@chakra-ui/react";
+import { Box, BoxProps, Flex, useColorModeValue, Text, CloseButton, VStack, Collapse, IconButton } from "@chakra-ui/react";
 import { NavItem } from "./NavItem";
+import { useState } from "react";
 import { IconType } from "react-icons";
-import { FiCompass, FiHome, FiSettings, FiUsers } from "react-icons/fi";
+import { FiChevronDown, FiCompass, FiHome, FiSettings, FiUsers } from "react-icons/fi";
+import { GrTransaction } from "react-icons/gr";
 
 interface LinkItemProps {
     name: string;
     icon: IconType;
     href: string;
+    subItems?: Array<LinkItemProps>;
 }
+
 const LinkItems: Array<LinkItemProps> = [
     { name: 'Inicio', icon: FiHome, href: '/' },
     { name: 'Funcionarios', icon: FiUsers, href: '/employees' },
     { name: 'Cargos', icon: FiCompass, href: '/general/positions' },
+    {
+        name: 'Movimientos', icon: GrTransaction, href: '#', subItems: [
+            { name: 'Ingresos', icon: GrTransaction, href: '/transaction/incomes' },
+            { name: 'Egresos', icon: GrTransaction, href: '/transaction/expenses' }
+        ]
+    },
+    {
+        name: 'Tipo de sueldo', icon: GrTransaction, href: '#', subItems: [
+            { name: 'Ingresos', icon: GrTransaction, href: '/general/incomeType/' },
+            { name: 'Egresos', icon: GrTransaction, href: '/general/expenseType' }
+        ]
+    },
     { name: 'Settings', icon: FiSettings, href: '/settings' },
 ];
 
@@ -21,6 +36,17 @@ interface SidebarProps extends BoxProps {
 }
 
 export const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+    const [isMovementsOpen, setIsMovementsOpen] = useState(false);
+    const [isSalaryTypeOpen, setIsSalaryTypeOpen] = useState(false);
+
+    const handleMovementsClick = () => {
+        setIsMovementsOpen(!isMovementsOpen);
+    };
+
+    const handleSalaryTypeClick = () => {
+        setIsSalaryTypeOpen(!isSalaryTypeOpen);
+    };
+
     return (
         <Box
             transition="3s ease"
@@ -38,10 +64,44 @@ export const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
                 <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
             </Flex>
             {LinkItems.map((link) => (
-                <NavItem color="white" key={link.name} icon={link.icon} href={link.href}>
-                    {link.name}
-                </NavItem>
+                <Box key={link.name}>
+                    <Flex align="center">
+                        <NavItem
+                            color="white"
+                            icon={link.icon}
+                            href={link.href}
+                            onClick={link.name === 'Movimientos' ? handleMovementsClick : link.name === 'Tipo de sueldo' ? handleSalaryTypeClick : undefined}
+                            flex="1"
+                        >
+                            {link.name}
+                        </NavItem>
+                        {(link.name === 'Movimientos' || link.name === 'Tipo de sueldo') && (
+                            <IconButton
+                                aria-label={`Expand ${link.name}`}
+                                icon={<FiChevronDown />}
+                                size="sm"
+                                onClick={link.name === 'Movimientos' ? handleMovementsClick : handleSalaryTypeClick}
+                                variant="ghost"
+                                color="white"
+                            />
+                        )}
+                    </Flex>
+                    {link.subItems && (
+                        <Collapse in={link.name === 'Movimientos' ? isMovementsOpen : isSalaryTypeOpen}>
+                            <VStack pl="8" align="start">
+                                {link.subItems.map((subItem) => (
+                                    <NavItem color="white" key={subItem.name} icon={subItem.icon} href={subItem.href}>
+                                        {subItem.name}
+                                    </NavItem>
+                                ))}
+                            </VStack>
+                        </Collapse>
+                    )}
+                </Box>
             ))}
         </Box>
     );
 };
+
+
+

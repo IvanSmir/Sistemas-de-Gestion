@@ -17,6 +17,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Auth } from 'src/auth/decorators/auth.decorator';
 
 @ApiTags('Payroll')
 @Controller('payroll')
@@ -30,6 +31,7 @@ export class PayrollController {
     status: 201,
     description: 'Payroll created successfully.',
   })
+  @Auth()
   @ApiResponse({ status: 400, description: 'Bad request.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   create(@GetUser() user: Users) {
@@ -59,6 +61,7 @@ export class PayrollController {
 
   @Post(':id/createPayments')
   @ApiBearerAuth()
+  @Auth()
   @ApiOperation({ summary: 'Create payments for a payroll period' })
   @ApiResponse({
     status: 201,
@@ -75,6 +78,7 @@ export class PayrollController {
 
   @Post(':id/createPayments/:employeeId')
   @ApiBearerAuth()
+  @Auth()
   @ApiOperation({ summary: 'Create a payment for a specific employee' })
   @ApiResponse({
     status: 201,
@@ -92,6 +96,7 @@ export class PayrollController {
 
   @Post(':id/closePayrollPeriod')
   @ApiBearerAuth()
+  @Auth()
   @ApiOperation({ summary: 'Close a payroll period' })
   @ApiResponse({
     status: 200,
@@ -107,6 +112,7 @@ export class PayrollController {
   }
 
   @Delete(':id/removePayrollPeriod')
+  @Auth()
   @ApiOperation({ summary: 'Remove a payroll period' })
   @ApiResponse({
     status: 200,
@@ -118,6 +124,7 @@ export class PayrollController {
   }
 
   @Post(':id/verifyPayrollDetails/:periodDetailsId')
+  @Auth()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Verify payroll details' })
   @ApiResponse({
@@ -135,6 +142,7 @@ export class PayrollController {
   }
 
   @Post(':id/familyBonification')
+  @Auth()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Calculate family bonus' })
   @ApiResponse({
@@ -151,6 +159,7 @@ export class PayrollController {
   }
 
   @Post(':id/ips')
+  @Auth()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Calculate IPS' })
   @ApiResponse({
@@ -164,6 +173,7 @@ export class PayrollController {
   }
 
   @Post(':id/ips/:payrollDetailId')
+  @Auth()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create IPS payment' })
   @ApiResponse({
@@ -181,6 +191,7 @@ export class PayrollController {
   }
 
   @Post(':id/bonusFamiliar/:payrollDetailId')
+  @Auth()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create Bonus Familiar payment' })
   @ApiResponse({
@@ -198,5 +209,20 @@ export class PayrollController {
       payrollDetailId,
       user,
     );
+  }
+
+
+  
+  @Get(':id/payrollDetails/:payrollDetailId')
+  @Auth()
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get payroll details' })
+  @ApiResponse({
+    status: 200,
+    description: 'Payroll details retrieved successfully.',
+  })
+  @ApiResponse({ status: 404, description: 'Payroll details not found.' })
+  findPayrollDetails(@Param('id', ParseUUIDPipe) id: string, @Param('payrollDetailId', ParseUUIDPipe) payrollDetailId: string) {
+    return this.payrollService.findPayrollDetails(id, payrollDetailId);
   }
 }

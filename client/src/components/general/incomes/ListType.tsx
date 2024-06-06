@@ -1,12 +1,13 @@
 'use client';
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { EditIcon, DeleteIcon, AddIcon } from "@chakra-ui/icons";
-import { IncomeType } from "@/components/general/incomes/incomeType";
+import { IncomeType as ModalIncomeType } from "@/components/general/incomes/incomeType";
+import { getIncomeTypes, deleteIncomeType} from '@/utils/finance.http';
+import { useAuth } from '@/components/context/AuthProvider';
+import ModalEliminar from "@/components/relatives/ModalEliminar";
 import {
     Box,
     Flex,
-    Input,
-    Select,
     TableContainer,
     Table,
     Thead,
@@ -15,141 +16,162 @@ import {
     Th,
     Td,
     Button,
-    useDisclosure
+    useDisclosure,
+    useToast
 } from "@chakra-ui/react";
 
 interface IncomeType {
+    id?: string;
     name: string,
-    description: string
     deductible: boolean
 }
 
-const inicialIncomeTypes: IncomeType[] = [
-    {
-        name: "Administrador",
-        description: "Administrador de la aplicación",
-        deductible: true,
-    },
-    {
-        name: "Empleado",
-        description: "Empleado de la aplicación",
-        deductible: true,
-    },
-    {
-        name: "Supervisor",
-        description: "Supervisor de la aplicación",
-        deductible: true,
-    },
-];
 export const ListIncomeTypes: React.FC = () => {
-
-    const [incomeType, setIncomeType] = useState<IncomeType[]>(inicialIncomeTypes);
-
-    const [filters, setFilters] = useState<{ name: string }>({
-        name: '',
-    });
-    const [filteredIncomes, setFilteredIncomes] = useState<IncomeType[]>([]);
-
+    const toast = useToast();
+    const [incomes, setIncomes] = useState<IncomeType[]>([]);
+    const [selectedIncome, setSelectedIncome] = useState<IncomeType | null>(null);
+    const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
+    const { isOpen: isAddOpen, onOpen: onAddOpen, onClose: onAddClose } = useDisclosure();
+    const [isModalOpen, setModalOpen] = useState(false);
+    const [newIncomeType, setNewIncomeType] = useState<IncomeType | null>(null);
+    const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
+    const [idToDelete, setIdToDelete] = useState<string | null>(null);
+    const auth = useAuth();
 
     useEffect(() => {
-
-        const filtered = inicialIncomeTypes.filter((incomeType) => {
-            if (filters.name && !incomeType.name.includes(filters.name)) {
-                return false;
+        const fetchIncomes = async () => {
+            try {
+                const { user } = auth;
+                const token = user?.token || '';
+                const data = await getIncomeTypes(token);
+                setIncomes(data);
+            } catch (error) {
+                console.error('Error al obtener tipos de ingresos:', error);
             }
-            return true;
-        });
-        setFilteredIncomes(filtered);
-    }, [filters]);
-
-    const handleNameFilter = (e: ChangeEvent<HTMLInputElement>) => {
-        setFilters({ ...filters, name: e.target.value });
-    };
-    const [selectedIncomeType, setSelectedIncomeType] = useState<IncomeType | null>(null);
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
-    /*
-        const handleEditClick = (position: IncomeType, event: React.MouseEvent) => {
-            event.stopPropagation();
-            setSelectedPosition(position);
-            onEditOpen();
         };
-    */
 
+        fetchIncomes();
+    }, [auth]);
 
-    const handleRowClick = (incomeType: IncomeType) => {
-        setSelectedIncomeType(incomeType);
-        onOpen();
+    const handleAddIncomeType = () => {
+        setNewIncomeType({ name: '', deductible: false });
+        onAddOpen();
+    };
+
+    const handleDeleteIncome = (income: IncomeType, event: React.MouseEvent) => {
+        event.stopPropagation();
+        setIdToDelete(income.id || '');
+        onDeleteOpen();
+    };
+
+    const confirmDeleteIncome = async () => {
+        if (idToDelete) {
+            const { user } = auth;
+            const token = user?.token || '';
+
+            try {
+                await deleteIncomeType(idToDelete, token);
+                setIncomes(incomes.filter(item => item.id !== idToDelete));
+                setIdToDelete(null);
+                toast({
+                    title: 'Éxito',
+                    description: 'El ingreso ha sido eliminado correctamente.',
+                    status: 'success',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            } catch (error) {
+                console.error('Error al eliminar el ingreso:', error);
+                toast({
+                    title: 'Error',
+                    description: 'Ocurrió un error al eliminar el ingreso.',
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
+        }
+        onDeleteClose();
+    };
+    
+    const handleSaveIncomeType = (incomeType: IncomeType) => {
+        if (incomeType.id) {
+            setIncomes(incomes.map(inc => (inc.id === incomeType.id ? incomeType : inc)));
+            setSelectedIncome(null);
+            onEditClose();
+        } else {
+            setIncomes([...incomes, incomeType]);
+            setNewIncomeType(null);
+            onAddClose();
+        }
+    };
+    
+    const handleEditIncomeType = (income: IncomeType) => {
+        setSelectedIncome(income);
+        onEditOpen();
     };
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        if (selectedIncomeType) {
-            const { name, value } = e.target;
-            setSelectedIncomeType({ ...selectedIncomeType, [name]: value });
-
+        if (selectedIncome) {
+            setSelectedIncome({
+                ...selectedIncome,
+                [e.target.name]: e.target.value,
+            });
         }
-    };
-    const handleAddIncomeType = () => {
-
-    }
-
-    const handleSave = () => {
-        /*
-        if (selectedPosition) {
-            setinicialIncomeTypes(inicialIncomeTypes.map(position =>
-                position.id === selectedPosition.id ? selectedPosition : position
-            ));
-            onEditClose();
-        }
-        */
     };
 
     return (
-        <Box backgroundColor={'white'} top={160} left={300} width={900} height={426} borderRadius="2xl" padding="8px" margin="auto" >
-            <Flex justifyContent="space-between" mb={6} >
+        <Box backgroundColor={'white'} width={1000} borderRadius="2xl" padding="8px" margin="auto">
+            <Flex justifyContent="space-between" mb={6}>
                 <Flex gap={2}>
-                    <Input
-                        placeholder="Nombre"
-                        value={filters.name}
-                        onChange={handleNameFilter}
-                        rounded={15}
-                        background='white'
-                        color='gray.600'
-                        _hover={{ bg: "gray.100" }}
-                    />
+                    {/* Aquí puedes agregar un filtro por nombre si lo necesitas */}
                 </Flex>
-                <IncomeType isOpen={isOpen} onClose={onClose} />
-                <Button onClick={onOpen}>Agregar Tipo de Ingreso</Button>
-
+                <Button onClick={handleAddIncomeType}>Agregar Tipo de Ingreso</Button>
             </Flex>
             <TableContainer>
                 <Table variant="simple" fontSize="14px">
                     <Thead>
                         <Tr>
                             <Th>Nombre</Th>
-                            <Th>Descripcion</Th>
                             <Th>Es deducible</Th>
-
+                            <Th>Acciones</Th>
                         </Tr>
                     </Thead>
                     <Tbody>
-
-                        {filteredIncomes.map((incomeType, index) => (
-                            <Tr key={index} onClick={() => handleRowClick(incomeType)} style={{ cursor: 'pointer' }}>
+                        {incomes.map((incomeType, index) => (
+                            <Tr key={index}>
                                 <Td>{incomeType.name}</Td>
-                                <Td>{incomeType.description}</Td>
                                 <Td>{incomeType.deductible ? 'Si' : 'No'}</Td>
-
                                 <Td>
-                                    <EditIcon mr={2} cursor="pointer"/* onClick={(event) => handleEditClick(incomeType, event)}*/ />
-                                    <DeleteIcon cursor="pointer" /* onClick={(event) => handleDeleteClick(incomeType.id, event)} */ />
+                                    <EditIcon mr={2} cursor="pointer"  onClick={() => handleEditIncomeType(incomeType)}/>
+                                    <DeleteIcon cursor="pointer" onClick={(event) => handleDeleteIncome(incomeType, event)} />
                                 </Td>
                             </Tr>
                         ))}
                     </Tbody>
                 </Table>
             </TableContainer>
-        </Box>
+            
+            <ModalIncomeType
+                isOpen={isAddOpen}
+                onClose={onAddClose}
+                onChange={handleChange}
+                onSave={handleSaveIncomeType}
+                initialData={newIncomeType}
+            />
 
+            <ModalIncomeType
+                isOpen={isEditOpen}
+                onClose={onEditClose}
+                onChange={handleChange}
+                onSave={handleSaveIncomeType}
+                initialData={selectedIncome}
+            />
+            <ModalEliminar
+                isOpen={isDeleteOpen}
+                onClose={onDeleteClose}
+                onConfirm={confirmDeleteIncome}
+            />
+        </Box>
     );
 };
