@@ -1,8 +1,8 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL + "/payroll";
 
-export const getPayrolls = async (id: string, token: string) => {
+export const getPayrolls = async ( token: string) => {
     try {
-        const response = await fetch(`${API_URL}/${id}`, {
+        const response = await fetch(`${API_URL}`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`,
