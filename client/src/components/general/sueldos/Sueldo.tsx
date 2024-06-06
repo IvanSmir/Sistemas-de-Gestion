@@ -204,7 +204,7 @@ const Sueldo = () => {
                     </div>
                     <div className="flex justify-end px-20 mt-2 mb-5">
                         {!isVerified && (
-                            <Button backgroundColor={'#e4b1bc'} onClick={handleVerification}>Verificar</Button>
+                            <Button backgroundColor={'#e4b1bc'} onClick={handleVerification}>Verificado</Button>
                         )}
                         {isVerified && !isClosed && (
                             <Button backgroundColor={'#e4b1bc'} onClick={handleClosure}>Cerrar Proceso</Button>

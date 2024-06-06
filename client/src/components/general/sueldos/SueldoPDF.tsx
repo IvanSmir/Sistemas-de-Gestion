@@ -80,8 +80,8 @@ const styles = StyleSheet.create({
     reciboContainer: {
         marginTop: 5,
         fontSize: 12,
-        marginBottom: 20,
-        paddingBottom: 10,
+        marginBottom: 50,
+        paddingBottom: 40,
     },
     signatureContainer: {
         marginTop: 5,
@@ -92,24 +92,31 @@ const styles = StyleSheet.create({
         paddingBottom: 15,
     },
     signatureBlock: {
-        width: '50%',
+        width: '40%',
         textAlign: 'center',
         alignItems: 'center',
+        justifyContent: 'center',
     },
     signatureLine: {
         borderTopWidth: 1,
         borderTopColor: 'gray',
-        textAlign: 'center',
-        alignItems: 'center',
         marginTop: 25,
         width: '100%',
     },
     signatureLabel: {
-        display: 'flex',
+       // display: 'flex',
         fontSize: 10,
         textAlign: 'center',
         marginTop: 5,
+       
     },
+    signatureLabel1: {
+        // display: 'flex',
+         fontSize: 10,
+         textAlign: 'center',
+         marginTop: 5,
+         paddingBottom: 25,
+     },
     totalsContainer: {
         flexDirection: 'column',
         marginBottom: 10,
@@ -257,14 +264,15 @@ const SueldoPDF: React.FC<SueldoPDFProps> = ({ sueldo, currentDate }) => {
                         </View>
                     </View>
                 </View><View style={styles.reciboContainer}>
-                    <Text>Recibi de la empresa LA FERRETERIA un monto total de {totalAPagar} Gs, son {totalAPagarEnTexto}guaraníes.</Text>
-                </View><View style={styles.signatureContainer}>
-                    <View>
+                    <Text>     Recibi de la empresa LA FERRETERIA un monto total de {totalAPagar} Gs, son {totalAPagarEnTexto}guaraníes.</Text>
+                </View> 
+                <View style={styles.signatureContainer}>
+                    <View style={{ textAlign: 'center', width: '30%' }}>
                         <Text style={styles.signatureLine}></Text>
                         <Text style={styles.signatureLabel}>LIC.ANALIA FRETES</Text>
-                        <Text style={styles.signatureLabel}>JEFA RR HH</Text>
+                        <Text style={styles.signatureLabel1}>JEFA RR HH</Text>
                     </View>
-                    <View>
+                    <View style={{ textAlign: 'center', width: '30%' }}>
                         <Text style={styles.signatureLine}></Text>
                         <Text style={styles.signatureLabel}>FUNCIONARIO</Text>
                     </View>
