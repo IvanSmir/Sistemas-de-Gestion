@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UpdatePayrollDto } from './dto/update-payroll.dto';
 import { Users } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { HandleDbErrorService } from 'src/common/services/handle-db-error.service';
@@ -99,6 +98,7 @@ export class PayrollService {
           },
         },
       });
+
       let PaymentTotal = 0;
       let PaymentDeductibleTotal = 0;
 
@@ -179,77 +179,13 @@ export class PayrollService {
         payrollItemsExpensesPromises,
       );
 
-      // Creación del ítem de IPS
-      const ips = await this.prismaService.basicConfig.findFirst({
-        where: { name: 'IPS' },
-        select: { value: true },
-      });
-      const ipsAmount = (PaymentDeductibleTotal * ips.value) / 100;
-      const payrollItemIps = await this.prismaService.payrollItems.create({
-        data: {
-          payrollDetailId: payrollDetails.id,
-          userId: user.id,
-          isIncome: false,
-          amount: ipsAmount,
-        },
-      });
+      const ipsAmount = await this.createOrUpdateIPS(payrollDetails.id, user);
       PaymentTotal -= ipsAmount;
 
-      // Creación del ítem de bonificación familiar
-      const currentDate = new Date();
-      const eighteenYearsAgo = new Date(
-        currentDate.getFullYear() - 18,
-        currentDate.getMonth(),
-        currentDate.getDate(),
+      const BonificationAmount = await this.createOrUpdateBonificationFamiliar(
+        payrollDetails.id,
+        user,
       );
-
-      const familiares = await this.prismaService.familyMembers.findMany({
-        where: {
-          employeeId,
-          AND: [
-            {
-              person: {
-                birthDate: {
-                  gte: eighteenYearsAgo,
-                },
-              },
-            },
-            {
-              familyType: {
-                name: {
-                  in: ['Hijo', 'Hija'],
-                },
-              },
-            },
-          ],
-        },
-        select: {
-          id: true,
-        },
-      });
-
-      const bonificacionFamiliarPercentage =
-        await this.prismaService.basicConfig.findFirst({
-          where: { name: 'Bonificacion Familiar' },
-          select: { value: true },
-        });
-
-      const BonificationAmount =
-        salaries.reduce((acc, salary) => acc + salary.salary, 0) *
-        (bonificacionFamiliarPercentage.value / 100) *
-        familiares.length;
-
-      const payrollItemsFamiliar = await this.prismaService.payrollItems.create(
-        {
-          data: {
-            payrollDetailId: payrollDetails.id,
-            userId: user.id,
-            isIncome: true,
-            amount: BonificationAmount,
-          },
-        },
-      );
-
       PaymentTotal += BonificationAmount;
 
       // Creación del objeto de retorno
@@ -257,11 +193,207 @@ export class PayrollService {
         ...payrollItemsSalaries,
         ...payrollItemsIncomes,
         ...payrollItemsExpenses,
-        payrollItemIps,
-        payrollItemsFamiliar,
       ];
 
       return { items: returnItems, total: PaymentTotal };
+    } catch (error) {
+      this.handleDbErrorService.handleDbError(error, 'Payroll', '');
+    }
+  }
+
+  async createOrUpdateIPS(payrollDetailId: string, user: Users) {
+    // Obtener el monto deducible total
+    const payrollDetail = await this.prismaService.payrollDetails.findUnique({
+      where: { id: payrollDetailId },
+      select: {
+        periodId: true,
+        employeeId: true,
+      },
+    });
+
+    const incomes = await this.prismaService.income.findMany({
+      where: { employeeId: payrollDetail.employeeId, active: true },
+      select: {
+        amount: true,
+        incomeType: {
+          select: { deductible: true },
+        },
+      },
+    });
+
+    const PaymentDeductibleTotal = incomes.reduce(
+      (acc, income) => acc + (income.incomeType.deductible ? income.amount : 0),
+      0,
+    );
+
+    // Calcular el monto de IPS
+    const ips = await this.prismaService.basicConfig.findFirst({
+      where: { name: 'IPS' },
+      select: { value: true },
+    });
+    const ipsAmount = (PaymentDeductibleTotal * ips.value) / 100;
+
+    // Verificar si ya existe un ítem de IPS
+    const existingIpsItem = await this.prismaService.payrollItems.findFirst({
+      where: { payrollDetailId, isIps: true, isDeleted: false },
+    });
+
+    if (existingIpsItem) {
+      // Si existe, actualizarlo
+      await this.prismaService.payrollItems.update({
+        where: { id: existingIpsItem.id },
+        data: { amount: ipsAmount, userId: user.id },
+      });
+    } else {
+      // Si no existe, crearlo
+      await this.prismaService.payrollItems.create({
+        data: {
+          payrollDetailId,
+          userId: user.id,
+          isIncome: false,
+          amount: ipsAmount,
+          isIps: true,
+        },
+      });
+    }
+
+    return ipsAmount;
+  }
+
+  async createOrUpdateBonificationFamiliar(
+    payrollDetailId: string,
+    user: Users,
+  ) {
+    const payrollDetail = await this.prismaService.payrollDetails.findUnique({
+      where: { id: payrollDetailId },
+      select: {
+        periodId: true,
+        employeeId: true,
+      },
+    });
+
+    const currentDate = new Date();
+    const eighteenYearsAgo = new Date(
+      currentDate.getFullYear() - 18,
+      currentDate.getMonth(),
+      currentDate.getDate(),
+    );
+
+    const familiares = await this.prismaService.familyMembers.findMany({
+      where: {
+        employeeId: payrollDetail.employeeId,
+        AND: [
+          {
+            person: {
+              birthDate: {
+                gte: eighteenYearsAgo,
+              },
+            },
+          },
+          {
+            familyType: {
+              name: {
+                in: ['Hijo', 'Hija'],
+              },
+            },
+          },
+        ],
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    const bonificacionFamiliarPercentage =
+      await this.prismaService.basicConfig.findFirst({
+        where: { name: 'Bonificacion Familiar' },
+        select: { value: true },
+      });
+
+    const salaries = await this.prismaService.employeeDetails.findMany({
+      where: { employeeId: payrollDetail.employeeId, isActive: true },
+      select: { salary: true },
+    });
+
+    const BonificationAmount =
+      salaries.reduce((acc, salary) => acc + salary.salary, 0) *
+      (bonificacionFamiliarPercentage.value / 100) *
+      familiares.length;
+
+    // Verificar si ya existe un ítem de bonificación familiar
+    const existingBonificationItem =
+      await this.prismaService.payrollItems.findFirst({
+        where: { payrollDetailId, isBonification: true, isDeleted: false },
+      });
+
+    if (existingBonificationItem) {
+      // Si existe, actualizarlo
+      await this.prismaService.payrollItems.update({
+        where: { id: existingBonificationItem.id },
+        data: { amount: BonificationAmount, userId: user.id },
+      });
+    } else {
+      // Si no existe, crearlo
+      await this.prismaService.payrollItems.create({
+        data: {
+          payrollDetailId,
+          userId: user.id,
+          isIncome: true,
+          amount: BonificationAmount,
+          isBonification: true,
+        },
+      });
+    }
+
+    return BonificationAmount;
+  }
+
+  async calculateIpsForAllEmployees(user: Users) {
+    try {
+      const payrollDetails = await this.prismaService.payrollDetails.findMany({
+        where: {
+          period: {
+            isEnded: false,
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      const ipsPromises = payrollDetails.map(async (payrollDetail) => {
+        const ipsAmount = await this.createOrUpdateIPS(payrollDetail.id, user);
+        return { payrollDetailId: payrollDetail.id, ipsAmount };
+      });
+
+      const ipsResults = await Promise.all(ipsPromises);
+      return ipsResults;
+    } catch (error) {
+      this.handleDbErrorService.handleDbError(error, 'Payroll', '');
+    }
+  }
+
+  async calculateBonificationForAllEmployees(user: Users) {
+    try {
+      const payrollDetails = await this.prismaService.payrollDetails.findMany({
+        where: {
+          period: {
+            isEnded: false,
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      const bonificationPromises = payrollDetails.map(async (payrollDetail) => {
+        const bonificationAmount =
+          await this.createOrUpdateBonificationFamiliar(payrollDetail.id, user);
+        return { payrollDetailId: payrollDetail.id, bonificationAmount };
+      });
+
+      const bonificationResults = await Promise.all(bonificationPromises);
+      return bonificationResults;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Payroll', '');
     }
@@ -361,6 +493,9 @@ export class PayrollService {
           totalAmount: totalAmount,
         },
       });
+
+      await this.createSalaryPayment(user, periodId);
+
       return payrollPeriod;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Payroll', '');
@@ -431,6 +566,45 @@ export class PayrollService {
       });
 
       return payrollDetails;
+    } catch (error) {
+      this.handleDbErrorService.handleDbError(error, 'Payroll', '');
+    }
+  }
+
+  async createSalaryPayment(user: Users, payrollPeriodId: string) {
+    try {
+      const payrollPeriod = await this.prismaService.payrollPeriods.findUnique({
+        where: { id: payrollPeriodId },
+        select: {
+          id: true,
+          periodStart: true,
+          periodEnd: true,
+          isEnded: true,
+          totalAmount: true,
+        },
+      });
+
+      const salaryPayment = await this.prismaService.accountingEntry.create({
+        data: {
+          netAmount: payrollPeriod.totalAmount,
+          name: 'Pago de Salarios',
+          type: 'DEBE',
+          paymentDate: payrollPeriod.periodEnd,
+        },
+      });
+
+      const salaryPaymentBank = await this.prismaService.accountingEntry.create(
+        {
+          data: {
+            netAmount: payrollPeriod.totalAmount,
+            name: 'Banco',
+            type: 'HABER',
+            paymentDate: payrollPeriod.periodEnd,
+          },
+        },
+      );
+
+      return { salaryPayment, salaryPaymentBank };
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Payroll', '');
     }
