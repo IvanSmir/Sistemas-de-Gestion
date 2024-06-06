@@ -13,7 +13,8 @@ import {
     Th,
     Td,
     Button,
-    useDisclosure
+    useDisclosure,
+    useToast
 } from "@chakra-ui/react";
 import { ModalDetalles } from "./ModalDetalles";
 import { EditForm } from "./Edit";
@@ -72,6 +73,7 @@ export const List: React.FC<ListProps> = ({ employeeCiRuc }) => {
     const { isOpen: isAddOpen, onOpen: onAddOpen, onClose: onAddClose } = useDisclosure();
     const [isModalOpen, setModalOpen] = useState(false);
 
+    const toast = useToast();
 
     const auth = useAuth();
 
@@ -151,6 +153,13 @@ export const List: React.FC<ListProps> = ({ employeeCiRuc }) => {
             await deleteFamilyMember(id, token);
             setFamiliares(familiares.filter(familiar => familiar.id !== id));
             setModalOpen(false);
+            toast({
+                title: "Familiar eliminado",
+                description: "El familiar ha sido eliminado correctamente.",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+            });
         } catch (error) {
             console.error('Error al eliminar el familiar:', error);
             alert('No tienes autorización para realizar esta acción.');
