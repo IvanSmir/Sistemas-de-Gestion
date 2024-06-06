@@ -210,4 +210,19 @@ export class PayrollController {
       user,
     );
   }
+
+
+  
+  @Get(':id/payrollDetails/:payrollDetailId')
+  @Auth()
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get payroll details' })
+  @ApiResponse({
+    status: 200,
+    description: 'Payroll details retrieved successfully.',
+  })
+  @ApiResponse({ status: 404, description: 'Payroll details not found.' })
+  findPayrollDetails(@Param('id', ParseUUIDPipe) id: string, @Param('payrollDetailId', ParseUUIDPipe) payrollDetailId: string) {
+    return this.payrollService.findPayrollDetails(id, payrollDetailId);
+  }
 }

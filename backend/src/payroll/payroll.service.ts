@@ -609,4 +609,33 @@ export class PayrollService {
       this.handleDbErrorService.handleDbError(error, 'Payroll', '');
     }
   }
+
+  async findPayrollDetails(id: string, payrollDetailId: string) {
+    try {
+      const payrollDetails = await this.prismaService.payrollDetails.findUnique(
+        {
+          where: { id: payrollDetailId },
+          select: {
+            id: true,
+            periodId: true,
+            employeeId: true,
+            userId: true,
+            amount: true,
+            payrollItems: {
+              select: {
+                id: true,
+                payrollDetailId: true,
+                isIncome: true,
+                amount: true,
+              },
+            },
+          },
+        },
+      );
+
+      return payrollDetails;
+    } catch (error) {
+      this.handleDbErrorService.handleDbError(error, 'Payroll', '');
+    }
+  }
 }
