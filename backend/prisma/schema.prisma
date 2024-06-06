@@ -212,6 +212,8 @@ model PayrollItems {
   user            Users          @relation(fields: [userId], references: [id])
   userId          String
   isDeleted       Boolean        @default(false)
+  isIps           Boolean        @default(false)
+  isBonification  Boolean        @default(false)
 }
 
 model PayrollPeriods {
@@ -238,4 +240,15 @@ model BasicConfig {
   user      Users    @relation(fields: [userId], references: [id])
   userId    String
   isDeleted Boolean  @default(false)
+}
+
+model AccountingEntry {
+  id          String   @id @default(uuid())
+  paymentDate DateTime @default(now())
+  netAmount   Float
+  type        String
+  name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isDeleted   Boolean  @default(false)
 }
