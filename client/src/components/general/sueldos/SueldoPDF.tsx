@@ -200,13 +200,13 @@ const formatDate = (date: Date): string => {
     return `Fecha: ${day} de ${month} de ${year}`;
 };
 
-const SueldoPDF: React.FC<SueldoPDFProps> = ({ sueldo }) => {
+const SueldoPDF: React.FC<SueldoPDFProps> = ({ sueldo, currentDate }) => {
     const totalIngresos = sueldo.map(s => Number(s.ingreso)).reduce((a, b) => a + b, 0);
     const totalEgresos = sueldo.map(s => Number(s.egreso)).reduce((a, b) => a + b, 0);
     const totalAPagar = totalIngresos - totalEgresos;
     const totalAPagarEnTexto = numberToWords(totalAPagar);
 
-    const currentDate = new Date(); 
+
     const formattedDate = formatDate(currentDate);
 
     const renderPage = (isDuplicate: boolean) => (
@@ -257,7 +257,7 @@ const SueldoPDF: React.FC<SueldoPDFProps> = ({ sueldo }) => {
                         </View>
                     </View>
                 </View><View style={styles.reciboContainer}>
-                    <Text>Recibi de la empresa LA FERRETERIA un monto total de {totalAPagar} Gs, son {totalAPagarEnTexto}guaranies.</Text>
+                    <Text>Recibi de la empresa LA FERRETERIA un monto total de {totalAPagar} Gs, son {totalAPagarEnTexto}guaraníes.</Text>
                 </View><View style={styles.signatureContainer}>
                     <View>
                         <Text style={styles.signatureLine}></Text>
@@ -280,8 +280,5 @@ const SueldoPDF: React.FC<SueldoPDFProps> = ({ sueldo }) => {
     )
 
 }
-
-
-
 
 export default SueldoPDF;
