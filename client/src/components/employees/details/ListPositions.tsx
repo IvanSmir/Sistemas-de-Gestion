@@ -157,7 +157,7 @@ export const EmployeeDetailsList: React.FC = () => {
                     </Tbody>
                 </Table>
             </TableContainer>
-            <AddPositionInDetails isOpen={isAddOpen} onClose={onAddClose} fetchData={fetchEmployeesDetails} />
+            <AddPositionInDetails isOpen={isAddOpen} onClose={onAddClose} fetchData={fetchEmployeesDetails} types={[]} />
             {selectedEmployeeDetails && (
                 <EditPositionInDetails
                     isOpen={isEditOpen}

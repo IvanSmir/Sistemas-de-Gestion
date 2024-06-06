@@ -26,37 +26,43 @@ import { useParams } from "next/navigation";
 import { getPositionTypes } from "@/utils/position.utils";
 const SALARIO_MINIMO = 2680373;
 
-interface AddPositionInDetailsProps {
-    isOpen: boolean;
-    onClose: () => void;
-    fetchData: () => void;
-}
+//donde traigo los cargo
 interface prositionIDProps{
   id: string;
   name: string;
 }
+
+interface AddPositionInDetailsProps {
+  isOpen: boolean;
+  onClose: () => void;
+  fetchData: () => void;
+  employDetails?: Omit<PositionFormValues, 'positionId'> & { positionId: string };
+  types: prositionIDProps[];
+}
+
 interface PositionFormValues{
   employeeId: string;
-  positionId : string;
+  positionId :string;
   startDate: string;
   endDate: string;
   salaryType: 'minimum' | 'base';
-  salary: number | string;
+  amount: number | string;
 }
 export const AddPositionInDetails: React.FC<AddPositionInDetailsProps> = ({isOpen,onClose,fetchData}) => {
+
   const toast = useToast();
   const auth = useAuth();
   const { id } = useParams();
  
   const [isPosition, setIsPosition] = useState<prositionIDProps[]>([]);
- 
-  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<PositionFormValues>({ 
+
+  const { register, handleSubmit,trigger, watch, setValue, formState: { errors } } = useForm<PositionFormValues>({ 
     resolver: zodResolver(positionSchema)
   });
   const [isDisabled, setIsDisabled] = useState(true);
   const [initialStartDate, setInitialStartDate] = useState(new Date().toISOString().split('T')[0]);
   const salaryType = watch('salaryType');
-
+  const [values,setValues]=useState<PositionFormValues>();
 
   const fetchDataPosition = useCallback(async () => {
     const employeeId = typeof id === "string" ? id : "";
@@ -67,7 +73,13 @@ export const AddPositionInDetails: React.FC<AddPositionInDetailsProps> = ({isOpe
   }, [auth]);
 
 
-  const onSubmit = async (values: PositionFormValues) => {
+  const onSubmit = async (e: React.MouseEvent) => {
+    
+    const prueba= await trigger();
+    console.log(prueba);
+    console.log(errors);
+    if(prueba){
+    handleSubmit((e)=>{setValues(e)})();
         console.log('Form values:', values);
         console.log('Employee ID being submitted:', id);
         try {
@@ -85,13 +97,12 @@ export const AddPositionInDetails: React.FC<AddPositionInDetailsProps> = ({isOpe
           
             const newPosition = {
               employeeId: id,
-              position :{ id: values.positionId, name: '' },
-              startDate: values.startDate,
-              endDate: values.endDate,
-              salaryType: values.salaryType,
-              salary: typeof values.salary === 'number' ? values.salary : Number(values.salary), // Asegurarse de que salary sea un número
+              position :values?.positionId,
+              
+              salaryType: values?.salaryType,
+              salary: typeof values?.amount === 'number' ? values?.amount: Number(values?.amount), // Asegurarse de que salary sea un número
             };
-            
+            console.log('Datos a enviar:', newPosition);
             const data = await createPositionDetails(newPosition, token);
             setIsDisabled(false);
             toast.closeAll();
@@ -103,10 +114,10 @@ export const AddPositionInDetails: React.FC<AddPositionInDetailsProps> = ({isOpe
               isClosable: true,
             });
             setValue('employeeId', '');
-            setValue('positionId', '');
+            setValue('positionId', '' as any);
             setValue('salaryType','base');
             setValue('startDate', '');
-            setValue('salary', '');
+            setValue('amount', '');
             setValue('endDate', ''); 
             fetchData();
             onClose();
@@ -122,15 +133,15 @@ export const AddPositionInDetails: React.FC<AddPositionInDetailsProps> = ({isOpe
               setIsDisabled(false);
               console.error('Error saving position:', error);
           }
+        }
     };
     useEffect(() => {
       fetchDataPosition();
-      fetchData();
       setValue('employeeId', '');
       setValue('positionId', '' as any);
       setValue('salaryType','base');
       setValue('startDate', '');
-      setValue('salary', '');
+      setValue('amount', '');
       setValue('endDate', ''); 
   }, [auth, setValue, fetchDataPosition]);
 
@@ -141,7 +152,7 @@ export const AddPositionInDetails: React.FC<AddPositionInDetailsProps> = ({isOpe
             <ModalHeader>Agregar</ModalHeader>
             <ModalCloseButton/>
             <ModalBody>
-              <form onSubmit={handleSubmit(onSubmit)}>
+              <form >
                 <FormControl isInvalid={!!errors.positionId}>
                   <FormLabel htmlFor="positionId">Posición:</FormLabel>
                   <Select id="positionId" {...register('positionId')}>
@@ -173,20 +184,20 @@ export const AddPositionInDetails: React.FC<AddPositionInDetailsProps> = ({isOpe
                   {salaryType === 'minimum' ? (
                   <Input
                     type="number"
-                    id="salary"
+                    id="amount"
                     value={SALARIO_MINIMO}
-                    {...register('salary', {
+                    {...register('amount', {
                       value: SALARIO_MINIMO,
                      
                     })}
                   
                   />
                 ) : (
-                  <Input type="number" id="salary" {...register('salary')} />
+                  <Input type="number" id="amount" {...register('amount')} />
                 )}
-                <FormErrorMessage>{errors.salary && errors.salary.message}</FormErrorMessage>
+                <FormErrorMessage>{errors.amount && errors.amount.message}</FormErrorMessage>
                 </FormControl>
-                  <Button  mt={4} color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} type='submit' display="block" mx="auto" >
+                  <Button  mt={4} color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} onClick={onSubmit} display="block" mx="auto" >
                     Guardar
                   </Button>
                  </form>

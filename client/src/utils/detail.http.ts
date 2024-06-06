@@ -73,6 +73,7 @@ export const getEmployeeDetails = async (id: string, token: string) => {
 
 export const createPositionDetails = async (data: any, token: string) => {
   try {
+    console.log(data, "aqui estamos");
     const response = await fetch(`${API_URL}/employee-details/`, {
       method: "POST",
       headers: {
@@ -88,6 +89,7 @@ export const createPositionDetails = async (data: any, token: string) => {
 
     return response.json();
   } catch (error: any) {
+    console.log(error);
     throw new Error((error as Error).message || "Error al guardar cargo");
   }
 };

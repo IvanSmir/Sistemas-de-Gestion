@@ -1,103 +1,81 @@
-import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
+'use client'
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { AddIcon, EditIcon } from "@chakra-ui/icons";
 import {
   Box,
-  ButtonGroup,
-  Editable,
-  EditableInput,
-  EditablePreview,
+  Button,
   Flex,
-  IconButton,
-  Input,
-  useEditableControls,
-  Text,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  useDisclosure,
 } from "@chakra-ui/react";
 
-function EditableControls() {
-  const {
-    isEditing,
-    getSubmitButtonProps,
-    getCancelButtonProps,
-    getEditButtonProps,
-  } = useEditableControls();
-
-  return isEditing ? (
-    <ButtonGroup justifyContent="center" size="sm">
-      <IconButton
-        icon={<CheckIcon />}
-        aria-label="Submit"
-        {...getSubmitButtonProps()}
-        mr={2} // Aumentar el margen derecho
-        bg="transparent" // Hacer el fondo transparente
-      />
-      <IconButton
-        icon={<CloseIcon />}
-        aria-label="Cancel"
-        {...getCancelButtonProps()}
-        bg="transparent" // Hacer el fondo transparente
-      />
-    </ButtonGroup>
-  ) : (
-    <IconButton
-      size="sm"
-      icon={<EditIcon />}
-      aria-label="Edit"
-      {...getEditButtonProps()}
-      mr={2} // Aumentar el margen derecho
-      bg="transparent" // Hacer el fondo transparente
-    />
-  );
+interface ConfigBasicProps {
+  name: string;
+  value: number;
 }
 
-function CustomEditable({
-  defaultValue,
-  label,
-}: {
-  defaultValue: string,
-  label: string,
-}) {
+export const ConfigBasic: React.FC = () => {
+  const { isOpen: isAddOpen, onOpen: onAddOpen, onClose: onAddClose } = useDisclosure();
+  const [configs, setConfigs] = useState<ConfigBasicProps[]>([]);
+  
+  // Fetch data from API
+  useEffect(() => {
+    axios.get("/api/config")
+      .then((response) => {
+        setConfigs(response.data);
+      })
+      .catch((error) => {
+        console.error("There was an error fetching the data!", error);
+      });
+  }, []);
+
+  // Handle Edit Click - Placeholder function
+  const handleEditClick = (config: ConfigBasicProps, event: React.MouseEvent) => {
+    // Implement your edit functionality here
+  };
+
   return (
-    <Flex mb={8} alignItems="center">
-      <Text mr={4} fontWeight="bold" flexBasis="100px">
-        {label}
-      </Text>
-      <Editable
-        textAlign="center"
-        defaultValue={defaultValue}
-        fontSize="xl"
-        isPreviewFocusable={false}
-        flex="1"
-        whiteSpace="nowrap"
-        maxWidth="100%" // Establecer el ancho máximo al 100% para que ocupe todo el espacio disponible
-      >
-        <EditablePreview />
-        <Input
-          as={EditableInput}
-          bg="gray.100"
-          border="1px solid"
-          borderColor="gray.300" // Color del borde gris claro
-          borderRadius="md"
-          px={4} // Aumentar el padding horizontal para más espacio dentro del Input
-          _focus={{
-            borderColor: "gray.300", // Cambiar el color del borde al enfocar el Input
-            boxShadow: "none", // Eliminar la sombra al enfocar el Input
-          }}
-        />
-        <EditableControls />
-      </Editable>
-    </Flex>
+    <Box backgroundColor={'white'} borderRadius="2xl" padding="8px" >
+      <Flex justifyContent="space-between" mb={6} >
+        <Button onClick={onAddOpen} rounded={23} mr={5} fontSize={13} py={3} px={5} bgColor='gray.700' _hover={{ bgColor: "gray.800" }} gap={2} color='white'>
+          <AddIcon />Agregar tipo
+        </Button>
+      </Flex>
+      <TableContainer>
+        <Table variant="simple" fontSize="14px">
+          <Thead>
+            <Tr>
+              <Th>Nombre</Th>
+              <Th>Valor</Th>
+              <Th>Acciones</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {configs.map((config, index) => (
+              <Tr key={index}>
+                <Td>{config.name}</Td>
+                <Td>{config.value}</Td>
+                <Td>
+                  <EditIcon
+                    mr={2}
+                    cursor="pointer"
+                    onClick={(event) => handleEditClick(config, event)}
+                  />
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </TableContainer>
+    </Box>
   );
-}
+};
 
-export function EditableExample() {
-  return (
-    <Flex justifyContent="center" alignItems="center" height="100vh">
-      <Box p={5}>
-        <CustomEditable defaultValue="50000" label="Salario Actual" />
-        <CustomEditable defaultValue="15000" label="IPS" />
-        <CustomEditable defaultValue="10000" label="Bonificaciones" />
-      </Box>
-    </Flex>
-  );
-}
-
-export default EditableExample;
+export default ConfigBasic;
