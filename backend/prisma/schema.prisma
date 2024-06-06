@@ -6,16 +6,12 @@
 
 generator client {
   provider = "prisma-client-js"
-  
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  
 }
-
-
 
 model Users {
   id              String            @id @default(uuid())
@@ -37,6 +33,10 @@ model Users {
   Expenses        Expenses[]
   isDeleted       Boolean           @default(false)
   isActive        Boolean           @default(true)
+  PayrollPeriods  PayrollPeriods[]
+  PayrollItems    PayrollItems[]
+  BasicConfig     BasicConfig[]
+  PayrollDetails  PayrollDetails[]
 }
 
 model Positions {
@@ -52,21 +52,21 @@ model Positions {
 }
 
 model Person {
-  id           String         @id @default(uuid())
+  id           String          @id @default(uuid())
   name         String
   address      String
-  phone        String
-  email        String
-  ciRuc        String         @unique
+  phone        String?
+  email        String?
+  ciRuc        String          @unique
   birthDate    DateTime
   gender       String
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  user         Users          @relation(fields: [userId], references: [id])
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  user         Users           @relation(fields: [userId], references: [id])
   userId       String
   Employee     Employees?
-  FamilyMember FamilyMembers?
-  isDeleted    Boolean        @default(false)
+  FamilyMember FamilyMembers[]
+  isDeleted    Boolean         @default(false)
 }
 
 model Employees {
@@ -83,6 +83,7 @@ model Employees {
   Income          Income[]
   Expenses        Expenses[]
   isDeleted       Boolean           @default(false)
+  PayrollDetails  PayrollDetails[]
 }
 
 model FamilyTypes {
@@ -103,7 +104,7 @@ model FamilyMembers {
   familyType   FamilyTypes @relation(fields: [familyTypeId], references: [id])
   familyTypeId String
   person       Person      @relation(fields: [personId], references: [id])
-  personId     String      @unique
+  personId     String
   user         Users       @relation(fields: [userId], references: [id])
   userId       String
   createdAt    DateTime    @default(now())
@@ -182,4 +183,72 @@ model Expenses {
   user          Users        @relation(fields: [userId], references: [id])
   userId        String
   isDeleted     Boolean      @default(false)
+}
+
+model PayrollDetails {
+  id           String         @id @default(uuid())
+  period       PayrollPeriods @relation(fields: [periodId], references: [id])
+  periodId     String
+  payrollItems PayrollItems[]
+  employee     Employees      @relation(fields: [employeeId], references: [id])
+  employeeId   String
+  amount       Float?
+  isVerified   Boolean        @default(false)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  isDeleted    Boolean        @default(false)
+  user         Users          @relation(fields: [userId], references: [id])
+  userId       String
+}
+
+model PayrollItems {
+  id              String         @id @default(uuid())
+  payrollDetail   PayrollDetails @relation(fields: [payrollDetailId], references: [id])
+  payrollDetailId String
+  isIncome        Boolean
+  amount          Float
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  user            Users          @relation(fields: [userId], references: [id])
+  userId          String
+  isDeleted       Boolean        @default(false)
+  isIps           Boolean        @default(false)
+  isBonification  Boolean        @default(false)
+}
+
+model PayrollPeriods {
+  id                         String           @id @default(uuid())
+  periodStart                DateTime
+  periodEnd                  DateTime?
+  createdAt                  DateTime         @default(now())
+  updatedAt                  DateTime         @updatedAt
+  user                       Users            @relation(fields: [userId], references: [id])
+  userId                     String
+  payrollDetails             PayrollDetails[]
+  isDeleted                  Boolean          @default(false)
+  isEnded                    Boolean          @default(false)
+  DetailsWithoutVerification Int              @default(0)
+  totalAmount                Float?
+}
+
+model BasicConfig {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  value     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      Users    @relation(fields: [userId], references: [id])
+  userId    String
+  isDeleted Boolean  @default(false)
+}
+
+model AccountingEntry {
+  id          String   @id @default(uuid())
+  paymentDate DateTime @default(now())
+  netAmount   Float
+  type        String
+  name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isDeleted   Boolean  @default(false)
 }

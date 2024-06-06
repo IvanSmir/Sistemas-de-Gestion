@@ -1,10 +1,6 @@
 'use client';
-
-import { useAuth } from '@/components/context/AuthProvider';
-import { TableEmployee } from '@/components/lists/TableEmployee';
+import { ListEmployee } from '@/components/transaction/ListEmployee';
 import { getEmployees } from '@/utils/employee.http';
-import { useToast } from '@chakra-ui/react';
-import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 interface Person {
@@ -48,15 +44,9 @@ const transformData = (data: Root[]): Root[] => {
 };
 
 const ListEmployeePage: React.FC = () => {
-    const toast = useToast();
-    const { id } = useParams();
-    const [error, setError] = useState<string | null>(null);
-    const auth = useAuth();
-
     const [employeeData, setEmployeeData] = useState<Root[]>([]);
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
-    const [isSalary, setIsSalary] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -90,7 +80,7 @@ const ListEmployeePage: React.FC = () => {
             {loading ? (
                 <p>Cargando...</p>
             ) : (
-                <TableEmployee data={employeeData} columnMapping={columnMapping} setEmployeeData={setEmployeeData} total={total} isSalary={isSalary} />
+                <ListEmployee data={employeeData} columnMapping={columnMapping} setEmployeeData={setEmployeeData} total={total} />
             )}
         </>
     );

@@ -244,7 +244,7 @@ export const EmployeeDetails = () => {
                                     </Flex>
                                 </Box>
                             </Flex>
-                            <EmployeeDetailsList />
+                           
                         </Box>
 
                     </Flex>
@@ -254,14 +254,14 @@ export const EmployeeDetails = () => {
             <Tabs variant='soft-rounded' colorScheme='green'>
                 <TabList ml={4}>
                     <Tab _selected={{ color: 'white', bg: '#AA546D' }}>Familiares</Tab>
-                    <Tab _selected={{ color: 'white', bg: '#AA546D' }}>Ingresos y egresos</Tab>
+                    <Tab _selected={{ color: 'white', bg: '#AA546D' }}>Cargos</Tab>
                 </TabList>
                 <TabPanels>
                     <TabPanel>
                         <List employeeCiRuc={employeeCiRuc} />
                     </TabPanel>
                     <TabPanel>
-                        <FinanceDetailsList />
+                    <EmployeeDetailsList />
                     </TabPanel>
                 </TabPanels>
             </Tabs>

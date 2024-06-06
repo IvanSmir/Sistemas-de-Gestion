@@ -56,7 +56,7 @@ const ListEmployeePage: React.FC = () => {
     const [employeeData, setEmployeeData] = useState<Root[]>([]);
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
-    const [isSalary, setIsSalary] = useState(false);
+    const [isSalary, setIsSalary] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -81,18 +81,18 @@ const ListEmployeePage: React.FC = () => {
 
     const columnMapping = {
         'Nombre': 'name',
-        'Edad': 'age',
-        'Correo Electrónico': 'email'
+        'CI/RUC': 'ciRuc',
+        'Correo Electrónico': 'email',
     };
 
     return (
-        <>
+        <div className='w-[70vw]'>
             {loading ? (
                 <p>Cargando...</p>
             ) : (
                 <TableEmployee data={employeeData} columnMapping={columnMapping} setEmployeeData={setEmployeeData} total={total} isSalary={isSalary} />
             )}
-        </>
+        </div>
     );
 };
 
