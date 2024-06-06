@@ -343,11 +343,22 @@ export class PayrollService {
       const closeIncome = await Promise.all(closeIncomePromises);
       const closeExpense = await Promise.all(closeExpensePromises);
 
+      const payrollItems = await this.prismaService.payrollItems.findMany({
+        where: { payrollDetailId: periodId },
+        select: { amount: true },
+      });
+
+      const totalAmount = payrollItems.reduce(
+        (acc, item) => acc + item.amount,
+        0,
+      );
+
       const payrollPeriod = await this.prismaService.payrollPeriods.update({
         where: { id: periodId },
         data: {
           isEnded: true,
           userId: user.id,
+          totalAmount: totalAmount,
         },
       });
       return payrollPeriod;

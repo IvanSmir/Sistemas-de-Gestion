@@ -226,6 +226,7 @@ model PayrollPeriods {
   isDeleted                  Boolean          @default(false)
   isEnded                    Boolean          @default(false)
   DetailsWithoutVerification Int              @default(0)
+  totalAmount                Float?
 }
 
 model BasicConfig {
