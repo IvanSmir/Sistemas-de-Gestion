@@ -15,6 +15,20 @@ export const getPositions = async (page: number = 1) => {
   }
 };
 
+export const getPosition = async (term:string = "") => {
+  try {
+    const response = await fetch(`${API_URL}/${term}`);
+
+    if (!response.ok) {
+      return null
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+  }
+};
+
 export const deletePosition = async (id: string, token: string) => {
   if(!id){
     return
@@ -86,4 +100,27 @@ export const editPosition = async (id: string, position: any, token: string) => 
     throw new Error(error.message || "Error al editar la posición");
     
   }
-}; 
+};  
+
+export const getPositionTypes = async ( token: string) => {
+  try {
+    const response = await fetch(`${API_URL}`, {
+      method: "GET",
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorResponse = await response.text();
+      throw new Error(`Error al obtener cargos: ${response.status} - ${response.statusText}. Detalle: ${errorResponse}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    console.error('Error en getPositionTypes:', error);
+    throw new Error(error.message || "Error al obtener cargo");
+  }
+};

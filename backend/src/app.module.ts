@@ -12,9 +12,27 @@ import { IncomeTypesModule } from './types/income-types/income-types.module';
 import { IncomesModule } from './transactions/incomes/incomes.module';
 import { ExpenseTypesModule } from './types/expense-types/expense-types.module';
 import { ExpensesModule } from './transactions/expenses/expenses.module';
+import { PayrollModule } from './payroll/payroll.module';
+import { BasicConfigModule } from './BasicConfig/basicConfig.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), AuthModule, PositionsModule, CommonModule, PersonModule, EmployeesModule, EmployeeDetailsModule, FamilyTypesModule, FamilyMembersModule, IncomeTypesModule, IncomesModule, ExpenseTypesModule, ExpensesModule],
+  imports: [
+    ConfigModule.forRoot(),
+    AuthModule,
+    PositionsModule,
+    CommonModule,
+    PersonModule,
+    EmployeesModule,
+    EmployeeDetailsModule,
+    FamilyTypesModule,
+    FamilyMembersModule,
+    IncomeTypesModule,
+    IncomesModule,
+    ExpenseTypesModule,
+    ExpensesModule,
+    PayrollModule,
+    BasicConfigModule,
+  ],
   exports: [ConfigModule],
 })
 export class AppModule {}
