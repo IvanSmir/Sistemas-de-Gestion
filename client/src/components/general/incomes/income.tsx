@@ -79,8 +79,8 @@ export const Income: React.FC<ModalProps> = ({ isOpen, onClose }) => {
                                         borderRadius="sm"
                                     >
                                         <option value="extra">Horas extras</option>
-                                        <option value="aaaaa">aaaaa</option>
-                                        <option value="xxxxx">xxxxx</option>
+                                        <option value="comision">Comisiones</option>
+                                        <option value="bonos">Bonos</option>
                                     </Select>
                                 </FormControl>
 
