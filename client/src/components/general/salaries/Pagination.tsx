@@ -1,5 +1,6 @@
 import React from 'react';
-import { Flex, Button } from '@chakra-ui/react';
+import { Flex, Button, Text } from '@chakra-ui/react';
+import { ArrowLeftIcon, ArrowRightIcon } from '@chakra-ui/icons';
 
 type PaginationProps = {
     currentPage: number;
@@ -19,7 +20,7 @@ const PaginationSalaries: React.FC<PaginationProps> = ({ currentPage, totalPages
                 disabled={currentPage === 1}
                 m={1}
             >
-                Inicio
+                <ArrowLeftIcon />
             </Button>
             <Button
                 size={'sm'}
@@ -27,7 +28,7 @@ const PaginationSalaries: React.FC<PaginationProps> = ({ currentPage, totalPages
                 disabled={currentPage === 1}
                 m={1}
             >
-                {"<"}
+                <Text as={"b"}>{"<"}</Text>
             </Button>
             {pages.map(page => (
                 <Button
@@ -49,7 +50,7 @@ const PaginationSalaries: React.FC<PaginationProps> = ({ currentPage, totalPages
                 disabled={currentPage === totalPages}
                 m={1}
             >
-                {">"}
+                <Text as={"b"}>{">"}</Text>
             </Button>
             <Button
                 size={'sm'}
@@ -57,7 +58,7 @@ const PaginationSalaries: React.FC<PaginationProps> = ({ currentPage, totalPages
                 disabled={currentPage === totalPages}
                 m={1}
             >
-                Final
+                <ArrowRightIcon />
             </Button>
         </Flex>
     );

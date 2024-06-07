@@ -3,7 +3,7 @@
 import { useAuth } from '@/components/context/AuthProvider';
 import { TableEmployee } from '@/components/lists/TableEmployee';
 import { getEmployees } from '@/utils/employee.http';
-import { Box, Button, useToast } from '@chakra-ui/react';
+import { Box, Button, Flex, useToast } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { getPayrollDetails, createPayments, calculateIpsForAllEmployees, calculateBonificationForAllEmployees, closePayrollPeriod } from '@/utils/salary.http';
 import Period from '@/types/period';
@@ -17,6 +17,7 @@ import BonificacionModalConfirm from '@/components/general/salaries/Bonificacion
 import GenerarModalConfirm from '@/components/general/salaries/GenerarModal';
 import { PayrollPeriod } from '@/types/payments';
 import { useRouter, useParams } from 'next/navigation'
+import { IoMdArrowRoundBack } from 'react-icons/io';
 
 interface Person {
     ciRuc: string;
@@ -305,12 +306,11 @@ const ListEmployeePage: React.FC = () => {
                     handleBonification();
                 }}
             />
-            <Box display={"flex"} justifyContent={"space-between"} gap={4} margin={10}>
-                <div>
-                    <Button onClick={handleBack} background='gray.200'>Volver</Button>
+            <Button m={2} onClick={handleBack} background='gray.100'><IoMdArrowRoundBack /></Button>
 
-                </div>
-                <div>
+            <Box mb={6} display={"flex"} justifyContent={"end"} gap={4} >
+
+                <Flex gap={2}>
 
                     {payments?.payrollDetails ?
                         payments?.payrollDetails?.length > 0 && (
@@ -356,7 +356,7 @@ const ListEmployeePage: React.FC = () => {
                     >
                         Generar IPS
                     </Button>
-                </div>
+                </Flex>
             </Box>
 
             <Box display={"flex"} justifyContent={"center"} >

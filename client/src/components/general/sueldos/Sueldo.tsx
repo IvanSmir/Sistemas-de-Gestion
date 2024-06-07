@@ -11,6 +11,7 @@ import { useAuth } from "@/components/context/AuthProvider";
 import { useRouter, useParams } from 'next/navigation'
 import { generateBonusPayrollDetails, generateIpsPayrollDetails, getPayroll, getPayrollDetail, salaryPayrollDetails, verifyPayrollDetails } from '@/utils/payroll'
 import { getEmployeeByTerm } from '@/utils/employee.http'
+import { IoMdArrowRoundBack } from 'react-icons/io'
 
 const Sueldo = () => {
 
@@ -286,9 +287,10 @@ const Sueldo = () => {
     return (
         <>
             <Box width={{ base: "98%", sm: "90%", md: "80%", lg: "100%", xl: "100%", "2xl": "100%" }}>
-                <Box backgroundColor="white" borderRadius="2xl" padding="8px" marginTop={6}>
-                    <div className="flex justify-between px-5 mt-2 mb-3">
-                        <Button onClick={handleBack} background='gray.200'>Volver</Button>
+                <Box backgroundColor="white" borderRadius="2xl" padding="8px" >
+                    <Button onClick={handleBack} background='gray.100'><IoMdArrowRoundBack /></Button>
+
+                    <div className=" w-full flex justify-end px-5 mt-2 mb-3">
                         {!isClosed && (
                             <div className="flex gap-2">
 
