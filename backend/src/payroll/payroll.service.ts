@@ -251,8 +251,22 @@ export class PayrollService {
       },
     });
 
-    const PaymentDeductibleTotal = incomes.reduce(
+    console.log('INCOMES:', incomes);
+
+    const salaries = await this.prismaService.employeeDetails.findMany({
+      where: { employeeId: payrollDetail.employeeId, isActive: true },
+      select: { salary: true },
+    });
+
+    console.log('SALARIES:', salaries);
+
+    let PaymentDeductibleTotal = incomes.reduce(
       (acc, income) => acc + (income.incomeType.deductible ? income.amount : 0),
+      0,
+    );
+
+    PaymentDeductibleTotal += salaries.reduce(
+      (acc, salary) => acc + (salary.salary ? salary.salary : 0),
       0,
     );
 
@@ -261,13 +275,15 @@ export class PayrollService {
       where: { name: 'IPS' },
       select: { value: true },
     });
-    const ipsAmount = (PaymentDeductibleTotal * ips.value) / 100;
+    const ipsAmount = PaymentDeductibleTotal * (ips.value / 100);
 
+    console.log('IPS AMOUNT:', ipsAmount);
     // Verificar si ya existe un ítem de IPS
     const existingIpsItem = await this.prismaService.payrollItems.findFirst({
       where: { payrollDetailId, isIps: true, isDeleted: false },
     });
 
+    console.log('EXISTING IPS ITEM:', existingIpsItem);
     if (existingIpsItem) {
       // Si existe, actualizarlo
       await this.prismaService.payrollItems.update({
@@ -276,7 +292,7 @@ export class PayrollService {
       });
     } else {
       // Si no existe, crearlo
-      await this.prismaService.payrollItems.create({
+      const ipsItem = await this.prismaService.payrollItems.create({
         data: {
           payrollDetailId,
           userId: user.id,
@@ -286,6 +302,7 @@ export class PayrollService {
           isIps: true,
         },
       });
+      console.log('IPS ITEM:', ipsItem);
     }
 
     return ipsAmount;
@@ -521,6 +538,7 @@ export class PayrollService {
         where: { id: periodId },
         data: {
           isEnded: true,
+          periodEnd: new Date(),
           userId: user.id,
           totalAmount: totalAmount,
         },
