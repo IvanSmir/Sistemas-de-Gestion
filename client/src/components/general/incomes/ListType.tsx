@@ -51,7 +51,7 @@ export const ListIncomeTypes: React.FC = () => {
         };
 
         fetchIncomes();
-    }, [auth]);
+    }, [auth, isAddOpen, isEditOpen]);
 
     const handleAddIncomeType = () => {
         setNewIncomeType({ name: '', deductible: false });
