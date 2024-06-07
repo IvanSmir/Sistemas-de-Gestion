@@ -20,6 +20,10 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+const normalizeRUC = (ruc: string) => ruc.replace(/\./g, '');
+const denormalizeCi = (ci: string) => ci.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+
 const AddEmployeePage = () => {
     const auth = useAuth();
     const router = useRouter();
@@ -101,7 +105,11 @@ const AddEmployeePage = () => {
         toast.closeAll();
 
         const employeeData = {
-            employee,
+            employee: {
+                ...employee,
+                ciRuc: employee.ciRuc.includes('-') ? employee.ciRuc : denormalizeCi(employee.ciRuc),
+                phone: '+595' + employee.phone.slice(0),
+            },
             isNew: !isPerson,
             role: positionEmployee,
             familyMembers: relatives,

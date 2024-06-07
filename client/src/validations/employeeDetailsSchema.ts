@@ -10,18 +10,25 @@ export const employeeDetailsSchema = z.object({
     .uuid({ message: "El ID de la posición debe ser un UUID válido" }),
   endDate: z
     .preprocess(
-      (arg) => new Date(arg as string),
+      (arg) => {
+        if (arg) return new Date(arg as string);
+      },
       z
         .date()
         .refine((date) => !isNaN(date.getTime()), { message: "Invalid date" })
     )
     .optional(),
-  startDate: z.preprocess(
-    (arg) => new Date(arg as string),
-    z
-      .date()
-      .refine((date) => !isNaN(date.getTime()), { message: "Invalid date" })
-  ),
+  startDate: z
+    .preprocess(
+      (arg) => {
+        if (arg) return new Date(arg as string);
+      },
+
+      z
+        .date()
+        .refine((date) => !isNaN(date.getTime()), { message: "Invalid date" })
+    )
+    .optional(),
   salaryType: z.enum(["minimum", "base"], {
     message: "El tipo de salario debe ser 'minimum' o 'base'",
   }),

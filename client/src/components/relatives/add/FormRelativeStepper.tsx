@@ -9,6 +9,9 @@ import { getPerson } from '@/utils/person.http';
 
 const ApiUrl = process.env.NEXT_PUBLIC_API_URL + '/family-types';
 
+const normalizeRUC = (ruc: string) => ruc.replace(/\./g, '');
+const denormalizeCi = (ci: string) => ci.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
 interface FormRelativeProps {
     relatives: Relative[];
     setRelatives: (relatives: Relative[]) => void;
@@ -20,7 +23,7 @@ interface FormRelativeProps {
     employeeCiRuc: string;
 }
 
-const cedulaRegex = /^\d{1,3}(\.\d{3})*$/;
+const cedulaRegex = /^\d{6,8}$/;
 const rucRegex = /^\d{1,8}-\d$/;
 
 export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelatives, onClose, register, errors, handleSubmit, setValue, employeeCiRuc }) => {
@@ -41,6 +44,9 @@ export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelati
     }, []);
 
     const onSubmit = (data: Relative) => {
+        if (!data.ciRuc.includes('-')) {
+            data.ciRuc = denormalizeCi(data.ciRuc);
+        }
         setRelatives([...relatives, { ...data, isNew: !isPerson }]);
         console.log('data', data);
         console.log('relatives', relatives);
@@ -83,7 +89,14 @@ export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelati
             onClose();
             return;
         }
-        const isOnTheList = relatives.some((relative) => relative.ciRuc === ruc);
+
+
+        const isOnTheList = relatives.some((relative) => {
+            if (relative.ciRuc.includes('-')) {
+                return relative.ciRuc === ruc;
+            }
+            return normalizeRUC(relative.ciRuc) === normalizeRUC(ruc);
+        });
 
         if (isOnTheList) {
             toast({
@@ -97,9 +110,17 @@ export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelati
             return;
         }
         try {
+
+            let rucToCheck = ruc;
+            if (!ruc.includes('-')) {
+                rucToCheck = denormalizeCi(ruc);
+                setRuc(denormalizeCi(ruc));
+            }
+
+            console.log('ruc', ruc);
             const { user } = auth;
             const token = user?.token || '';
-            const personResponse = await getPerson(ruc, token);
+            const personResponse = await getPerson(rucToCheck, token);
 
             toast({
                 title: 'Info',

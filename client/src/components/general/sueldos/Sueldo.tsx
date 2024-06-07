@@ -1,5 +1,5 @@
 'use client'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Button, IconButton, Input, Heading, InputGroup, Box, InputLeftElement, useToast } from '@chakra-ui/react'
 import { DeleteIcon, EditIcon, SearchIcon } from '@chakra-ui/icons'
 import { Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableContainer, } from '@chakra-ui/react'
@@ -7,16 +7,78 @@ import { Tag, TagLabel, TagLeftIcon, TagRightIcon } from '@chakra-ui/react'
 import { text } from 'stream/consumers'
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import SueldoPDF from './SueldoPDF';
-import Link from 'next/link';
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/components/context/AuthProvider";
+import { useParams } from 'next/navigation'
+import { generateBonusPayrollDetails, generateIpsPayrollDetails, getPayroll, getPayrollDetail, salaryPayrollDetails, verifyPayrollDetails } from '@/utils/payroll'
+import { getEmployeeByTerm } from '@/utils/employee.http'
 
 const Sueldo = () => {
+
+    const sueldo1 = [
+        {
+            _id: "1",
+
+            concepto: "Sueldo",
+            ingreso: "2500000",
+            egreso: "0",
+
+        }
+    ]
+
+    const params = useParams()
 
     const [isVerified, setIsVerified] = useState(false);
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [isClosed, setIsClosed] = useState(false);
+    const [sueldo, setSueldo] = useState(sueldo1);
+    const [employeeId, setEmployeeId] = useState("");
+    const [refresh, setRefresh] = useState(false)
+    const [employee, setEmployee] = useState({
+        ciRuc: '',
+        name: ''
+    });
     const toast = useToast();
+
+    const periodsId = `${params.periodsId}`
+    const { user } = useAuth();
+
+    useEffect(()=>{
+        getPayroll(periodsId ?? "", user?.token ?? "")
+            .then((a)=>{console.log(a)})
+    },[periodsId])
+
+    const detailsId = `${params.detailsId}`
+
+    useEffect(()=>{
+        getPayrollDetail(periodsId ?? "", detailsId ?? '', user?.token ?? "")
+            .then((a)=>{
+                console.log(a)
+                setSueldo(a.payrollItems.filter((pi:{description:string})=>pi.description !== "IPS").map((pi: { id: string; isIncome: boolean; amount: number; description: string })=>({
+                    _id: pi.id,
+                    concepto: pi.description,
+                    ingreso: pi.isIncome? `${pi.amount}` : "0",
+                    egreso: pi.isIncome? "0" : `${pi.amount}`,
+
+                })))
+                setIsVerified(a.isVerified)
+                setIsClosed(null !== a.amount)
+                setEmployeeId(a.employeeId)
+            })
+    },[periodsId, refresh])
+
+    useEffect(()=>{
+        if(employeeId.length > 1){
+            getEmployeeByTerm(employeeId, user?.token ?? '')
+                .then(e=>{
+                    console.log(e)
+                    setEmployee({
+                        ciRuc: e.person.ciRuc ?? '',
+                        name: e.person.name ?? ''
+                    })
+                })
+        }
+    }, [employeeId])
 
     const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selected = new Date(event.target.value);
@@ -34,59 +96,126 @@ const Sueldo = () => {
         setSelectedDate(selected);
     };
 
+    const handleClickIps = () => {
+        try {
+            generateIpsPayrollDetails(periodsId, detailsId, user?.token ?? '')
+                .then(a=>{
+                    console.log("retorno de generar ips" + a)
+                })
+            setRefresh(!refresh)
+            toast({
+                title: 'IPS Generado',
+                description: 'El proceso ha sido culminado con exito.',
+                status: 'success',
+                duration: 5000,
+                isClosable: true,
+            });
+        } catch {
+            toast({
+                title: 'Error',
+                description: 'No se pudo procesar la peticion.',
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
+        }
+    }
+
+    const handleClickBonus = () => {
+        try {
+            generateBonusPayrollDetails(periodsId, detailsId, user?.token ?? '')
+                .then(a=>{
+                    console.log("retorno de generar bonus" + a)
+                })
+            setRefresh(!refresh)
+            toast({
+                title: 'Bonus Generado',
+                description: 'El proceso ha sido culminado con exito.',
+                status: 'success',
+                duration: 5000,
+                isClosable: true,
+            });
+        } catch {
+            toast({
+                title: 'Error',
+                description: 'No se pudo procesar la peticion.',
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
+        }
+    }
+
+    const handleClickSalary = () => {
+        try {
+            salaryPayrollDetails(periodsId, employeeId, user?.token ?? '')
+                .then(a=>{
+                    console.log("retorno de generar bonus" + a)
+                })
+            setRefresh(!refresh)
+            toast({
+                title: 'Bonus Generado',
+                description: 'El proceso ha sido culminado con exito.',
+                status: 'success',
+                duration: 5000,
+                isClosable: true,
+            });
+        } catch {
+            toast({
+                title: 'Error',
+                description: 'No se pudo procesar la peticion.',
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
+        }
+    }
+
     const handleVerification = () => {
-        setIsVerified(true);
-        toast({
-            title: 'Verificado',
-            description: 'El proceso ha sido verificado.',
-            status: 'success',
-            duration: 5000,
-            isClosable: true,
-        });
+        try {
+            verifyPayrollDetails(periodsId, detailsId, user?.token ?? '')
+                .then(a=>{
+                    console.log("retorno de payroll verification" + a)
+                })
+            setIsVerified(true);   
+            toast({
+                title: 'Verificado',
+                description: 'El proceso ha sido verificado.',
+                status: 'success',
+                duration: 5000,
+                isClosable: true,
+            });
+        } catch {
+            //console.error('Error:', error);
+            toast({
+                title: 'Error',
+                description: 'No se pudo verificar la nómina.',
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
+        }
     };
 
-    const sueldo = [
-        {
-            _id: "1",
-
-            concepto: "Sueldo",
-            ingreso: "2500000",
-            egreso: "0",
-
-        },
-        {
-            _id: "2",
-            concepto: "Bonificacion",
-            ingreso: "50000",
-            egreso: "0",
-        },
-        {
-            _id: "3",
-            concepto: "Adelanto",
-            ingreso: "0",
-            egreso: "700000",
-
-        },
-        {
-            _id: "4",
-
-            concepto: "Retiro",
-            ingreso: "0",
-            egreso: "15000",
-
-        },
-    ]
+    
 
 
 
     const handleClosure = () => {
         if (sueldo.length > 0) {
-            setIsClosed(true);
+            // setIsClosed(true);
+            // toast({
+            //     title: 'Exito',
+            //     description: 'El proceso ha sido cerrado.',
+            //     status: 'success',
+            //     duration: 5000,
+            //     isClosable: true,
+            // });
             toast({
-                title: 'Exito',
-                description: 'El proceso ha sido cerrado.',
-                status: 'success',
-                duration: 5000,
+                title: 'Informacion',
+                description: 'Debes cerrar el Periodo, y podras generar el pdf.',
+                status: 'info',
+                duration: 10000,
                 isClosable: true,
             });
         } else {
@@ -107,13 +236,9 @@ const Sueldo = () => {
                 <Box backgroundColor="white" borderRadius="2xl" padding="8px" marginTop={6}>
                     <div className="flex justify-between px-5 mt-2 mb-3">
                         <div className="flex gap-2">
-                            <Button fontSize={12} borderRadius='full' background='pink.100' onClick={() => {
-                                console.log("bonificacion")
-                            }}>Volver</Button>
-                            <Button fontSize={12} borderRadius='full' background='pink.200' onClick={() => {
-                                console.log("general sueldo")
-                            }}>Cierre-sueldo</Button>
-
+                            <Button fontSize={12} borderRadius='full' background='pink.100' onClick={handleClickIps}>Generar IPS</Button>
+                            <Button fontSize={12} borderRadius='full' background='pink.100' onClick={handleClickBonus}>G. Bonificacion</Button>
+                           <Button fontSize={12} borderRadius='full' background='pink.200' onClick={handleClickSalary}>Generar sueldo</Button>
                         </div>
 
                     </div>
@@ -136,11 +261,11 @@ const Sueldo = () => {
                         <div className="flex gap-2">
                             <div className="pl-2 flex flex-col">
                                 <span>Nombre:</span>
-                                <Input type='search' width={200} placeholder='Nombre' />
+                                <Input type='search' value={employee.name} width={200} disabled placeholder='Nombre' />
                             </div>
                             <div className="flex flex-col">
                                 <span>CI:</span>
-                                <Input type='search' width={200} placeholder='CI' />
+                                <Input type='search' value={employee.ciRuc.replaceAll(".", "")} width={200} disabled placeholder='CI' />
                             </div>
                         </div>
 
@@ -158,7 +283,7 @@ const Sueldo = () => {
                                         <Th>Concepto</Th>
                                         <Th >Ingresos</Th>
                                         <Th >Egresos</Th>
-                                        {/* <Th >Acciones</Th> */}
+                                      
                                     </Tr>
                                 </Thead>
                                 <Tbody>
@@ -169,11 +294,7 @@ const Sueldo = () => {
                                                 <Td className=' py-1'>{sueldo.concepto}</Td>
                                                 <Td className=' py-1'>{sueldo.ingreso}</Td>
                                                 <Td className=' py-1'>{sueldo.egreso}</Td>
-                                                {/* <Td className='flex gap-1 px-4 py-1'>
-                                            <IconButton aria-label='Editar' colorScheme='white' icon={<EditIcon color={'gray'}/>} />
-                                            <IconButton aria-label='borrar' colorScheme='white'  icon={<DeleteIcon color={'gray'}/>} />
-                                         </Td>   
-                                            */}
+                                          
 
 
                                             </Tr>)
@@ -207,11 +328,11 @@ const Sueldo = () => {
                             <Button backgroundColor={'#e4b1bc'} onClick={handleVerification}>Verificado</Button>
                         )}
                         {isVerified && !isClosed && (
-                            <Button backgroundColor={'#e4b1bc'} onClick={handleClosure}>Cerrar Proceso</Button>
+                            <Button backgroundColor={'#e4b1bc'} onClick={handleClosure}>Generar PDF</Button>
                         )}
                         {isClosed && (
                             <PDFDownloadLink
-                                document={<SueldoPDF sueldo={sueldo} currentDate={selectedDate} />}
+                                document={<SueldoPDF sueldo={sueldo} currentDate={selectedDate} employee={employee} />}
                                 fileName="sueldo.pdf"
                             >
                                 {({ blob, url, loading, error }) =>

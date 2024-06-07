@@ -10,16 +10,20 @@ export const positionSchema = z.object({
     z.number().positive("El salario debe ser un número positivo")
   ),
 
-  endDate: z.preprocess(
-    (arg) => new Date(arg as string),
-    z
-      .date()
-      .refine((date) => !isNaN(date.getTime()), { message: "Invalid date" })
-  ),
-  startDate: z.preprocess(
-    (arg) => new Date(arg as string),
-    z
-      .date()
-      .refine((date) => !isNaN(date.getTime()), { message: "Invalid date" })
-  ),
+  endDate: z
+    .preprocess(
+      (arg) => new Date(arg as string),
+      z
+        .date()
+        .refine((date) => !isNaN(date.getTime()), { message: "Invalid date" })
+    )
+    .optional(),
+  startDate: z
+    .preprocess(
+      (arg) => new Date(arg as string),
+      z
+        .date()
+        .refine((date) => !isNaN(date.getTime()), { message: "Invalid date" })
+    )
+    .optional(),
 });

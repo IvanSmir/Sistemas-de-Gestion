@@ -7,7 +7,6 @@ import Employee from "@/types/employee";
 import { getPerson } from '@/utils/person.http';
 import { useAuth } from '@/components/context/AuthProvider';
 import { useRouter } from 'next/navigation';
-import { circIn } from 'framer-motion';
 interface FormEmployeeProps {
     register: UseFormRegister<Employee>;
     errors: FieldErrors<Employee>;
@@ -17,8 +16,10 @@ interface FormEmployeeProps {
 
 }
 
-const cedulaRegex = /^\d{1,3}(\.\d{3})*$/;
+const cedulaRegex = /^\d{6,8}$/;
 const rucRegex = /^\d{1,8}-\d$/;
+const normalizeRUC = (ruc: string) => ruc.replace(/\./g, '');
+const denormalizeCi = (ci: string) => ci.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
 export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors, setIsPerson, setValue, setEmployeeCiRuc }) => {
     const toast = useToast();
@@ -36,7 +37,13 @@ export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors, se
         try {
             const { user } = auth;
             const token = user?.token || '';
-            if (ruc.trim() === '') {
+            let rucToCheck = ruc;
+            if (!ruc.includes('-')) {
+                rucToCheck = denormalizeCi(ruc);
+                setRuc(rucToCheck);
+            }
+
+            if (rucToCheck.trim() === '') {
                 toast({
                     title: 'Info',
                     description: 'El CI/RUC no puede estar vacío',
@@ -46,7 +53,8 @@ export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors, se
                 });
                 return;
             }
-            if (!cedulaRegex.test(ruc) && !rucRegex.test(ruc)) {
+
+            if (!cedulaRegex.test(normalizeRUC(rucToCheck)) && !rucRegex.test(rucToCheck)) {
                 toast({
                     title: 'Info',
                     description: 'El CI/RUC debe ser un número de cédula o RUC válido',
@@ -58,7 +66,8 @@ export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors, se
             }
 
 
-            const employeeResponse = await getPerson(ruc, token);
+
+            const employeeResponse = await getPerson(rucToCheck, token);
 
             console.log(employeeResponse);
             if (employeeResponse.isEmployee) {

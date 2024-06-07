@@ -42,8 +42,11 @@ interface ModalProps {
 }
 
 
-const cedulaRegex = /^\d{1,3}(\.\d{3})*$/;
+const cedulaRegex = /^\d{6,8}$/;
 const rucRegex = /^\d{1,8}-\d$/;
+
+const normalizeRUC = (ruc: string) => ruc.replace(/\./g, '');
+const denormalizeCi = (ci: string) => ci.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
 export const Form: React.FC<ModalProps> = ({ isOpen, onClose, employeeCiRuc, relatives, fetchDataFamily }) => {
     const toast = useToast();
@@ -78,6 +81,8 @@ export const Form: React.FC<ModalProps> = ({ isOpen, onClose, employeeCiRuc, rel
                 duration: null,
                 isClosable: true,
             });
+            relative.ciRuc = relative.ciRuc.includes('-') ? relative.ciRuc : denormalizeCi(relative.ciRuc);
+            console.log('relative', { ...relative });
             const data = await createFamilyMember({ ...relative, isNew: !isPerson }, id as string, token);
             setIsDisabled(false);
             toast.closeAll();
@@ -164,7 +169,17 @@ export const Form: React.FC<ModalProps> = ({ isOpen, onClose, employeeCiRuc, rel
             onClose();
             return;
         }
-        const isOnTheList = relatives.some((relative) => relative.person.ciRuc === ruc);
+
+        const isOnTheList = relatives.some((relative) => {
+            console.log('relative', relative);
+            if (relative.person.ciRuc.includes('-')) {
+                return relative.person.ciRuc === ruc;
+            }
+            return normalizeRUC(relative.person.ciRuc) === normalizeRUC(ruc);
+        });
+
+
+
 
         if (isOnTheList) {
             toast({
@@ -178,9 +193,12 @@ export const Form: React.FC<ModalProps> = ({ isOpen, onClose, employeeCiRuc, rel
             return;
         }
         try {
+
+
+
             const { user } = auth;
             const token = user?.token || '';
-            const personResponse = await getPerson(ruc, token);
+            const personResponse = await getPerson(ruc.includes('-') ? ruc : denormalizeCi(ruc), token);
 
             toast({
                 title: 'Info',
@@ -228,6 +246,9 @@ export const Form: React.FC<ModalProps> = ({ isOpen, onClose, employeeCiRuc, rel
             }
             setIsDisabled(false);
 
+        }
+        finally {
+            setRuc(ruc);
         }
     };
 

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const isCedulaOrRUC = (value: string) => {
-  const cedulaRegex = /^\d{1,3}(\.\d{3})*$/;
+  const cedulaRegex = /^\d{6,8}$/;
   const rucRegex = /^\d{1,8}-\d$/;
   return cedulaRegex.test(value) || rucRegex.test(value);
 };

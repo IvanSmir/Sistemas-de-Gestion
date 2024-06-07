@@ -90,6 +90,25 @@ export class PayrollService {
     user: Users,
   ) {
     try {
+      const existingPayrollDetails =
+        await this.prismaService.payrollDetails.findMany({
+          where: { periodId, employeeId },
+          select: { id: true },
+        });
+
+      const payrollDetailIds = existingPayrollDetails.map(
+        (detail) => detail.id,
+      );
+
+      if (payrollDetailIds.length > 0) {
+        await this.prismaService.payrollItems.deleteMany({
+          where: { payrollDetailId: { in: payrollDetailIds } },
+        });
+        await this.prismaService.payrollDetails.deleteMany({
+          where: { id: { in: payrollDetailIds } },
+        });
+      }
+
       const payrollDetails = await this.prismaService.payrollDetails.create({
         data: {
           periodId,
@@ -558,7 +577,11 @@ export class PayrollService {
     }
   }
 
-  async verifyPayrollDetails(user: Users, periodDetailsId: string) {
+  async verifyPayrollDetails(
+    user: Users,
+    periodDetailsId: string,
+    periodId: string,
+  ) {
     try {
       const payrollDetails = await this.prismaService.payrollDetails.update({
         where: { id: periodDetailsId },
@@ -569,9 +592,8 @@ export class PayrollService {
       });
 
       const payrollPeriod = await this.prismaService.payrollPeriods.update({
-        where: { id: periodDetailsId },
+        where: { id: periodId },
         data: {
-          isEnded: true,
           DetailsWithoutVerification: {
             decrement: 1,
           },
@@ -630,13 +652,29 @@ export class PayrollService {
           where: { id: payrollDetailId },
           select: {
             id: true,
-            periodId: true,
+            employee: {
+              select: {
+                person: {
+                  select: {
+                    ciRuc: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+            isVerified: true,
             employeeId: true,
+            user: {
+              select: {
+                fullName: true,
+              },
+            },
             userId: true,
             amount: true,
             payrollItems: {
               select: {
                 id: true,
+                description: true,
                 payrollDetailId: true,
                 isIncome: true,
                 amount: true,
