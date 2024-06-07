@@ -41,3 +41,44 @@ export const createPayroll = async ( token: string) => {
         throw new Error((error as Error).message || "Error al crear salario");
     }
 };
+ 
+export const createPayments = async (periodId: string, token: string) => {
+    try {
+        const response = await fetch(`${API_URL}/${periodId}/createPayments`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Error al crear salario");
+        }
+
+
+        return response.json();
+    } catch (error: any) {
+        throw new Error((error as Error).message || "Error al crear salario");
+    }
+};
+export const getPayrollDetails = async (periodId: string, token: string) => {
+    try {
+        const response = await fetch(`${API_URL}/${periodId}`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Error al obtener salarios");
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error: any) {
+        throw new Error((error as Error).message || "Error al obtener salarios");
+    }
+};
