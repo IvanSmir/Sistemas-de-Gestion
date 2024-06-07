@@ -154,7 +154,7 @@ const Sueldo = () => {
                 })
             setRefresh(!refresh)
             toast({
-                title: 'Bonus Generado',
+                title: 'Sueldo Generado',
                 description: 'El proceso ha sido culminado con exito.',
                 status: 'success',
                 duration: 5000,
@@ -203,21 +203,21 @@ const Sueldo = () => {
 
     const handleClosure = () => {
         if (sueldo.length > 0) {
-            // setIsClosed(true);
-            // toast({
-            //     title: 'Exito',
-            //     description: 'El proceso ha sido cerrado.',
-            //     status: 'success',
-            //     duration: 5000,
-            //     isClosable: true,
-            // });
+            setIsClosed(true);
             toast({
-                title: 'Informacion',
-                description: 'Debes cerrar el Periodo, y podras generar el pdf.',
-                status: 'info',
-                duration: 10000,
+                title: 'Exito',
+                description: 'El proceso ha sido cerrado.',
+                status: 'success',
+                duration: 5000,
                 isClosable: true,
             });
+            // toast({
+            //     title: 'Informacion',
+            //     description: 'Debes cerrar el Periodo, y podras generar el pdf.',
+            //     status: 'info',
+            //     duration: 10000,
+            //     isClosable: true,
+            // });
         } else {
             toast({
                 title: 'Error',
@@ -328,7 +328,7 @@ const Sueldo = () => {
                             <Button backgroundColor={'#e4b1bc'} onClick={handleVerification}>Verificado</Button>
                         )}
                         {isVerified && !isClosed && (
-                            <Button backgroundColor={'#e4b1bc'} onClick={handleClosure}>Generar PDF</Button>
+                            <Button backgroundColor={'#e4b1bc'} onClick={handleClosure}>Cerrar proceso</Button>
                         )}
                         {isClosed && (
                             <PDFDownloadLink

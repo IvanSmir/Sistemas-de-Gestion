@@ -103,7 +103,7 @@ export const FormAddPosition: React.FC<FormAddPositionProps> = ({ isOpen, onClos
 
     return (
         <Flex justify="center" align="center" minH="90vh">
-            <Box bg="white" p={5} borderRadius="md" boxShadow="md" width="90%">
+            <Box bg="white" p={5} borderRadius="md" boxShadow="md" width="60%">
                 <Text fontSize='24px' mb={6} textAlign="center" color="#AA546D"> Agregar Cargo</Text>
 
                 <form onSubmit={()=>{}}>
