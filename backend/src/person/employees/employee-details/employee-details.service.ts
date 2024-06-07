@@ -22,6 +22,7 @@ export class EmployeeDetailsService {
         name: true,
       },
     },
+    positionId: true,
     startDate: true,
     endDate: true,
     salaryType: true,
