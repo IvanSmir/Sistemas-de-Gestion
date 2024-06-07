@@ -1,4 +1,14 @@
-import { Box, BoxProps, Flex, useColorModeValue, Text, CloseButton, VStack, Collapse, IconButton } from "@chakra-ui/react";
+import {
+    Box,
+    BoxProps,
+    Flex,
+    useColorModeValue,
+    Text,
+    CloseButton,
+    VStack,
+    Collapse,
+    IconButton
+} from "@chakra-ui/react";
 import { NavItem } from "./NavItem";
 import { useState } from "react";
 import { IconType } from "react-icons";
@@ -19,13 +29,13 @@ const LinkItems: Array<LinkItemProps> = [
     {
         name: 'Movimientos', icon: GrTransaction, href: '#', subItems: [
             { name: 'Ingresos', icon: GrTransaction, href: '/transaction/incomes' },
-            { name: 'Egresos', icon: GrTransaction, href: '/transaction/expenses' }
-        ]
-    },
-    {
-        name: 'Tipo de sueldo', icon: GrTransaction, href: '#', subItems: [
-            { name: 'Ingresos', icon: GrTransaction, href: '/general/incomeType/' },
-            { name: 'Egresos', icon: GrTransaction, href: '/general/expenseType' }
+            { name: 'Egresos', icon: GrTransaction, href: '/transaction/expenses' },
+            {
+                name: 'Tipos de movimientos', icon: GrTransaction, href: '#', subItems: [
+                    { name: 'Ingresos', icon: GrTransaction, href: '/general/incomeType/' },
+                    { name: 'Egresos', icon: GrTransaction, href: '/general/expenseType' }
+                ]
+            }
         ]
     },
     { name: 'Settings', icon: FiSettings, href: '/ConfigBasic' },
@@ -37,14 +47,14 @@ interface SidebarProps extends BoxProps {
 
 export const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
     const [isMovementsOpen, setIsMovementsOpen] = useState(false);
-    const [isSalaryTypeOpen, setIsSalaryTypeOpen] = useState(false);
+    const [isTransactionTypeOpen, setIsTransactionTypeOpen] = useState(false);
 
     const handleMovementsClick = () => {
         setIsMovementsOpen(!isMovementsOpen);
     };
 
-    const handleSalaryTypeClick = () => {
-        setIsSalaryTypeOpen(!isSalaryTypeOpen);
+    const handleTransactionTypeClick = () => {
+        setIsTransactionTypeOpen(!isTransactionTypeOpen);
     };
 
     return (
@@ -70,29 +80,74 @@ export const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
                             color="white"
                             icon={link.icon}
                             href={link.href}
-                            onClick={link.name === 'Movimientos' ? handleMovementsClick : link.name === 'Tipo de sueldo' ? handleSalaryTypeClick : undefined}
+                            onClick={
+                                link.name === 'Movimientos'
+                                    ? handleMovementsClick
+                                    : link.name === 'Tipos de movimientos'
+                                    ? handleTransactionTypeClick
+                                    : undefined
+                            }
                             flex="1"
                         >
                             {link.name}
                         </NavItem>
-                        {(link.name === 'Movimientos' || link.name === 'Tipo de sueldo') && (
+                        {(link.name === 'Movimientos' || link.name === 'Tipos de movimientos') && (
                             <IconButton
                                 aria-label={`Expand ${link.name}`}
                                 icon={<FiChevronDown />}
                                 size="sm"
-                                onClick={link.name === 'Movimientos' ? handleMovementsClick : handleSalaryTypeClick}
+                                onClick={
+                                    link.name === 'Movimientos'
+                                        ? handleMovementsClick
+                                        : handleTransactionTypeClick
+                                }
                                 variant="ghost"
                                 color="white"
                             />
                         )}
                     </Flex>
                     {link.subItems && (
-                        <Collapse in={link.name === 'Movimientos' ? isMovementsOpen : isSalaryTypeOpen}>
+                        <Collapse in={link.name === 'Movimientos' ? isMovementsOpen : isTransactionTypeOpen}>
                             <VStack pl="8" align="start">
                                 {link.subItems.map((subItem) => (
-                                    <NavItem color="white" key={subItem.name} icon={subItem.icon} href={subItem.href}>
-                                        {subItem.name}
-                                    </NavItem>
+                                    <Box key={subItem.name}>
+                                        <Flex align="center">
+                                            <NavItem
+                                                color="white"
+                                                icon={subItem.icon}
+                                                href={subItem.href}
+                                                onClick={
+                                                    subItem.name === 'Tipos de movimientos'
+                                                        ? handleTransactionTypeClick
+                                                        : undefined
+                                                }
+                                                flex="1"
+                                            >
+                                                {subItem.name}
+                                            </NavItem>
+                                            {subItem.subItems && (
+                                                <IconButton ml="15"
+                                                    aria-label={`Expand ${subItem.name}`}
+                                                    icon={<FiChevronDown />}
+                                                    size="sm"
+                                                    onClick={handleTransactionTypeClick}
+                                                    variant="ghost"
+                                                    color="white"
+                                                />
+                                            )}
+                                        </Flex>
+                                        {subItem.subItems && (
+                                            <Collapse in={isTransactionTypeOpen}>
+                                                <VStack pl="8" align="start">
+                                                    {subItem.subItems.map((nestedSubItem) => (
+                                                        <NavItem color="white" key={nestedSubItem.name} icon={nestedSubItem.icon} href={nestedSubItem.href}>
+                                                            {nestedSubItem.name}
+                                                        </NavItem>
+                                                    ))}
+                                                </VStack>
+                                            </Collapse>
+                                        )}
+                                    </Box>
                                 ))}
                             </VStack>
                         </Collapse>
@@ -102,6 +157,7 @@ export const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         </Box>
     );
 };
+
 
 
 

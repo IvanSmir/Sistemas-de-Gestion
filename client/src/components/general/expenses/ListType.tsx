@@ -127,7 +127,7 @@ export const ListExpenseTypes: React.FC = () => {
                 <Flex gap={2}>
                     {/* Aquí puedes agregar un filtro por nombre si lo necesitas */}
                 </Flex>
-                <Button onClick={handleAddExpenseType}>Agregar Tipo de Egreso</Button>
+                <Button onClick={handleAddExpenseType}  color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }}>Agregar Tipo de Egreso</Button>
             </Flex>
             <TableContainer>
                 <Table variant="simple" fontSize="14px">

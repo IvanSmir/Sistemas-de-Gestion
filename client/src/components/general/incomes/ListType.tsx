@@ -51,7 +51,7 @@ export const ListIncomeTypes: React.FC = () => {
         };
 
         fetchIncomes();
-    }, [auth]);
+    }, [auth, isAddOpen, isEditOpen]);
 
     const handleAddIncomeType = () => {
         setNewIncomeType({ name: '', deductible: false });
@@ -96,15 +96,20 @@ export const ListIncomeTypes: React.FC = () => {
     
     const handleSaveIncomeType = (incomeType: IncomeType) => {
         if (incomeType.id) {
-            setIncomes(incomes.map(inc => (inc.id === incomeType.id ? incomeType : inc)));
+            // Actualizar el tipo de ingreso existente en el estado
+            setIncomes(prevIncomes =>
+                prevIncomes.map(inc => (inc.id === incomeType.id ? incomeType : inc))
+            );
             setSelectedIncome(null);
             onEditClose();
         } else {
-            setIncomes([...incomes, incomeType]);
+            // Agregar el nuevo tipo de ingreso al estado
+            setIncomes(prevIncomes => [...prevIncomes, incomeType]);
             setNewIncomeType(null);
             onAddClose();
         }
     };
+    
     
     const handleEditIncomeType = (income: IncomeType) => {
         setSelectedIncome(income);
@@ -112,21 +117,32 @@ export const ListIncomeTypes: React.FC = () => {
     };
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value, type } = e.target;
+        const updatedValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
+    
         if (selectedIncome) {
             setSelectedIncome({
                 ...selectedIncome,
-                [e.target.name]: e.target.value,
+                [name]: updatedValue,
+            });
+        }
+        
+        if (newIncomeType) {
+            setNewIncomeType({
+                ...newIncomeType,
+                [name]: updatedValue,
             });
         }
     };
+    
+    
 
     return (
         <Box backgroundColor={'white'} width={1000} borderRadius="2xl" padding="8px" margin="auto">
             <Flex justifyContent="space-between" mb={6}>
                 <Flex gap={2}>
-                    {/* Aquí puedes agregar un filtro por nombre si lo necesitas */}
                 </Flex>
-                <Button onClick={handleAddIncomeType}>Agregar Tipo de Ingreso</Button>
+                <Button onClick={handleAddIncomeType}  color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }}>Agregar Tipo de Ingreso</Button>
             </Flex>
             <TableContainer>
                 <Table variant="simple" fontSize="14px">
