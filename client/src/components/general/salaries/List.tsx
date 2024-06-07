@@ -37,7 +37,6 @@ export const TableSalaries: React.FC<PaymentsProps> = ({ payments }) => {
                             <Th >Nombre</Th>
                             <Th >CI/RUC</Th>
                             <Th>Detalle</Th>
-                            <Th>Recibo</Th>
                             <Th textAlign="center">Verificado</Th>
 
                         </Tr>
@@ -53,11 +52,6 @@ export const TableSalaries: React.FC<PaymentsProps> = ({ payments }) => {
                                     <Td>
                                         <Link className='text-blue-500' href={`/general/salaries/periods/${periodsId}/${datum.id}`}>
                                             Detalles
-                                        </Link>
-                                    </Td>
-                                    <Td >
-                                        <Link href={`/general/salaries/periods/details/${datum.id}`}>
-                                            Recibo
                                         </Link>
                                     </Td>
                                     <Td display={"flex"} justifyContent={"center"}>

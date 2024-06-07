@@ -64,12 +64,8 @@ const ListEmployeePage: React.FC = () => {
     const { periodsId } = useParams();
     const auth = useAuth();
     const [payments, setPayments] = useState<PayrollPeriod | undefined>(undefined);
-
-
-
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [total, setTotal] = useState(0);
-
 
     const columnMapping = {
         'Nombre': 'name',
@@ -78,10 +74,20 @@ const ListEmployeePage: React.FC = () => {
     };
 
     const createPayment = async () => {
+        setLoading(true);
         try {
             const { user } = auth;
             const token = user?.token || '';
+            toast.closeAll();
+            toast({
+                title: 'Cargando',
+                description: 'Por favor espere...',
+                status: 'loading',
+                duration: null,
+                isClosable: true,
+            });
             const data = await createPayments(periodsId as string, token);
+            toast.closeAll();
             toast({
                 title: "Pago de Salarios",
                 description: "El proceso ha sido verificado.",
@@ -91,9 +97,7 @@ const ListEmployeePage: React.FC = () => {
             });
             console.log("dataaaaa", data);
             fetchPayrolls();
-        }
-
-        catch (error) {
+        } catch (error) {
             console.error('Error al generar salario:', error);
             toast({
                 title: "Error",
@@ -102,14 +106,27 @@ const ListEmployeePage: React.FC = () => {
                 duration: 3000,
                 isClosable: true,
             });
+        } finally {
+            setLoading(false);
         }
     }
+
     const handleIps = async () => {
+        setLoading(true);
         try {
             const { user } = auth;
             const token = user?.token || '';
+            toast.closeAll();
+            toast({
+                title: 'Cargando',
+                description: 'Por favor espere...',
+                status: 'loading',
+                duration: null,
+                isClosable: true,
+            });
             const data = await calculateIpsForAllEmployees(periodsId as string, token);
             console.log(data);
+            toast.closeAll();
             toast({
                 title: "IPS",
                 description: "El proceso ha sido verificado.",
@@ -118,8 +135,7 @@ const ListEmployeePage: React.FC = () => {
                 isClosable: true,
             });
             fetchPayrolls();
-        }
-        catch (error) {
+        } catch (error) {
             console.error('Error al calcular IPS:', error);
             toast({
                 title: "Error",
@@ -128,14 +144,27 @@ const ListEmployeePage: React.FC = () => {
                 duration: 3000,
                 isClosable: true,
             });
+        } finally {
+            setLoading(false);
         }
     }
+
     const handleBonification = async () => {
+        setLoading(true);
         try {
             const { user } = auth;
             const token = user?.token || '';
+            toast.closeAll();
+            toast({
+                title: 'Cargando',
+                description: 'Por favor espere...',
+                status: 'loading',
+                duration: null,
+                isClosable: true,
+            });
             const data = await calculateBonificationForAllEmployees(periodsId as string, token);
             console.log(data);
+            toast.closeAll();
             toast({
                 title: "Bonificaciones",
                 description: "El proceso ha sido verificado.",
@@ -144,8 +173,7 @@ const ListEmployeePage: React.FC = () => {
                 isClosable: true,
             });
             fetchPayrolls();
-        }
-        catch (error) {
+        } catch (error) {
             console.error('Error al calcular bonificaciones:', error);
             toast({
                 title: "Error",
@@ -154,12 +182,24 @@ const ListEmployeePage: React.FC = () => {
                 duration: 3000,
                 isClosable: true,
             });
+        } finally {
+            setLoading(false);
         }
     }
+
     const handleClosePayroll = async () => {
+        setLoading(true);
         try {
             const { user } = auth;
             const token = user?.token || '';
+            toast.closeAll();
+            toast({
+                title: 'Cargando',
+                description: 'Por favor espere...',
+                status: 'loading',
+                duration: null,
+                isClosable: true,
+            });
             const data = await closePayrollPeriod(periodsId as string, token);
             console.log(data);
             toast({
@@ -170,8 +210,7 @@ const ListEmployeePage: React.FC = () => {
                 isClosable: true,
             });
             fetchPayrolls();
-        }
-        catch (error) {
+        } catch (error) {
             console.error('Error al cerrar periodo:', error);
             toast({
                 title: "Error",
@@ -180,28 +219,46 @@ const ListEmployeePage: React.FC = () => {
                 duration: 3000,
                 isClosable: true,
             });
+        } finally {
+            setLoading(false);
         }
     }
 
-
-
     const fetchPayrolls = useCallback(async () => {
+        setLoading(true);
         try {
+            toast.closeAll();
+            toast({
+                title: 'Cargando',
+                description: 'Por favor espere...',
+                status: 'loading',
+                duration: null,
+                isClosable: true,
+            });
             const { user } = auth;
             const token = user?.token || '';
             const data = await getPayrollDetails(periodsId as string, token);
+            toast.closeAll();
+            toast({
+                title: "Cargado",
+                description: "Datos de salario cargados con éxito",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+            });
             console.log("data33333", data);
             setPayments(data);
         } catch (error) {
             console.error('Error al obtener los empleados:', error);
+        } finally {
+            setLoading(false);
         }
-    }, [periodsId, auth]);
+    }, [periodsId, auth, toast]);
 
     const [showModalGenerar, setShowModalGenerar] = useState(false);
     const [showModalIps, setShowModalIps] = useState(false);
     const [showModalBonificacion, setShowModalBonificacion] = useState(false);
     const [showModalCierre, setShowModalCierre] = useState(false);
-
 
     useEffect(() => {
         fetchPayrolls()
@@ -224,7 +281,6 @@ const ListEmployeePage: React.FC = () => {
                     setShowModalIps(false);
                     handleIps();
                 }}
-
             />
             <CierreModalConfirm
                 isOpen={showModalCierre}
@@ -234,7 +290,6 @@ const ListEmployeePage: React.FC = () => {
                     handleClosePayroll();
                 }}
                 detailsWhiteoutVerified={payments?.DetailsWithoutVerification || 0}
-
             />
             <BonificacionModalConfirm
                 isOpen={showModalBonificacion}
@@ -243,41 +298,58 @@ const ListEmployeePage: React.FC = () => {
                     setShowModalBonificacion(false);
                     handleBonification();
                 }}
-
             />
             <Box display={"flex"} justifyContent={"end"} gap={4} margin={10}>
                 {payments?.payrollDetails ?
                     payments?.payrollDetails?.length > 0 && (
-                        <Button fontSize={13} borderRadius='full' textColor={'white'} background='pink.500' isDisabled={payments?.isEnded} onClick={() => setShowModalCierre(true)}>
+                        <Button
+                            fontSize={13}
+                            borderRadius='full'
+                            textColor={'white'}
+                            background='pink.500'
+                            isDisabled={payments?.isEnded || loading}
+                            onClick={() => setShowModalCierre(true)}
+                        >
                             Cierre
                         </Button>
-
                     ) : (
                         <>
                         </>
                     )}
-                <Button fontSize={13} borderRadius='full' textColor={'white'} background='pink.400' isDisabled={payments?.isEnded} onClick={() => setShowModalGenerar(true)}>
+                <Button
+                    fontSize={13}
+                    borderRadius='full'
+                    textColor={'white'}
+                    background='pink.400'
+                    isDisabled={payments?.isEnded || loading}
+                    onClick={() => setShowModalGenerar(true)}
+                >
                     Generar Salario
                 </Button>
-                <Button fontSize={13} borderRadius='full' background='pink.100' isDisabled={payments?.isEnded} onClick={() => setShowModalBonificacion(true)}>
+                <Button
+                    fontSize={13}
+                    borderRadius='full'
+                    background='pink.100'
+                    isDisabled={payments?.isEnded || loading}
+                    onClick={() => setShowModalBonificacion(true)}
+                >
                     Generar Bonificaciones
                 </Button>
-                <Button fontSize={13} borderRadius='full' background='pink.100' isDisabled={payments?.isEnded} onClick={() => setShowModalIps(true)}>
+                <Button
+                    fontSize={13}
+                    borderRadius='full'
+                    background='pink.100'
+                    isDisabled={payments?.isEnded || loading}
+                    onClick={() => setShowModalIps(true)}
+                >
                     Generar IPS
                 </Button>
-
-
-
-
             </Box>
 
             <Box display={"flex"} justifyContent={"center"} >
                 <TableSalaries payments={payments?.payrollDetails || []} />
-
-
             </Box>
         </Box>
-
     );
 };
 

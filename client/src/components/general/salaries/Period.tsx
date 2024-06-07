@@ -2,9 +2,10 @@ import Period from '@/types/period';
 import { Box, Button, Card, CardBody, CardFooter, CardHeader, Flex, Heading, Text } from '@chakra-ui/react';
 import Link from 'next/link';
 import React from 'react';
+import { PayrollPeriod } from '@/types/payments';
 
 interface PeriodProps {
-    period: Period
+    period: PayrollPeriod
 
 }
 
