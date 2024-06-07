@@ -187,9 +187,9 @@ const AddEmployeePage = () => {
                         employeeCiRuc={employeeCiRuc}
                     />
                 )}
-                <div className='w-[55%] bottom-32 flex gap-14 justify-end fixed'>
+                <div className='w-[55%] bottom-10 flex gap-14 justify-end fixed'>
                     {currentStep > 0 && (
-                        <Button color={"white"} bg={"gray.200"} onClick={handleBackStep}>Atrás</Button>
+                        <Button color={"gray.600"} bg={"gray.100"} onClick={handleBackStep}>Atrás</Button>
                     )}
                     {currentStep < 3 && (
                         <Button _hover={{ bgColor: "#c1738e" }} color={"white"} bg={"#AA546D"} onClick={handleNextStep}>Siguiente</Button>
