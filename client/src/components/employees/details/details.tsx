@@ -161,6 +161,7 @@ export const EmployeeDetails = () => {
                                         isReadOnly={!isEditing}
                                         mb={4}
                                         placeholder='Seleccione el sexo'
+                                        isDisabled={!isEditing}
                                     >
                                         <option value="male">Masculino</option>
                                         <option value="female">Femenino</option>
