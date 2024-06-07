@@ -3,7 +3,7 @@
 import { useAuth } from '@/components/context/AuthProvider';
 import { TableEmployee } from '@/components/lists/TableEmployee';
 import { getEmployees } from '@/utils/employee.http';
-import { Box, Button, Flex, useToast } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, useToast } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { getPayrollDetails, createPayments, calculateIpsForAllEmployees, calculateBonificationForAllEmployees, closePayrollPeriod } from '@/utils/salary.http';
 import Period from '@/types/period';
@@ -272,7 +272,8 @@ const ListEmployeePage: React.FC = () => {
     }, [fetchPayrolls]);
 
     return (
-        <Box bg={'white'} width={{ base: "98%", sm: "90%", md: "80%", lg: "100%", xl: "100%", "2xl": "100%" }}>
+        <>
+
             <GenerarModalConfirm
                 isOpen={showModalGenerar}
                 onClose={() => setShowModalGenerar(false)}
@@ -306,63 +307,71 @@ const ListEmployeePage: React.FC = () => {
                     handleBonification();
                 }}
             />
-            <Button m={2} onClick={handleBack} background='gray.100'><IoMdArrowRoundBack /></Button>
+            <Flex width={"90%"} flexDirection={"column"}>
+                <Heading color={"gray.600"} mt={4} marginLeft={5} width={"100%"}>Generacion de Salarios</Heading>
 
-            <Box mb={6} display={"flex"} justifyContent={"end"} gap={4} >
+                <Box marginTop={2} width={{ base: "100%", sm: "90%", md: "80%", lg: "100%", xl: "100%", "2xl": "100%" }} height={"70vh"}>
 
-                <Flex gap={2}>
+                    <Button m={2} onClick={handleBack} background='gray.100'><IoMdArrowRoundBack /></Button>
 
-                    {payments?.payrollDetails ?
-                        payments?.payrollDetails?.length > 0 && (
+                    <Box mb={6} display={"flex"} justifyContent={"end"} gap={4} >
+
+                        <Flex gap={2}>
+
+                            {payments?.payrollDetails ?
+                                payments?.payrollDetails?.length > 0 && (
+                                    <Button
+                                        fontSize={13}
+                                        borderRadius='full'
+                                        textColor={'white'}
+                                        background='pink.500'
+                                        isDisabled={payments?.isEnded || loading}
+                                        onClick={() => setShowModalCierre(true)}
+                                    >
+                                        Cierre
+                                    </Button>
+                                ) : (
+                                    <>
+                                    </>
+                                )}
                             <Button
                                 fontSize={13}
                                 borderRadius='full'
                                 textColor={'white'}
-                                background='pink.500'
+                                background='pink.400'
                                 isDisabled={payments?.isEnded || loading}
-                                onClick={() => setShowModalCierre(true)}
+                                onClick={() => setShowModalGenerar(true)}
                             >
-                                Cierre
+                                Generar Salario
                             </Button>
-                        ) : (
-                            <>
-                            </>
-                        )}
-                    <Button
-                        fontSize={13}
-                        borderRadius='full'
-                        textColor={'white'}
-                        background='pink.400'
-                        isDisabled={payments?.isEnded || loading}
-                        onClick={() => setShowModalGenerar(true)}
-                    >
-                        Generar Salario
-                    </Button>
-                    <Button
-                        fontSize={13}
-                        borderRadius='full'
-                        background='pink.100'
-                        isDisabled={payments?.isEnded || loading}
-                        onClick={() => setShowModalBonificacion(true)}
-                    >
-                        Generar Bonificaciones
-                    </Button>
-                    <Button
-                        fontSize={13}
-                        borderRadius='full'
-                        background='pink.100'
-                        isDisabled={payments?.isEnded || loading}
-                        onClick={() => setShowModalIps(true)}
-                    >
-                        Generar IPS
-                    </Button>
-                </Flex>
-            </Box>
+                            <Button
+                                fontSize={13}
+                                borderRadius='full'
+                                background='pink.100'
+                                isDisabled={payments?.isEnded || loading}
+                                onClick={() => setShowModalBonificacion(true)}
+                            >
+                                Generar Bonificaciones
+                            </Button>
+                            <Button
+                                fontSize={13}
+                                borderRadius='full'
+                                background='pink.100'
+                                isDisabled={payments?.isEnded || loading}
+                                onClick={() => setShowModalIps(true)}
+                            >
+                                Generar IPS
+                            </Button>
+                        </Flex>
+                    </Box>
 
-            <Box display={"flex"} justifyContent={"center"} >
-                <TableSalaries payments={payments?.payrollDetails || []} />
-            </Box>
-        </Box>
+                    <Box display={"flex"} justifyContent={"center"} >
+                        <TableSalaries payments={payments?.payrollDetails || []} />
+                    </Box>
+                </Box>
+
+            </Flex>
+        </ >
     );
 };
 

@@ -75,9 +75,11 @@ const PeriodPage = () => {
     }, [periods]);
 
     return (
-        <>
-            <Box display={"flex"} flexDirection={"column"} gap={4} mt={4}>
-                <Heading>Periodos de Salario</Heading>
+        <Flex width={"90%"} flexDirection={"column"}>
+            <Heading color={"gray.600"} mt={4} marginLeft={5} width={"100%"}>Periodos</Heading>
+
+            <Box marginTop={6} width={{ base: "100%", sm: "90%", md: "80%", lg: "100%", xl: "100%", "2xl": "100%" }} height={"70vh"}>
+
 
                 <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4} mt={4}>
                     <Card w={"300px"} h={"250px"} _hover={{ bg: 'gray.50' }} display={"flex"} justifyContent={"center"} alignItems={"center"}>
@@ -106,9 +108,9 @@ const PeriodPage = () => {
                     ))}
                 </SimpleGrid>
             </Box>
+        </Flex>
 
 
-        </>
     );
 };
 
