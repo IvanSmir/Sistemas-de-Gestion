@@ -52,6 +52,14 @@ const Sueldo = () => {
     const detailsId = `${params.detailsId}`
 
     useEffect(() => {
+        toast.closeAll();
+        toast({
+            title: 'Cargando',
+            description: 'Por favor espere...',
+            status: 'loading',
+            duration: null,
+            isClosable: true,
+        });
         getPayrollDetail(periodsId ?? "", detailsId ?? '', user?.token ?? "")
             .then((a) => {
                 console.log(a)
@@ -63,8 +71,16 @@ const Sueldo = () => {
                 })))
                 setIsVerified(a.isVerified)
                 setEmployeeId(a.employeeId)
+                toast.closeAll();
+                toast({
+                    title: 'Cargado',
+                    description: 'El detalle de sueldo ha sido cargado correctamente.',
+                    status: 'success',
+                    duration: 5000,
+                    isClosable: true,
+                });
             })
-    }, [periodsId, refresh, user?.token, detailsId])
+    }, [periodsId, refresh, user?.token, detailsId, toast])
 
     useEffect(() => {
         if (employeeId.length > 1) {
@@ -97,18 +113,26 @@ const Sueldo = () => {
 
     const handleClickIps = () => {
         try {
+            toast({
+                title: 'Generando',
+                description: 'Por favor espere...',
+                status: 'loading',
+                duration: null,
+                isClosable: true,
+            });
             generateIpsPayrollDetails(periodsId, detailsId, user?.token ?? '')
                 .then(a => {
                     console.log("retorno de generar ips" + a)
+                    toast.closeAll();
+                    setRefresh(!refresh)
+                    toast({
+                        title: 'IPS Generado',
+                        description: 'El proceso ha sido culminado con exito.',
+                        status: 'success',
+                        duration: 5000,
+                        isClosable: true,
+                    });
                 })
-            setRefresh(!refresh)
-            toast({
-                title: 'IPS Generado',
-                description: 'El proceso ha sido culminado con exito.',
-                status: 'success',
-                duration: 5000,
-                isClosable: true,
-            });
         } catch {
             toast({
                 title: 'Error',
@@ -122,18 +146,27 @@ const Sueldo = () => {
 
     const handleClickBonus = () => {
         try {
+            toast({
+                title: 'Generando',
+                description: 'Por favor espere...',
+                status: 'loading',
+                duration: null,
+                isClosable: true,
+            });
             generateBonusPayrollDetails(periodsId, detailsId, user?.token ?? '')
                 .then(a => {
                     console.log("retorno de generar bonus" + a)
+
+                    setRefresh(!refresh)
+                    toast.closeAll();
+                    toast({
+                        title: 'Bonus Generado',
+                        description: 'El proceso ha sido culminado con exito.',
+                        status: 'success',
+                        duration: 5000,
+                        isClosable: true,
+                    });
                 })
-            setRefresh(!refresh)
-            toast({
-                title: 'Bonus Generado',
-                description: 'El proceso ha sido culminado con exito.',
-                status: 'success',
-                duration: 5000,
-                isClosable: true,
-            });
         } catch {
             toast({
                 title: 'Error',
@@ -150,6 +183,7 @@ const Sueldo = () => {
             salaryPayrollDetails(periodsId, employeeId, user?.token ?? '')
                 .then(a => {
                     console.log("retorno de generar bonus" + a)
+
                 })
             setRefresh(!refresh)
             toast({
@@ -172,18 +206,27 @@ const Sueldo = () => {
 
     const handleVerification = () => {
         try {
+            toast({
+                title: 'Verificando',
+                description: 'Por favor espere...',
+                status: 'loading',
+                duration: null,
+                isClosable: true,
+            });
             verifyPayrollDetails(periodsId, detailsId, user?.token ?? '')
                 .then(a => {
                     console.log("retorno de payroll verification" + a)
+                    setIsVerified(true);
+                    toast.closeAll();
+                    toast({
+                        title: 'Verificado',
+                        description: 'El proceso ha sido verificado.',
+                        status: 'success',
+                        duration: 5000,
+                        isClosable: true,
+
+                    });
                 })
-            setIsVerified(true);
-            toast({
-                title: 'Verificado',
-                description: 'El proceso ha sido verificado.',
-                status: 'success',
-                duration: 5000,
-                isClosable: true,
-            });
         } catch {
             toast({
                 title: 'Error',
