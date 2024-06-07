@@ -28,6 +28,7 @@ const GenerarModalConfirm: React.FC<GenerarModal> = ({
                 <ModalHeader>Confirmar</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
+
                     ¿Estás seguro que deseas generar el pago de salarios? Esta acción no se puede deshacer.
                 </ModalBody>
                 <ModalFooter>

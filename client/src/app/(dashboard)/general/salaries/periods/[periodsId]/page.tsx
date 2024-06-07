@@ -81,6 +81,13 @@ const ListEmployeePage: React.FC = () => {
             const { user } = auth;
             const token = user?.token || '';
             const data = await createPayments(periodsId as string, token);
+            toast({
+                title: "Pago de Salarios",
+                description: "El proceso ha sido verificado.",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+            });
             console.log("dataaaaa", data);
             fetchPayrolls();
         }
@@ -102,6 +109,13 @@ const ListEmployeePage: React.FC = () => {
             const token = user?.token || '';
             const data = await calculateIpsForAllEmployees(periodsId as string, token);
             console.log(data);
+            toast({
+                title: "IPS",
+                description: "El proceso ha sido verificado.",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+            });
             fetchPayrolls();
         }
         catch (error) {
@@ -121,6 +135,13 @@ const ListEmployeePage: React.FC = () => {
             const token = user?.token || '';
             const data = await calculateBonificationForAllEmployees(periodsId as string, token);
             console.log(data);
+            toast({
+                title: "Bonificaciones",
+                description: "El proceso ha sido verificado.",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+            });
             fetchPayrolls();
         }
         catch (error) {
@@ -140,6 +161,13 @@ const ListEmployeePage: React.FC = () => {
             const token = user?.token || '';
             const data = await closePayrollPeriod(periodsId as string, token);
             console.log(data);
+            toast({
+                title: "Cerrado",
+                description: "El proceso ha sido verificado.",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+            });
             fetchPayrolls();
         }
         catch (error) {
@@ -187,6 +215,7 @@ const ListEmployeePage: React.FC = () => {
                     setShowModalGenerar(false);
                     createPayment();
                 }}
+                detailsWhiteoutVerified={payments.DetailsWithoutVerification}
             />
             <IpsModalConfirm
                 isOpen={showModalIps}
@@ -195,6 +224,7 @@ const ListEmployeePage: React.FC = () => {
                     setShowModalIps(false);
                     handleIps();
                 }}
+
             />
             <CierreModalConfirm
                 isOpen={showModalCierre}
@@ -203,6 +233,8 @@ const ListEmployeePage: React.FC = () => {
                     setShowModalCierre(false);
                     handleClosePayroll();
                 }}
+                detailsWhiteoutVerified={payments.DetailsWithoutVerification}
+
             />
             <BonificacionModalConfirm
                 isOpen={showModalBonificacion}
@@ -211,6 +243,7 @@ const ListEmployeePage: React.FC = () => {
                     setShowModalBonificacion(false);
                     handleBonification();
                 }}
+
             />
 
             <Button isDisabled={payments?.isEnded} onClick={() => setShowModalGenerar(true)}>

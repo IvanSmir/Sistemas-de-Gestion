@@ -14,12 +14,14 @@ interface CierreModal {
     isOpen: boolean;
     onClose: () => void;
     onConfirm: () => void;
+    detailsWhiteoutVerified: number;
 }
 
 const CierreModalConfirm: React.FC<CierreModal> = ({
     isOpen,
     onClose,
     onConfirm,
+    detailsWhiteoutVerified,
 }) => {
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
@@ -28,6 +30,9 @@ const CierreModalConfirm: React.FC<CierreModal> = ({
                 <ModalHeader>Confirmar</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
+                    {detailsWhiteoutVerified != 0 && (
+                        <p>Aun existen detalles sin verificar.</p>
+                    )}
                     ¿Estás seguro que deseas cerrar el Pago de Salarios? Esta acción no se puede deshacer.
                 </ModalBody>
                 <ModalFooter>
