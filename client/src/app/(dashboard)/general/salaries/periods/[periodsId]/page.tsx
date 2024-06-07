@@ -16,6 +16,7 @@ import IpsModalConfirm from '@/components/general/salaries/BonificacionModal';
 import CierreModalConfirm from '@/components/general/salaries/CierreModal';
 import BonificacionModalConfirm from '@/components/general/salaries/BonificacionModal';
 import GenerarModalConfirm from '@/components/general/salaries/GenerarModal';
+import { PayrollPeriod } from '@/types/payments';
 
 interface Person {
     ciRuc: string;
@@ -62,7 +63,7 @@ const ListEmployeePage: React.FC = () => {
     const toast = useToast();
     const { periodsId } = useParams();
     const auth = useAuth();
-    const [payments, setPayments] = useState<Period[]>([]);
+    const [payments, setPayments] = useState<PayrollPeriod | undefined>(undefined);
 
 
 
@@ -215,7 +216,6 @@ const ListEmployeePage: React.FC = () => {
                     setShowModalGenerar(false);
                     createPayment();
                 }}
-                detailsWhiteoutVerified={payments.DetailsWithoutVerification}
             />
             <IpsModalConfirm
                 isOpen={showModalIps}
@@ -233,7 +233,7 @@ const ListEmployeePage: React.FC = () => {
                     setShowModalCierre(false);
                     handleClosePayroll();
                 }}
-                detailsWhiteoutVerified={payments.DetailsWithoutVerification}
+                detailsWhiteoutVerified={payments?.DetailsWithoutVerification || 0}
 
             />
             <BonificacionModalConfirm
@@ -246,19 +246,23 @@ const ListEmployeePage: React.FC = () => {
 
             />
             <Box display={"flex"} justifyContent={"end"} gap={4} margin={10}>
-                {payments?.payrollDetails?.length > 0 && (
-                    <Button fontSize={12} borderRadius='full' textColor={'white'} background='pink.500' isDisabled={payments?.isEnded} onClick={() => setShowModalCierre(true)}>
-                        Cierre
-                    </Button>
+                {payments?.payrollDetails ?
+                    payments?.payrollDetails?.length > 0 && (
+                        <Button fontSize={13} borderRadius='full' textColor={'white'} background='pink.500' isDisabled={payments?.isEnded} onClick={() => setShowModalCierre(true)}>
+                            Cierre
+                        </Button>
 
-                )}
-                <Button fontSize={14} borderRadius='full' textColor={'white'} background='pink.400' isDisabled={payments?.isEnded} onClick={() => setShowModalGenerar(true)}>
+                    ) : (
+                        <>
+                        </>
+                    )}
+                <Button fontSize={13} borderRadius='full' textColor={'white'} background='pink.400' isDisabled={payments?.isEnded} onClick={() => setShowModalGenerar(true)}>
                     Generar Salario
                 </Button>
-                <Button fontSize={14} borderRadius='full' background='pink.100' isDisabled={payments?.isEnded} onClick={() => setShowModalBonificacion(true)}>
+                <Button fontSize={13} borderRadius='full' background='pink.100' isDisabled={payments?.isEnded} onClick={() => setShowModalBonificacion(true)}>
                     Generar Bonificaciones
                 </Button>
-                <Button fontSize={14} borderRadius='full' background='pink.100' isDisabled={payments?.isEnded} onClick={() => setShowModalIps(true)}>
+                <Button fontSize={13} borderRadius='full' background='pink.100' isDisabled={payments?.isEnded} onClick={() => setShowModalIps(true)}>
                     Generar IPS
                 </Button>
 
@@ -268,7 +272,7 @@ const ListEmployeePage: React.FC = () => {
             </Box>
 
             <Box display={"flex"} justifyContent={"center"} >
-                <TableSalaries payments={payments.payrollDetails} />
+                <TableSalaries payments={payments?.payrollDetails || []} />
 
 
             </Box>

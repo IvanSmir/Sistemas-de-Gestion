@@ -6,6 +6,7 @@ export default interface PayrollDetail {
   amount: any
   employee: Employee
   isVerified: boolean
+  DetailsWithoutVerification : number
 }
 
 export interface Employee {
