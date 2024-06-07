@@ -140,7 +140,7 @@ export const ExpenseList: React.FC = () => {
             {/* Tabla de Egresos */}
             <TableContainer>
                 <Flex justifyContent="end" mb={5}>
-                    <Button onClick={handleAddExpenseClick} rounded={23} fontSize={13} py={3} px={5} bgColor='gray.700' _hover={{ bgColor: "gray.800" }} color='white'>
+                    <Button onClick={handleAddExpenseClick} padding={5} color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }}>
                         <AddIcon />Agregar Egreso
                     </Button>
                 </Flex>
