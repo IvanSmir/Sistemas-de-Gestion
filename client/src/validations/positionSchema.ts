@@ -34,7 +34,7 @@ export const positionSchema = z
     (data) =>
       !data.endDate || !data.startDate || data.endDate >= data.startDate,
     {
-      message: "Fecha de inicio debe ser menor que la fecha de fin",
+      message: "Fecha de fin debe ser mayor a la fecha de inicio",
       path: ["endDate"],
     }
   );
