@@ -105,7 +105,7 @@ export const FormAddPosition: React.FC<FormAddPositionProps> = ({ isOpen, onClos
     return (
         <>
             <Flex width={"90%"} flexDirection={"column"}>
-                <Heading color={"gray.600"} marginLeft={5} width={"100%"}>Agregar Cargo</Heading>
+                <Heading color={"gray.600"} mt={4} marginLeft={5} width={"100%"}>Agregar Cargo</Heading>
 
                 <Flex justify="center" mt={20} width={"90%"} minH="90vh">
                     <form className='w-[60%]' onSubmit={() => { }}>

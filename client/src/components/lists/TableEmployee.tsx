@@ -50,7 +50,7 @@ export const TableEmployee: React.FC<TableEmployeeProps> = ({ data, columnMappin
 
     return (
         <Flex width={"90%"} flexDirection={"column"}>
-            <Heading color={"gray.600"} marginLeft={5} width={"100%"}>Funcionarios</Heading>
+            <Heading color={"gray.600"} mt={4} marginLeft={5} width={"100%"}>Funcionarios</Heading>
 
             <Box marginTop={6} width={{ base: "100%", sm: "90%", md: "80%", lg: "100%", xl: "100%", "2xl": "100%" }} height={"70vh"}>
                 <Flex justifyContent="end" mb={6} flexWrap="wrap">

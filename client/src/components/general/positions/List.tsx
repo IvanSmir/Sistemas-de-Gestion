@@ -179,7 +179,7 @@ export const ListPositions: React.FC = () => {
     return (
         <>
             <Flex width={"90%"} flexDirection={"column"}>
-                <Heading color={"gray.700"} marginLeft={5} width={"100%"}>Cargos</Heading>
+                <Heading color={"gray.600"} mt={4} marginLeft={5} width={"100%"}>Cargos</Heading>
 
                 <Box backgroundColor={'white'} top={160} left={300} width={"100%"} height={426} borderRadius="2xl" padding="8px" mt={10} >
                     <Flex justifyContent="space-between" mb={6} >
