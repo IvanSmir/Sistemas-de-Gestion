@@ -12,7 +12,7 @@ const PaginationSalaries: React.FC<PaginationProps> = ({ currentPage, totalPages
     const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
 
     return (
-        <Flex>
+        <Flex >
             <Button
                 size={'sm'}
                 onClick={() => onPageChange(1)}

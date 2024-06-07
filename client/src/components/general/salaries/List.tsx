@@ -17,7 +17,7 @@ export const TableSalaries: React.FC<PaymentsProps> = ({ payments }) => {
     const { periodsId } = useParams();
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [recordsPerPage, setRecordsPerPage] = useState(10);
+    const [recordsPerPage, setRecordsPerPage] = useState(7);
 
     const indexOfLastRecord = currentPage * recordsPerPage;
     const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
@@ -29,8 +29,8 @@ export const TableSalaries: React.FC<PaymentsProps> = ({ payments }) => {
         setCurrentPage(pageNumber);
     };
     return (
-        <Box marginTop={6} width={{ base: "90%", sm: "80%", md: "90%", lg: "90%", xl: "90%", "2xl": "90%" }} >
-            <TableContainer>
+        <Box width={{ base: "90%", sm: "80%", md: "90%", lg: "90%", xl: "90%", "2xl": "90%" }} height={"70vh"} >
+            <TableContainer height={"65vh"}>
                 <Table variant="simple" fontSize={{ base: "12px", sm: "13px", md: "14px", lg: "14px", xl: "14px", "2xl": "14px" }}>
                     <Thead>
                         <Tr>
@@ -69,7 +69,7 @@ export const TableSalaries: React.FC<PaymentsProps> = ({ payments }) => {
                 </Table>
             </TableContainer>
             {totalPages > 1 && (
-                <Flex justifyContent="center" marginTop={4}>
+                <Flex justifyContent="center" >
                     <PaginationSalaries
                         currentPage={currentPage}
                         totalPages={totalPages}
