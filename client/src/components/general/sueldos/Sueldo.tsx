@@ -4,12 +4,11 @@ import { Button, IconButton, Input, Heading, InputGroup, Box, InputLeftElement, 
 import { DeleteIcon, EditIcon, SearchIcon } from '@chakra-ui/icons'
 import { Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableContainer, } from '@chakra-ui/react'
 import { Tag, TagLabel, TagLeftIcon, TagRightIcon } from '@chakra-ui/react'
-import { text } from 'stream/consumers'
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import SueldoPDF from './SueldoPDF';
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/components/context/AuthProvider";
-import { useParams } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { generateBonusPayrollDetails, generateIpsPayrollDetails, getPayroll, getPayrollDetail, salaryPayrollDetails, verifyPayrollDetails } from '@/utils/payroll'
 import { getEmployeeByTerm } from '@/utils/employee.http'
 
@@ -18,15 +17,14 @@ const Sueldo = () => {
     const sueldo1 = [
         {
             _id: "1",
-
             concepto: "Sueldo",
             ingreso: "2500000",
             egreso: "0",
-
         }
     ]
 
     const params = useParams()
+    const router = useRouter();
 
     const [isVerified, setIsVerified] = useState(false);
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -54,12 +52,11 @@ const Sueldo = () => {
         getPayrollDetail(periodsId ?? "", detailsId ?? '', user?.token ?? "")
             .then((a) => {
                 console.log(a)
-                setSueldo(a.payrollItems.filter((pi: { description: string }) => pi.description !== "IPS").map((pi: { id: string; isIncome: boolean; amount: number; description: string }) => ({
+                setSueldo(a.payrollItems.map((pi: { id: string; isIncome: boolean; amount: number; description: string }) => ({
                     _id: pi.id,
                     concepto: pi.description,
-                    ingreso: pi.isIncome ? `${pi.amount}` : "0",
-                    egreso: pi.isIncome ? "0" : `${pi.amount}`,
-
+                    ingreso: pi.isIncome ? pi.amount.toFixed(2) : "0",
+                    egreso: pi.isIncome ? "0" : pi.amount.toFixed(2),
                 })))
                 setIsVerified(a.isVerified)
                 setIsClosed(null !== a.amount)
@@ -186,8 +183,6 @@ const Sueldo = () => {
                 isClosable: true,
             });
         } catch {
-            //console.error('Error:', error);
-            
             toast({
                 title: 'Error',
                 description: 'No se pudo verificar la nómina.',
@@ -198,20 +193,8 @@ const Sueldo = () => {
         }
     };
 
-
-
-
-
     const handleClosure = () => {
         if (sueldo.length > 0) {
-            // setIsClosed(true);
-            // toast({
-            //     title: 'Exito',
-            //     description: 'El proceso ha sido cerrado.',
-            //     status: 'success',
-            //     duration: 5000,
-            //     isClosable: true,
-            // });
             toast({
                 title: 'Informacion',
                 description: 'Debes cerrar el Periodo, y podras generar el pdf.',
@@ -230,18 +213,21 @@ const Sueldo = () => {
         }
     }
 
+    const handleBack = () => {
+        router.back();
+    }
 
     return (
         <>
             <Box width={{ base: "98%", sm: "90%", md: "80%", lg: "100%", xl: "100%", "2xl": "100%" }}>
                 <Box backgroundColor="white" borderRadius="2xl" padding="8px" marginTop={6}>
                     <div className="flex justify-between px-5 mt-2 mb-3">
+                        <Button onClick={handleBack} background='gray.200'>Volver</Button>
                         <div className="flex gap-2">
                             <Button fontSize={12} borderRadius='full' background='pink.100' onClick={handleClickIps}>Generar IPS</Button>
                             <Button fontSize={12} borderRadius='full' background='pink.100' onClick={handleClickBonus}>G. Bonificacion</Button>
                             <Button fontSize={12} borderRadius='full' background='pink.200' onClick={handleClickSalary}>Generar sueldo</Button>
                         </div>
-
                     </div>
                     <div className="flex justify-between px-5 mt-3 mb-3">
                         <h1 className=" text-2xl">Detalle de Sueldo</h1>
@@ -269,41 +255,30 @@ const Sueldo = () => {
                                 <Input type='search' value={employee.ciRuc.replaceAll(".", "")} width={200} disabled placeholder='CI' />
                             </div>
                         </div>
-
                         <div className="border-[1px] border-[#e4b1bc] w-full h-0 my-2"></div>
                     </div>
-
                     <div className="px-5" >
-
                         <TableContainer >
-
                             <Table variant='simple' >
                                 <Thead>
                                     <Tr>
-
                                         <Th>Concepto</Th>
                                         <Th >Ingresos</Th>
                                         <Th >Egresos</Th>
-
                                     </Tr>
                                 </Thead>
                                 <Tbody>
                                     {
                                         sueldo.map(sueldo => (
                                             <Tr key={sueldo._id}>
-
                                                 <Td className=' py-1'>{sueldo.concepto}</Td>
                                                 <Td className=' py-1'>{sueldo.ingreso}</Td>
                                                 <Td className=' py-1'>{sueldo.egreso}</Td>
-
-
-
                                             </Tr>)
                                         )
                                     }
                                 </Tbody>
                                 <Tfoot>
-
                                 </Tfoot>
                             </Table>
                         </TableContainer>
@@ -312,15 +287,15 @@ const Sueldo = () => {
                         <div className="flex flex-col font-semibold text-[17px] gap-2">
                             <div className="flex justify-end">
                                 <span>TOTAL INGRESOS:</span>
-                                <div className="min-w-40 text-right">{sueldo.map(s => Number(s.ingreso)).reduce((a, b) => a + b)} Gs</div>
+                                <div className="min-w-40 text-right">{sueldo.map(s => Number(s.ingreso)).reduce((a, b) => a + b).toFixed(2)} Gs</div>
                             </div>
                             <div className="flex justify-end">
                                 <span>TOTAL EGRESOS:</span>
-                                <div className="min-w-40 text-right">{sueldo.map(s => Number(s.egreso)).reduce((a, b) => a + b)} Gs</div>
+                                <div className="min-w-40 text-right">{sueldo.map(s => Number(s.egreso)).reduce((a, b) => a + b).toFixed(2)} Gs</div>
                             </div>
                             <div className="flex justify-end">
                                 <span> TOTAL A PAGAR:</span>
-                                <div className="min-w-40 text-right">{sueldo.map(s => Number(s.ingreso)).reduce((a, b) => a + b) - sueldo.map(s => Number(s.egreso)).reduce((a, b) => a + b)} Gs</div>
+                                <div className="min-w-40 text-right">{(sueldo.map(s => Number(s.ingreso)).reduce((a, b) => a + b) - sueldo.map(s => Number(s.egreso)).reduce((a, b) => a + b)).toFixed(2)} Gs</div>
                             </div>
                         </div>
                     </div>
@@ -344,12 +319,8 @@ const Sueldo = () => {
                     </div>
                 </Box>
             </Box>
-
         </>
-
     );
 };
 
 export default Sueldo
-
-
