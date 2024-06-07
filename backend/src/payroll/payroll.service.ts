@@ -142,7 +142,7 @@ export class PayrollService {
             userId: user.id,
             isIncome: true,
             amount: salary.salary,
-            description: 'Salario de' + salary.position.name,
+            description: 'Salario de ' + salary.position.name,
           },
         });
         PaymentTotal += salary.salary;
