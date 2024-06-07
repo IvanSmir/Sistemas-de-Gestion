@@ -261,7 +261,7 @@ export const EmployeeDetails = () => {
                         <List employeeCiRuc={employeeCiRuc} />
                     </TabPanel>
                     <TabPanel>
-                    <EmployeeDetailsList />
+                        <EmployeeDetailsList />
                     </TabPanel>
                 </TabPanels>
             </Tabs>

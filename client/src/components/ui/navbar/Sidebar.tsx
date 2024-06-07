@@ -38,7 +38,7 @@ const LinkItems: Array<LinkItemProps> = [
             }
         ]
     },
-    { name: 'Settings', icon: FiSettings, href: '/settings' },
+    { name: 'Settings', icon: FiSettings, href: '/ConfigBasic' },
 ];
 
 interface SidebarProps extends BoxProps {
