@@ -1,6 +1,5 @@
 'use client'
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { AddIcon, EditIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -14,38 +13,90 @@ import {
   Thead,
   Tr,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
+import { useAuth } from "../context/AuthProvider";
+import { AmountType } from "./MoneyType";
+import { getConfigAmount } from "@/utils/configBasic.http";
 
-interface ConfigBasicProps {
+interface AmountType {
+  id?: string;
   name: string;
   value: number;
 }
 
 export const ConfigBasic: React.FC = () => {
+  const auth = useAuth();
+  const [amounts,setAmounts]=useState<AmountType[]>([]);
+  const [selectedAmount, setSelectedAmount] = useState<AmountType | null>(null);
   const { isOpen: isAddOpen, onOpen: onAddOpen, onClose: onAddClose } = useDisclosure();
-  const [configs, setConfigs] = useState<ConfigBasicProps[]>([]);
+  const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
+  const [newAmountType, setNewAmountType] = useState<AmountType| null>(null);
   
-  // Fetch data from API
   useEffect(() => {
-    axios.get("/api/config")
-      .then((response) => {
-        setConfigs(response.data);
-      })
-      .catch((error) => {
-        console.error("There was an error fetching the data!", error);
-      });
-  }, []);
+    const fetchAmounts = async () => {
+        try {
+            const { user } = auth;
+            const token = user?.token || '';
+            const data = await getConfigAmount(token);
+            setAmounts(data);
+        } catch (error) {
+            console.error('Error al obtener tipos de montos:', error);
+        }
+    };
+    fetchAmounts();
+}, [auth]);
 
-  // Handle Edit Click - Placeholder function
-  const handleEditClick = (config: ConfigBasicProps, event: React.MouseEvent) => {
-    // Implement your edit functionality here
+useEffect(() => {
+  const updateTable = async () => {
+    try {
+      const { user } = auth;
+      const token = user?.token || '';
+      const data = await getConfigAmount(token);
+      setAmounts(data);
+    } catch (error) {
+      console.error('Error al obtener tipos de montos:', error);
+    }
   };
+  updateTable();
+}, [auth, isAddOpen, isEditOpen]); 
+
+const handleAddAmountType = () => {
+  setNewAmountType({ name: '', value:0 });
+  onAddOpen();
+};
+
+const handleSaveAmountType = (amountType: AmountType) => {
+  if (amountType.id) {
+      setAmounts(amounts.map(a => (a.id === amountType.id ? amountType : a)));
+      setSelectedAmount(null);
+      onEditClose();
+  } else {
+      setAmounts([...amounts, amountType]);
+      setNewAmountType(null);
+      onAddClose();
+  }
+};
+
+const handleEditAmountType = (amount: AmountType) => {
+  setSelectedAmount(amount);
+  onEditOpen();
+};
+
+const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  if (selectedAmount) {
+      setSelectedAmount({
+          ...selectedAmount,
+          [e.target.name]: e.target.value,
+      });
+  }
+};
 
   return (
-    <Box backgroundColor={'white'} borderRadius="2xl" padding="8px" >
+    <Box backgroundColor={'white'} width={1000} borderRadius="2xl" padding="8px" margin="auto" mt={50}>
       <Flex justifyContent="space-between" mb={6} >
-        <Button onClick={onAddOpen} rounded={23} mr={5} fontSize={13} py={3} px={5} bgColor='gray.700' _hover={{ bgColor: "gray.800" }} gap={2} color='white'>
-          <AddIcon />Agregar tipo
+        <Button onClick={handleAddAmountType} rounded={23} mr={5} fontSize={13} py={3} px={5} bgColor='gray.700' _hover={{ bgColor: "gray.800" }} gap={2} color='white'>
+          <AddIcon />Agregar concepto
         </Button>
       </Flex>
       <TableContainer>
@@ -58,15 +109,15 @@ export const ConfigBasic: React.FC = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {configs.map((config, index) => (
+            {amounts.map((amountType, index) => (
               <Tr key={index}>
-                <Td>{config.name}</Td>
-                <Td>{config.value}</Td>
+                <Td>{amountType.name}</Td>
+                <Td>{amountType.value}</Td>
                 <Td>
                   <EditIcon
                     mr={2}
                     cursor="pointer"
-                    onClick={(event) => handleEditClick(config, event)}
+                    onClick={() => handleEditAmountType(amountType)}
                   />
                 </Td>
               </Tr>
@@ -74,8 +125,26 @@ export const ConfigBasic: React.FC = () => {
           </Tbody>
         </Table>
       </TableContainer>
+      {newAmountType&&(
+        <AmountType
+          isOpen={isAddOpen}
+          onClose={onAddClose}
+          onChange={handleChange}
+          onSave={handleSaveAmountType}
+          initialData={newAmountType}
+        />
+      )}
+
+      {selectedAmount &&(
+        <AmountType
+          isOpen={isEditOpen}
+          onClose={onEditClose}
+          onChange={handleChange}
+          onSave={handleSaveAmountType}
+          initialData={selectedAmount}
+        />
+      )}
     </Box>
   );
 };
 
-export default ConfigBasic;

@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { IsNumber, IsPositive, IsString, MinLength } from 'class-validator';
 
 export class CreateBasicConfigDto {
@@ -18,5 +19,6 @@ export class CreateBasicConfigDto {
   })
   @IsNumber()
   @IsPositive()
+  @Transform(({ value }) => Number(value))
   value: number;
 }
