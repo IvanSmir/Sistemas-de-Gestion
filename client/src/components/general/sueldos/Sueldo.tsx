@@ -43,34 +43,34 @@ const Sueldo = () => {
     const periodsId = `${params.periodsId}`
     const { user } = useAuth();
 
-    useEffect(()=>{
+    useEffect(() => {
         getPayroll(periodsId ?? "", user?.token ?? "")
-            .then((a)=>{console.log(a)})
-    },[periodsId])
+            .then((a) => { console.log(a) })
+    }, [periodsId, user?.token])
 
     const detailsId = `${params.detailsId}`
 
-    useEffect(()=>{
+    useEffect(() => {
         getPayrollDetail(periodsId ?? "", detailsId ?? '', user?.token ?? "")
-            .then((a)=>{
+            .then((a) => {
                 console.log(a)
-                setSueldo(a.payrollItems.filter((pi:{description:string})=>pi.description !== "IPS").map((pi: { id: string; isIncome: boolean; amount: number; description: string })=>({
+                setSueldo(a.payrollItems.filter((pi: { description: string }) => pi.description !== "IPS").map((pi: { id: string; isIncome: boolean; amount: number; description: string }) => ({
                     _id: pi.id,
                     concepto: pi.description,
-                    ingreso: pi.isIncome? `${pi.amount}` : "0",
-                    egreso: pi.isIncome? "0" : `${pi.amount}`,
+                    ingreso: pi.isIncome ? `${pi.amount}` : "0",
+                    egreso: pi.isIncome ? "0" : `${pi.amount}`,
 
                 })))
                 setIsVerified(a.isVerified)
                 setIsClosed(null !== a.amount)
                 setEmployeeId(a.employeeId)
             })
-    },[periodsId, refresh])
+    }, [periodsId, refresh, user?.token, detailsId])
 
-    useEffect(()=>{
-        if(employeeId.length > 1){
+    useEffect(() => {
+        if (employeeId.length > 1) {
             getEmployeeByTerm(employeeId, user?.token ?? '')
-                .then(e=>{
+                .then(e => {
                     console.log(e)
                     setEmployee({
                         ciRuc: e.person.ciRuc ?? '',
@@ -78,7 +78,7 @@ const Sueldo = () => {
                     })
                 })
         }
-    }, [employeeId])
+    }, [employeeId, user?.token])
 
     const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selected = new Date(event.target.value);
@@ -99,7 +99,7 @@ const Sueldo = () => {
     const handleClickIps = () => {
         try {
             generateIpsPayrollDetails(periodsId, detailsId, user?.token ?? '')
-                .then(a=>{
+                .then(a => {
                     console.log("retorno de generar ips" + a)
                 })
             setRefresh(!refresh)
@@ -124,7 +124,7 @@ const Sueldo = () => {
     const handleClickBonus = () => {
         try {
             generateBonusPayrollDetails(periodsId, detailsId, user?.token ?? '')
-                .then(a=>{
+                .then(a => {
                     console.log("retorno de generar bonus" + a)
                 })
             setRefresh(!refresh)
@@ -149,7 +149,7 @@ const Sueldo = () => {
     const handleClickSalary = () => {
         try {
             salaryPayrollDetails(periodsId, employeeId, user?.token ?? '')
-                .then(a=>{
+                .then(a => {
                     console.log("retorno de generar bonus" + a)
                 })
             setRefresh(!refresh)
@@ -174,10 +174,10 @@ const Sueldo = () => {
     const handleVerification = () => {
         try {
             verifyPayrollDetails(periodsId, detailsId, user?.token ?? '')
-                .then(a=>{
+                .then(a => {
                     console.log("retorno de payroll verification" + a)
                 })
-            setIsVerified(true);   
+            setIsVerified(true);
             toast({
                 title: 'Verificado',
                 description: 'El proceso ha sido verificado.',
@@ -187,6 +187,7 @@ const Sueldo = () => {
             });
         } catch {
             //console.error('Error:', error);
+            
             toast({
                 title: 'Error',
                 description: 'No se pudo verificar la nómina.',
@@ -197,7 +198,7 @@ const Sueldo = () => {
         }
     };
 
-    
+
 
 
 
@@ -238,7 +239,7 @@ const Sueldo = () => {
                         <div className="flex gap-2">
                             <Button fontSize={12} borderRadius='full' background='pink.100' onClick={handleClickIps}>Generar IPS</Button>
                             <Button fontSize={12} borderRadius='full' background='pink.100' onClick={handleClickBonus}>G. Bonificacion</Button>
-                           <Button fontSize={12} borderRadius='full' background='pink.200' onClick={handleClickSalary}>Generar sueldo</Button>
+                            <Button fontSize={12} borderRadius='full' background='pink.200' onClick={handleClickSalary}>Generar sueldo</Button>
                         </div>
 
                     </div>
@@ -283,7 +284,7 @@ const Sueldo = () => {
                                         <Th>Concepto</Th>
                                         <Th >Ingresos</Th>
                                         <Th >Egresos</Th>
-                                      
+
                                     </Tr>
                                 </Thead>
                                 <Tbody>
@@ -294,7 +295,7 @@ const Sueldo = () => {
                                                 <Td className=' py-1'>{sueldo.concepto}</Td>
                                                 <Td className=' py-1'>{sueldo.ingreso}</Td>
                                                 <Td className=' py-1'>{sueldo.egreso}</Td>
-                                          
+
 
 
                                             </Tr>)
