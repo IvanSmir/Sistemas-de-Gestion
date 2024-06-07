@@ -104,18 +104,21 @@ export class PayrollService {
         await this.prismaService.payrollItems.deleteMany({
           where: { payrollDetailId: { in: payrollDetailIds } },
         });
-        await this.prismaService.payrollDetails.deleteMany({
-          where: { id: { in: payrollDetailIds } },
-        });
       }
 
-      const payrollDetails = await this.prismaService.payrollDetails.create({
-        data: {
-          periodId,
-          employeeId,
-          userId: user.id,
-        },
-      });
+      let payrollDetails;
+
+      if (payrollDetailIds.length > 0) {
+        payrollDetails = existingPayrollDetails[0];
+      } else {
+        payrollDetails = await this.prismaService.payrollDetails.create({
+          data: {
+            periodId,
+            employeeId,
+            userId: user.id,
+          },
+        });
+      }
 
       await this.prismaService.payrollPeriods.update({
         where: { id: periodId },
@@ -457,10 +460,24 @@ export class PayrollService {
 
       const employees = await this.prismaService.employees.findMany({
         where: { isDeleted: false },
-        select: { id: true },
+        select: { id: true, EmployeeDetails: true },
       });
 
       const payrollDetailsPromises = employees.map(async (employee) => {
+        if (!employee.EmployeeDetails) return;
+
+        let noRole = true;
+        for (const role of employee.EmployeeDetails) {
+          if (
+            role.endDate > new Date() ||
+            role.endDate == new Date('1900-06-03T00:00:00.000Z')
+          ) {
+            noRole = false;
+            break;
+          }
+        }
+        if (noRole) return;
+
         const payments = await this.createPaymentforEmployee(
           periodId,
           employee.id,

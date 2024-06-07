@@ -68,7 +68,7 @@ export const EmployeeDetailsList: React.FC = () => {
                 isClosable: true,
             });
         });
-    }, [fetchEmployeesDetails]);
+    }, [fetchEmployeesDetails, toast]);
 
     const handleEditClick = (employee: EmployeeDetails, event: React.MouseEvent) => {
         event.stopPropagation();
@@ -108,6 +108,11 @@ export const EmployeeDetailsList: React.FC = () => {
     const getStatus = (startDate: string, endDate: string) => {
         const currentDate = new Date();
         const start = new Date(startDate);
+        console.log('start', start);
+        console.log('end', endDate);
+        if (endDate === '1900-06-03T00:00:00.000Z') return 'Activo';
+        if (endDate === '1969-12-31T00:00:00.000Z') return 'Activo';
+        if (endDate === null) return 'Activo';
         const end = new Date(endDate);
         return currentDate >= start && currentDate <= end ? "Activo" : "Inactivo";
     };
@@ -137,7 +142,11 @@ export const EmployeeDetailsList: React.FC = () => {
                             <Tr key={index}>
                                 <Td>{employeeDetail.position.name}</Td>
                                 <Td>{new Date(employeeDetail.startDate).toLocaleDateString()}</Td>
-                                <Td>{new Date(employeeDetail.endDate).toLocaleDateString()}</Td>
+                                <Td>{
+                                    employeeDetail.endDate === null ? '' :
+                                        employeeDetail.endDate === '1969-12-31T00:00:00.000Z' ? '' :
+                                            new Date(employeeDetail.endDate).toLocaleDateString()}
+                                </Td>
                                 <Td>{employeeDetail.salaryType === 'minimum' ? 'Mínimo' : 'Base'}</Td>
                                 <Td>{employeeDetail.salary}</Td>
                                 <Td>{getStatus(employeeDetail.startDate, employeeDetail.endDate)}</Td>

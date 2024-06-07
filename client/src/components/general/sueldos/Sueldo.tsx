@@ -36,6 +36,7 @@ const Sueldo = () => {
         ciRuc: '',
         name: ''
     });
+    const [isLoading, setIsLoading] = useState(false);
     const toast = useToast();
 
     const periodsId = `${params.periodsId}`
@@ -112,6 +113,7 @@ const Sueldo = () => {
     };
 
     const handleClickIps = () => {
+        setIsLoading(true);
         try {
             toast({
                 title: 'Generando',
@@ -141,10 +143,13 @@ const Sueldo = () => {
                 duration: 5000,
                 isClosable: true,
             });
+        } finally {
+            setIsLoading(false);
         }
     }
 
     const handleClickBonus = () => {
+        setIsLoading(true);
         try {
             toast({
                 title: 'Generando',
@@ -156,7 +161,6 @@ const Sueldo = () => {
             generateBonusPayrollDetails(periodsId, detailsId, user?.token ?? '')
                 .then(a => {
                     console.log("retorno de generar bonus" + a)
-
                     setRefresh(!refresh)
                     toast.closeAll();
                     toast({
@@ -166,6 +170,7 @@ const Sueldo = () => {
                         duration: 5000,
                         isClosable: true,
                     });
+
                 })
         } catch {
             toast({
@@ -175,24 +180,35 @@ const Sueldo = () => {
                 duration: 5000,
                 isClosable: true,
             });
+        } finally {
+            setIsLoading(false);
         }
     }
 
     const handleClickSalary = () => {
+        setIsLoading(true);
         try {
+            toast.closeAll();
+            toast({
+                title: 'Generando',
+                description: 'Por favor espere...',
+                status: 'loading',
+                duration: null,
+                isClosable: true,
+            });
             salaryPayrollDetails(periodsId, employeeId, user?.token ?? '')
                 .then(a => {
                     console.log("retorno de generar bonus" + a)
-
+                    toast.closeAll();
+                    toast({
+                        title: 'Salario Generado',
+                        description: 'El proceso ha sido culminado con exito.',
+                        status: 'success',
+                        duration: 5000,
+                        isClosable: true,
+                    });
+                    setRefresh(!refresh)
                 })
-            setRefresh(!refresh)
-            toast({
-                title: 'Bonus Generado',
-                description: 'El proceso ha sido culminado con exito.',
-                status: 'success',
-                duration: 5000,
-                isClosable: true,
-            });
         } catch {
             toast({
                 title: 'Error',
@@ -201,10 +217,13 @@ const Sueldo = () => {
                 duration: 5000,
                 isClosable: true,
             });
+        } finally {
+            setIsLoading(false);
         }
     }
 
     const handleVerification = () => {
+        setIsLoading(true);
         try {
             toast({
                 title: 'Verificando',
@@ -235,6 +254,8 @@ const Sueldo = () => {
                 duration: 5000,
                 isClosable: true,
             });
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -271,9 +292,9 @@ const Sueldo = () => {
                         {!isClosed && (
                             <div className="flex gap-2">
 
-                                <Button fontSize={12} borderRadius='full' background='pink.100' onClick={handleClickIps}>Generar IPS</Button>
-                                <Button fontSize={12} borderRadius='full' background='pink.100' onClick={handleClickBonus}>G. Bonificacion</Button>
-                                <Button fontSize={12} borderRadius='full' background='pink.200' onClick={handleClickSalary}>Generar sueldo</Button>
+                                <Button fontSize={12} borderRadius='full' background='pink.100' isDisabled={isLoading} onClick={handleClickIps}>Generar IPS</Button>
+                                <Button fontSize={12} borderRadius='full' background='pink.100' isDisabled={isLoading} onClick={handleClickBonus}>G. Bonificacion</Button>
+                                <Button fontSize={12} borderRadius='full' background='pink.200' isDisabled={isLoading} onClick={handleClickSalary}>Generar sueldo</Button>
                             </div>)}
                     </div>
                     <div className="flex justify-between px-5 mt-3 mb-3">
@@ -348,7 +369,7 @@ const Sueldo = () => {
                     </div>
                     <div className="flex justify-end px-20 mt-2 mb-5">
                         {!isVerified && (
-                            <Button backgroundColor={'#e4b1bc'} onClick={handleVerification}>Verificado</Button>
+                            <Button backgroundColor={'#e4b1bc'} isDisabled={isLoading} onClick={handleVerification}>Verificado</Button>
                         )}
                         {isVerified && !isClosed && (
                             <Button backgroundColor={'#e4b1bc'} onClick={handleClosure}>Generar PDF</Button>
