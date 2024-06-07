@@ -49,9 +49,9 @@ const VerifiedModal: React.FC<ConfirmationModalProps> = ({
     const getOperationMessage = () => {
         switch (operation) {
             case "Cierre":
-                return "¿Estás seguro que deseas cerrar el Pago de Salarios? Esta acción no se puede deshacer.";
+                return "Aún hay salarios sin verificar, ¿Estás seguro que deseas cerrar el Pago de Salarios? Esta acción no se puede deshacer.";
             case "Generar":
-                return "¿Estás seguro que deseas generar el Pago de Salarios? Esta acción no se puede deshacer.";
+                return "¿ Estás seguro que deseas generar el Pago de Salarios? Esta acción no se puede deshacer.";
             case "bonificaciones":
                 return "¿Estás seguro que deseas asignar las bonificaciones? Esta acción no se puede deshacer.";
             case "IPS":

@@ -85,7 +85,7 @@ export const getPayrollDetails = async (periodId: string, token: string) => {
 
 export const calculateBonificationForAllEmployees = async (id: string, token: string) => {
     try {
-        const response = await fetch(`${API_URL}/payroll/ ${id}/familyBonification`, {
+        const response = await fetch(`${API_URL}/ ${id}/familyBonification`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -106,7 +106,7 @@ export const calculateBonificationForAllEmployees = async (id: string, token: st
 
 export const calculateIpsForAllEmployees = async (id: string, token: string) => {
     try {
-        const response = await fetch(`${API_URL}/payroll/ ${id}/ips`, {
+        const response = await fetch(`${API_URL}/ ${id}/ips`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -127,7 +127,7 @@ export const calculateIpsForAllEmployees = async (id: string, token: string) => 
 
 export const closePayrollPeriod = async (id: string, token: string) => {
     try {
-        const response = await fetch(`${API_URL}/payroll/${id}/closePayrollPeriod`, {
+        const response = await fetch(`${API_URL}/${id}/closePayrollPeriod`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

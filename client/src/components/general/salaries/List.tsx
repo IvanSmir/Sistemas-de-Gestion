@@ -12,7 +12,6 @@ type PaymentsProps = {
 }
 
 export const TableSalaries: React.FC<PaymentsProps> = ({ payments }) => {
-    console.log('payments', payments);
     const { periodsId } = useParams();
     return (
         <Box marginTop={6} width={{ base: "100%", sm: "90%", md: "80%", lg: "100%", xl: "100%", "2xl": "100%" }} >

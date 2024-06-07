@@ -6,7 +6,7 @@ import { getEmployees } from '@/utils/employee.http';
 import { Box, Button, useToast } from '@chakra-ui/react';
 import { useParams } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
-import { getPayrollDetails, createPayments, calculateIpsForAllEmployees, calculateBonificationForAllEmployees } from '@/utils/salary.http';
+import { getPayrollDetails, createPayments, calculateIpsForAllEmployees, calculateBonificationForAllEmployees, closePayrollPeriod } from '@/utils/salary.http';
 import Period from '@/types/period';
 import { TableSalaries } from '@/components/general/salaries/List';
 import PayrollDetail from '@/types/period';
@@ -132,6 +132,24 @@ const ListEmployeePage: React.FC = () => {
             });
         }
     }
+    const handleClosePayroll = async () => {
+        try {
+            const { user } = auth;
+            const token = user?.token || '';
+            const data = await closePayrollPeriod(periodsId as string, token);
+            console.log(data);
+        }
+        catch (error) {
+            console.error('Error al cerrar periodo:', error);
+            toast({
+                title: "Error",
+                description: "Error al cerrar el periodo",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
+        }
+    }
 
 
 
@@ -140,7 +158,7 @@ const ListEmployeePage: React.FC = () => {
             const { user } = auth;
             const token = user?.token || '';
             const data = await getPayrollDetails(periodsId as string, token);
-            console.log("data22222", data);
+            console.log("data33333", data);
             setPayments(data);
         } catch (error) {
             console.error('Error al obtener los empleados:', error);
@@ -172,6 +190,7 @@ const ListEmployeePage: React.FC = () => {
                 onClose={() => setShowModalIps(false)}
                 onConfirm={() => {
                     setShowModalIps(false);
+                    handleIps();
                 }}
             />
             <CierreModalConfirm
@@ -179,6 +198,7 @@ const ListEmployeePage: React.FC = () => {
                 onClose={() => setShowModalCierre(false)}
                 onConfirm={() => {
                     setShowModalCierre(false);
+                    handleClosePayroll();
                 }}
             />
             <BonificacionModalConfirm
@@ -186,13 +206,14 @@ const ListEmployeePage: React.FC = () => {
                 onClose={() => setShowModalBonificacion(false)}
                 onConfirm={() => {
                     setShowModalBonificacion(false);
+                    handleBonification();
                 }}
             />
 
             <Button onClick={() => setShowModalGenerar(true)}>
                 Generar Salario
             </Button>
-            <Button onClick={() => setShowModalIps(true)}>
+            <Button isDisabled={payments.isEnded} onClick={() => setShowModalIps(true)}>
                 Generar IPS
             </Button>
             <Button onClick={() => setShowModalBonificacion(true)}>
