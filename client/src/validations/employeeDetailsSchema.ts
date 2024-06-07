@@ -32,7 +32,8 @@ export const employeeDetailsSchema = z.object({
   salaryType: z.enum(["minimum", "base"], {
     message: "El tipo de salario debe ser 'minimum' o 'base'",
   }),
-  salary: z
-    .number()
-    .positive({ message: "El salario debe ser un número positivo" }),
+  salary: z.preprocess(
+    (val) => Number(val),
+    z.number().positive("El salario debe ser un número positivo")
+  ),  
 });
