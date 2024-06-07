@@ -207,7 +207,7 @@ const ListEmployeePage: React.FC = () => {
     }, [fetchPayrolls]);
 
     return (
-        <>
+        <Box bg={'white'} width={{ base: "98%", sm: "90%", md: "80%", lg: "100%", xl: "100%", "2xl": "100%" }}>
             <GenerarModalConfirm
                 isOpen={showModalGenerar}
                 onClose={() => setShowModalGenerar(false)}
@@ -245,24 +245,35 @@ const ListEmployeePage: React.FC = () => {
                 }}
 
             />
+            <Box display={"flex"} justifyContent={"end"} gap={4} margin={10}>
+                {payments?.payrollDetails?.length > 0 && (
+                    <Button fontSize={12} borderRadius='full' textColor={'white'} background='pink.500' isDisabled={payments?.isEnded} onClick={() => setShowModalCierre(true)}>
+                        Cierre
+                    </Button>
 
-            <Button isDisabled={payments?.isEnded} onClick={() => setShowModalGenerar(true)}>
-                Generar Salario
-            </Button>
-            <Button isDisabled={payments?.isEnded} onClick={() => setShowModalIps(true)}>
-                Generar IPS
-            </Button>
-            <Button isDisabled={payments?.isEnded} onClick={() => setShowModalBonificacion(true)}>
-                Generar Bonificaciones
-            </Button>
-            <Button isDisabled={payments?.isEnded} onClick={() => setShowModalCierre(true)}>
-                Cierre
-            </Button>
+                )}
+                <Button fontSize={14} borderRadius='full' textColor={'white'} background='pink.400' isDisabled={payments?.isEnded} onClick={() => setShowModalGenerar(true)}>
+                    Generar Salario
+                </Button>
+                <Button fontSize={14} borderRadius='full' background='pink.100' isDisabled={payments?.isEnded} onClick={() => setShowModalBonificacion(true)}>
+                    Generar Bonificaciones
+                </Button>
+                <Button fontSize={14} borderRadius='full' background='pink.100' isDisabled={payments?.isEnded} onClick={() => setShowModalIps(true)}>
+                    Generar IPS
+                </Button>
 
 
-            <TableSalaries payments={payments.payrollDetails} />
 
-        </>
+
+            </Box>
+
+            <Box display={"flex"} justifyContent={"center"} >
+                <TableSalaries payments={payments.payrollDetails} />
+
+
+            </Box>
+        </Box>
+
     );
 };
 

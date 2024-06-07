@@ -6,6 +6,8 @@ import Link from 'next/link';
 import VerifiedModal from './VerifiedModal';
 import PayrollDetail from "@/types/period";
 import { useParams } from 'next/navigation';
+import { CheckCircleIcon } from '@chakra-ui/icons';
+import { IoIosCheckmarkCircle, IoIosCheckmarkCircleOutline, IoIosCloseCircle, IoIosCloseCircleOutline } from 'react-icons/io';
 // Definimos los tipos para las props
 type PaymentsProps = {
     payments: PayrollDetail[];
@@ -14,7 +16,7 @@ type PaymentsProps = {
 export const TableSalaries: React.FC<PaymentsProps> = ({ payments }) => {
     const { periodsId } = useParams();
     return (
-        <Box marginTop={6} width={{ base: "100%", sm: "90%", md: "80%", lg: "100%", xl: "100%", "2xl": "100%" }} >
+        <Box marginTop={6} width={{ base: "90%", sm: "80%", md: "90%", lg: "90%", xl: "90%", "2xl": "90%" }} >
             <TableContainer>
                 <Table variant="simple" fontSize={{ base: "12px", sm: "13px", md: "14px", lg: "15px", xl: "16px", "2xl": "17px" }}>
                     <Thead>
@@ -46,7 +48,7 @@ export const TableSalaries: React.FC<PaymentsProps> = ({ payments }) => {
                                         </Link>
                                     </Td>
                                     <Td>
-                                        <Checkbox isDisabled colorScheme='green' checked={datum.isVerified} />
+                                        {datum.isVerified ? <IoIosCheckmarkCircle color='green' /> : <IoIosCloseCircle color='red' />}
                                     </Td>
                                 </Tr>
                             ))}
