@@ -43,7 +43,10 @@ const Sueldo = () => {
 
     useEffect(() => {
         getPayroll(periodsId ?? "", user?.token ?? "")
-            .then((a) => { console.log(a) })
+            .then((a) => {
+                console.log(a)
+                setIsClosed(a.isEnded)
+            })
     }, [periodsId, user?.token])
 
     const detailsId = `${params.detailsId}`
@@ -59,7 +62,6 @@ const Sueldo = () => {
                     egreso: pi.isIncome ? "0" : pi.amount.toFixed(2),
                 })))
                 setIsVerified(a.isVerified)
-                setIsClosed(null !== a.amount)
                 setEmployeeId(a.employeeId)
             })
     }, [periodsId, refresh, user?.token, detailsId])
