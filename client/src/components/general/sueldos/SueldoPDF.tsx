@@ -104,19 +104,19 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     signatureLabel: {
-       // display: 'flex',
+        // display: 'flex',
         fontSize: 10,
         textAlign: 'center',
         marginTop: 5,
-       
+
     },
     signatureLabel1: {
         // display: 'flex',
-         fontSize: 10,
-         textAlign: 'center',
-         marginTop: 5,
-         paddingBottom: 25,
-     },
+        fontSize: 10,
+        textAlign: 'center',
+        marginTop: 5,
+        paddingBottom: 25,
+    },
     totalsContainer: {
         flexDirection: 'column',
         marginBottom: 10,
@@ -169,11 +169,10 @@ interface SueldoPDFProps {
     employee: Employee
 }
 
-const unidades = [' ', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve'];
-const especiales = ['once', 'doce', 'trece', 'catorce', 'quince', 'dieciséis', 'diecisiete', 'dieciocho', 'diecinueve'];
-const decenas = ['diez', 'veinte', 'treinta', 'cuarenta', 'cincuenta', 'sesenta', 'setenta', 'ochenta', 'noventa'];
-const centenas = ['cien', 'doscientos', 'trescientos', 'cuatrocientos', 'quinientos', 'seiscientos', 'setecientos', 'ochocientos', 'novecientos'];
-
+const unidades = ["cero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
+const especiales = ["once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve"];
+const decenas = ["diez", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
+const centenas = ["cien", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos"];
 const numberToWords = (num: number): string => {
     if (num < 10) return unidades[num];
     if (num >= 10 && num < 20) return especiales[num - 11];
@@ -185,20 +184,30 @@ const numberToWords = (num: number): string => {
     if (num >= 100 && num < 1000) {
         let centena = Math.floor(num / 100);
         let resto = num % 100;
-        return resto === 0 ? centenas[centena - 1] : `${centenas[centena - 1]} ${numberToWords(resto)}`;
+        return centena === 1 && resto === 0 ? 'cien' : `${centenas[centena - 1]} ${numberToWords(resto)}`;
     }
     if (num >= 1000 && num < 1000000) {
         let miles = Math.floor(num / 1000);
         let resto = num % 1000;
         return miles === 1 ? `mil ${numberToWords(resto)}` : `${numberToWords(miles)} mil ${numberToWords(resto)}`;
     }
-    if (num >= 1000000 && num < 90000000) {
+    if (num >= 1000000 && num < 1000000000) {
         let millones = Math.floor(num / 1000000);
         let resto = num % 1000000;
         return millones === 1 ? `un millón ${numberToWords(resto)}` : `${numberToWords(millones)} millones ${numberToWords(resto)}`;
     }
+    if (num >= 1000000000 && num < 1000000000000) {
+        let milesMillones = Math.floor(num / 1000000000);
+        let resto = num % 1000000000;
+        return milesMillones === 1 ? `mil millones ${numberToWords(resto)}` : `${numberToWords(milesMillones)} mil millones ${numberToWords(resto)}`;
+    }
+    if (num >= 1000000000000 && num < 1000000000000000) {
+        let billones = Math.floor(num / 1000000000000);
+        let resto = num % 1000000000000;
+        return billones === 1 ? `un billón ${numberToWords(resto)}` : `${numberToWords(billones)} billones ${numberToWords(resto)}`;
+    }
     return "Número fuera de rango";
-};
+}
 
 const formatDate = (date: Date): string => {
     const months = [
@@ -218,10 +227,10 @@ const SueldoPDF: React.FC<SueldoPDFProps> = ({ sueldo, currentDate, employee }) 
     const totalAPagar = totalIngresos - totalEgresos;
     let totalAPagarEnTexto = "";
 
-    if(`${totalAPagar}`.includes(".")){
+    if (`${totalAPagar}`.includes(".")) {
         const numberArr = `${totalAPagar}`.split('.')
         totalAPagarEnTexto = `${numberToWords(Number(numberArr[0]))} con ${numberToWords(Number(numberArr[1]))} centavos de `
-    }else{
+    } else {
         totalAPagarEnTexto = numberToWords(totalAPagar);
     }
 
@@ -239,7 +248,7 @@ const SueldoPDF: React.FC<SueldoPDFProps> = ({ sueldo, currentDate, employee }) 
                     <Text style={styles.heading}>Recibo de Sueldo </Text>
                     <Text style={styles.headingDate}> {formattedDate}</Text>
                     <View style={styles.separator} />
-                    <Text style={styles.funcionarioDetails}>Funcionario: {employee.name}    CI: {employee.ciRuc.replaceAll(".","")}</Text>
+                    <Text style={styles.funcionarioDetails}>Funcionario: {employee.name}    CI: {employee.ciRuc.replaceAll(".", "")}</Text>
                     <View style={styles.tableHeaderCell}>
                     </View>
                     <View style={styles.tableHeaderCell}>
@@ -276,7 +285,7 @@ const SueldoPDF: React.FC<SueldoPDFProps> = ({ sueldo, currentDate, employee }) 
                     </View>
                 </View><View style={styles.reciboContainer}>
                     <Text>     Recibi de la empresa LA FERRETERIA un monto total de {totalAPagar} Gs, son {totalAPagarEnTexto}guaraníes.</Text>
-                </View> 
+                </View>
                 <View style={styles.signatureContainer}>
                     <View style={{ textAlign: 'center', width: '30%' }}>
                         <Text style={styles.signatureLine}></Text>

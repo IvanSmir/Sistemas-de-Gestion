@@ -43,12 +43,23 @@ const Sueldo = () => {
 
     useEffect(() => {
         getPayroll(periodsId ?? "", user?.token ?? "")
-            .then((a) => { console.log(a) })
+            .then((a) => {
+                console.log(a)
+                setIsClosed(a.isEnded)
+            })
     }, [periodsId, user?.token])
 
     const detailsId = `${params.detailsId}`
 
     useEffect(() => {
+        toast.closeAll();
+        toast({
+            title: 'Cargando',
+            description: 'Por favor espere...',
+            status: 'loading',
+            duration: null,
+            isClosable: true,
+        });
         getPayrollDetail(periodsId ?? "", detailsId ?? '', user?.token ?? "")
             .then((a) => {
                 console.log(a)
@@ -59,10 +70,17 @@ const Sueldo = () => {
                     egreso: pi.isIncome ? "0" : pi.amount.toFixed(2),
                 })))
                 setIsVerified(a.isVerified)
-                setIsClosed(null !== a.amount)
                 setEmployeeId(a.employeeId)
+                toast.closeAll();
+                toast({
+                    title: 'Cargado',
+                    description: 'El detalle de sueldo ha sido cargado correctamente.',
+                    status: 'success',
+                    duration: 5000,
+                    isClosable: true,
+                });
             })
-    }, [periodsId, refresh, user?.token, detailsId])
+    }, [periodsId, refresh, user?.token, detailsId, toast])
 
     useEffect(() => {
         if (employeeId.length > 1) {
@@ -95,18 +113,26 @@ const Sueldo = () => {
 
     const handleClickIps = () => {
         try {
+            toast({
+                title: 'Generando',
+                description: 'Por favor espere...',
+                status: 'loading',
+                duration: null,
+                isClosable: true,
+            });
             generateIpsPayrollDetails(periodsId, detailsId, user?.token ?? '')
                 .then(a => {
                     console.log("retorno de generar ips" + a)
+                    toast.closeAll();
+                    setRefresh(!refresh)
+                    toast({
+                        title: 'IPS Generado',
+                        description: 'El proceso ha sido culminado con exito.',
+                        status: 'success',
+                        duration: 5000,
+                        isClosable: true,
+                    });
                 })
-            setRefresh(!refresh)
-            toast({
-                title: 'IPS Generado',
-                description: 'El proceso ha sido culminado con exito.',
-                status: 'success',
-                duration: 5000,
-                isClosable: true,
-            });
         } catch {
             toast({
                 title: 'Error',
@@ -120,18 +146,27 @@ const Sueldo = () => {
 
     const handleClickBonus = () => {
         try {
+            toast({
+                title: 'Generando',
+                description: 'Por favor espere...',
+                status: 'loading',
+                duration: null,
+                isClosable: true,
+            });
             generateBonusPayrollDetails(periodsId, detailsId, user?.token ?? '')
                 .then(a => {
                     console.log("retorno de generar bonus" + a)
+
+                    setRefresh(!refresh)
+                    toast.closeAll();
+                    toast({
+                        title: 'Bonus Generado',
+                        description: 'El proceso ha sido culminado con exito.',
+                        status: 'success',
+                        duration: 5000,
+                        isClosable: true,
+                    });
                 })
-            setRefresh(!refresh)
-            toast({
-                title: 'Bonus Generado',
-                description: 'El proceso ha sido culminado con exito.',
-                status: 'success',
-                duration: 5000,
-                isClosable: true,
-            });
         } catch {
             toast({
                 title: 'Error',
@@ -148,6 +183,7 @@ const Sueldo = () => {
             salaryPayrollDetails(periodsId, employeeId, user?.token ?? '')
                 .then(a => {
                     console.log("retorno de generar bonus" + a)
+
                 })
             setRefresh(!refresh)
             toast({
@@ -170,18 +206,27 @@ const Sueldo = () => {
 
     const handleVerification = () => {
         try {
+            toast({
+                title: 'Verificando',
+                description: 'Por favor espere...',
+                status: 'loading',
+                duration: null,
+                isClosable: true,
+            });
             verifyPayrollDetails(periodsId, detailsId, user?.token ?? '')
                 .then(a => {
                     console.log("retorno de payroll verification" + a)
+                    setIsVerified(true);
+                    toast.closeAll();
+                    toast({
+                        title: 'Verificado',
+                        description: 'El proceso ha sido verificado.',
+                        status: 'success',
+                        duration: 5000,
+                        isClosable: true,
+
+                    });
                 })
-            setIsVerified(true);
-            toast({
-                title: 'Verificado',
-                description: 'El proceso ha sido verificado.',
-                status: 'success',
-                duration: 5000,
-                isClosable: true,
-            });
         } catch {
             toast({
                 title: 'Error',
@@ -223,11 +268,13 @@ const Sueldo = () => {
                 <Box backgroundColor="white" borderRadius="2xl" padding="8px" marginTop={6}>
                     <div className="flex justify-between px-5 mt-2 mb-3">
                         <Button onClick={handleBack} background='gray.200'>Volver</Button>
-                        <div className="flex gap-2">
-                            <Button fontSize={12} borderRadius='full' background='pink.100' onClick={handleClickIps}>Generar IPS</Button>
-                            <Button fontSize={12} borderRadius='full' background='pink.100' onClick={handleClickBonus}>G. Bonificacion</Button>
-                            <Button fontSize={12} borderRadius='full' background='pink.200' onClick={handleClickSalary}>Generar sueldo</Button>
-                        </div>
+                        {!isClosed && (
+                            <div className="flex gap-2">
+
+                                <Button fontSize={12} borderRadius='full' background='pink.100' onClick={handleClickIps}>Generar IPS</Button>
+                                <Button fontSize={12} borderRadius='full' background='pink.100' onClick={handleClickBonus}>G. Bonificacion</Button>
+                                <Button fontSize={12} borderRadius='full' background='pink.200' onClick={handleClickSalary}>Generar sueldo</Button>
+                            </div>)}
                     </div>
                     <div className="flex justify-between px-5 mt-3 mb-3">
                         <h1 className=" text-2xl">Detalle de Sueldo</h1>
