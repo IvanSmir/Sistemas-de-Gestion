@@ -18,6 +18,13 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         textAlign: 'center',
     },
+
+    headingDateContainer: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginBottom: 15,
+        textAlign: 'center',
+    },
     headingDate: {
         fontSize: 12,
         marginBottom: 15,
@@ -166,9 +173,9 @@ interface Employee {
 interface SueldoPDFProps {
     sueldo: Sueldo[];
     currentDate: Date;
-    employee: Employee
+    employee: Employee;
+    receiptNumber: string;
 }
-
 const unidades = ["cero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
 const especiales = ["once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve"];
 const decenas = ["diez", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
@@ -221,7 +228,7 @@ const formatDate = (date: Date): string => {
     return `Fecha: ${day} de ${month} de ${year}`;
 };
 
-const SueldoPDF: React.FC<SueldoPDFProps> = ({ sueldo, currentDate, employee }) => {
+const SueldoPDF: React.FC<SueldoPDFProps> = ({ sueldo, currentDate, employee, receiptNumber }) => {
     const totalIngresos = sueldo.map(s => Number(s.ingreso)).reduce((a, b) => a + b, 0);
     const totalEgresos = sueldo.map(s => Number(s.egreso)).reduce((a, b) => a + b, 0);
     const totalAPagar = totalIngresos - totalEgresos;
@@ -246,7 +253,10 @@ const SueldoPDF: React.FC<SueldoPDFProps> = ({ sueldo, currentDate, employee }) 
                         <Text>LA FERRETERIA</Text>
                     </View>
                     <Text style={styles.heading}>Recibo de Sueldo </Text>
-                    <Text style={styles.headingDate}> {formattedDate}</Text>
+                    <View style={styles.headingDateContainer}>
+                        <Text style={styles.headingDate}>{formattedDate}</Text>
+                        <Text style={styles.headingDate}>Recibo N°: {receiptNumber}</Text>
+                    </View>
                     <View style={styles.separator} />
                     <Text style={styles.funcionarioDetails}>Funcionario: {employee.name}    CI: {employee.ciRuc.replaceAll(".", "")}</Text>
                     <View style={styles.tableHeaderCell}>

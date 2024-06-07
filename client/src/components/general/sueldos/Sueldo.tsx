@@ -378,7 +378,7 @@ const Sueldo = () => {
                         )}
                         {isClosed && (
                             <PDFDownloadLink
-                                document={<SueldoPDF sueldo={sueldo} currentDate={selectedDate} employee={employee} />}
+                                document={<SueldoPDF sueldo={sueldo} currentDate={selectedDate} employee={employee} receiptNumber={detailsId} />}
                                 fileName="sueldo.pdf"
                             >
                                 {({ blob, url, loading, error }) =>
