@@ -142,7 +142,7 @@ export const IncomeList: React.FC = () => {
             {/* Tabla de Ingresos */}
             <TableContainer mb={10}>
                 <Flex justifyContent="end" mb={5} mt={5}>
-                    <Button onClick={handleAddIncomeClick} rounded={23} fontSize={13} py={3} px={5} bgColor='gray.700' _hover={{ bgColor: "gray.800" }} color='white'>
+                    <Button onClick={handleAddIncomeClick} padding={5} color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }}>
                         <AddIcon />Agregar Ingreso
                     </Button>
                 </Flex>

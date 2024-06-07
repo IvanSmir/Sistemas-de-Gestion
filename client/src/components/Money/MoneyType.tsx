@@ -1,4 +1,5 @@
-import React, { ChangeEvent, FormEvent, useState, useEffect } from "react";
+'use client'
+import React, { ChangeEvent, FormEvent, useState, useEffect, use } from "react";
 import {
     Modal,
     ModalOverlay,
@@ -13,65 +14,59 @@ import {
     Input,
     Flex,
     Text,
-    Switch,
-    Wrap,
-    WrapItem,
     useToast
 } from "@chakra-ui/react";
-import { createIncomeType, updateIncomeType } from "@/utils/finance.http";
-import { useAuth } from "@/components/context/AuthProvider";
 
-interface IncomeType {
-    id?: string;
-    name: string;
-    deductible: boolean;
+import {useAuth} from "@/components/context/AuthProvider"
+import { createConfigAmountType, updateConfigAmountType } from "@/utils/configBasic.http";
+
+interface AmountType{
+    id?:string;
+    name:string;
+    value:number;
 }
 
-interface ModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-    onSave: (incomeType: IncomeType) => void;
-    initialData?: IncomeType | null;
+interface ModalProps{
+    isOpen:boolean;
+    onClose:()=>void;
+    onChange:(e:ChangeEvent<HTMLInputElement | HTMLSelectElement>)=>void;
+    onSave:(AmountType:AmountType)=>void;
+    initialData?:AmountType|null;
 }
 
-export const IncomeType: React.FC<ModalProps> = ({ isOpen, onClose, onChange, onSave, initialData }) => {
+export const AmountType : React.FC<ModalProps> = ({ isOpen, onClose, onChange, onSave, initialData })=>{
     const toast = useToast();
-    const { user } = useAuth();
-    const [income, setIncomeType] = useState<IncomeType>({
+    const {user} = useAuth();
+    const [amount, setAmount] = useState<AmountType>({
         name: "",
-        deductible: false,
+        value: 0,
     });
 
-    useEffect(() => {
-        if (initialData) {
-            setIncomeType({
-                id: initialData.id,
-                name: initialData.name,
-                deductible: initialData.deductible
-            });
-        } else {
-            setIncomeType({ name: "", deductible: false });
+    useEffect(()=>{
+        if(initialData){
+            setAmount(initialData);
+        }else{
+            setAmount({name:"", value:0});
         }
-    }, [initialData]);
+    },[initialData])
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value, type, checked } = e.target;
-        const updatedValue = type === 'checkbox' ? checked : value;
-        setIncomeType({ ...income, [name]: updatedValue });
+    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const target = e.target;
+        const value = target.type === 'checkbox' ? (target as HTMLInputElement).checked : target.value;
+        setAmount({ ...amount, [target.name]: value });
         onChange(e);
     };
-
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         const token = user?.token || "";
+        console.log('token autorizado:',token)
 
-        if (income.name.trim().length > 0) {
+        if (amount.name.trim().length > 0) {
             try {
                 const data = {
-                    name: income.name,
-                    deductible: income.deductible,
+                    name: amount.name,
+                    value: amount.value,
                 };
 
                 toast.closeAll();
@@ -83,44 +78,44 @@ export const IncomeType: React.FC<ModalProps> = ({ isOpen, onClose, onChange, on
                     isClosable: true,
                 });
 
-                if (income.id) {
-                    // Update existing income type
-                    const response = await updateIncomeType(income.id, data, token);
+                if (amount.id) {
+                    // Update existing amount type
+                    const response = await updateConfigAmountType(amount.id, data, token);
                     onSave(response);
                     toast.close(loadingToast);
                     toast({
                         title: "Guardado",
-                        description: "Tipo de ingreso actualizado con éxito",
+                        description: "El tipo de monto se edito exitosamente",
                         status: "success",
                         duration: 5000,
                         isClosable: true,
                     });
                 } else {
-                    // Create new income type
-                    const response = await createIncomeType(data, token);
+                    // Create new amount type
+                    const response = await createConfigAmountType(data, token);
                     onSave(response);
                     toast.close(loadingToast);
                     toast({
                         title: "Guardado",
-                        description: "Tipo de ingreso creado con éxito",
+                        description: "Tipo de monto creado con éxito",
                         status: "success",
                         duration: 5000,
                         isClosable: true,
                     });
                 }
 
-                setIncomeType({ name: "", deductible: false });
+                setAmount({ name: "", value: 0});
                 onClose();
             } catch (error) {
                 toast.closeAll();
                 toast({
                     title: "Error",
-                    description: "Error al guardar el tipo de ingreso",
+                    description: "Error al guardar el tipo de monto",
                     status: "error",
                     duration: 5000,
                     isClosable: true,
                 });
-                console.error("Error al guardar el tipo de ingreso:", error);
+                console.error("Error al guardar el tipo de monto:", error);
             }
         } else {
             toast({
@@ -133,13 +128,14 @@ export const IncomeType: React.FC<ModalProps> = ({ isOpen, onClose, onChange, on
         }
     };
 
-    return (
+
+    return(
         <Modal isOpen={isOpen} onClose={onClose} size="" isCentered>
             <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(4px)" />
             <ModalContent maxW="400px">
                 <ModalHeader>
                     <Text fontSize="24px" mb={6} textAlign="center" color="#AA546D">
-                        {income.id ? "Editar Tipo de Ingreso" : "Crear Tipo de Ingreso"}
+                        {amount.id ? "Editar Tipo de monto" : "Crear Tipo de monto"}
                     </Text>
                 </ModalHeader>
                 <ModalCloseButton />
@@ -152,25 +148,23 @@ export const IncomeType: React.FC<ModalProps> = ({ isOpen, onClose, onChange, on
                                     type="text"
                                     id="name"
                                     name="name"
-                                    value={income.name}
+                                    value={amount.name}
+                                    borderRadius="sm"
+                                    onChange={handleChange}
+                                />
+                            </FormControl>
+                            <FormControl>
+                                <FormLabel htmlFor="value">Monto:</FormLabel>
+                                <Input
+                                    type="text"
+                                    id="value"
+                                    name="value"
+                                    value={amount.value}
                                     borderRadius="sm"
                                     onChange={handleChange}
                                 />
                             </FormControl>
                         </Flex>
-                        <Wrap>
-                            <WrapItem>
-                                <FormControl>
-                                    <FormLabel htmlFor="deductible">Es deducible:</FormLabel>
-                                    <Switch
-                                        id="deductible"
-                                        name="deductible"
-                                        isChecked={income.deductible}
-                                        onChange={handleChange}
-                                    />
-                                </FormControl>
-                            </WrapItem>
-                        </Wrap>
                         <ModalFooter>
                             <Button variant="ghost" onClick={onClose} mr={3}>
                                 Cancelar
@@ -183,6 +177,6 @@ export const IncomeType: React.FC<ModalProps> = ({ isOpen, onClose, onChange, on
                 </ModalBody>
             </ModalContent>
         </Modal>
-    );
-};
 
+    );
+}

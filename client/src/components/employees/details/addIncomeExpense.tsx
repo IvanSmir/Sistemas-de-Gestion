@@ -45,7 +45,7 @@ export const IncomeExpenseForm: React.FC<IncomeExpenseFormProps> = ({ isOpen, on
     const toast = useToast();
     const auth = useAuth();
     const { id } = useParams();
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm<IncomeExpenseFormValues>({ resolver: zodResolver(incomeExpenseSchema) });
+    const { register, handleSubmit,reset, formState: { errors } } = useForm<IncomeExpenseFormValues>({ resolver: zodResolver(incomeExpenseSchema) });
 
     const onSubmit = async (values: IncomeExpenseFormValues) => {
         console.log('values', values);
@@ -79,6 +79,7 @@ export const IncomeExpenseForm: React.FC<IncomeExpenseFormProps> = ({ isOpen, on
                     isClosable: true,
                 });
                 fetchData();
+                reset();  // Limpiar el formulario
                 onClose();
 
 
@@ -124,6 +125,7 @@ export const IncomeExpenseForm: React.FC<IncomeExpenseFormProps> = ({ isOpen, on
                     isClosable: true,
                 });
                 fetchData();
+                reset();  // Limpiar el formulario
                 onClose();
 
 

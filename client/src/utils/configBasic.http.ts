@@ -44,7 +44,7 @@ export const getConfigAmountType = async (id: string, token: string) => {
     }
 };
 
-export const createConfigAmountType = async (name: string, value: number, token: string) => {
+export const createConfigAmountType = async (data:any , token: string) => {
     try {
         const response = await fetch(`${API_URL}/config`, {
             method: "POST",
@@ -52,7 +52,7 @@ export const createConfigAmountType = async (name: string, value: number, token:
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ name, value }),
+            body: JSON.stringify(data),
         });
 
         if (!response.ok) {
@@ -65,7 +65,7 @@ export const createConfigAmountType = async (name: string, value: number, token:
     }
 };
 
-export const updateConfigAmountType = async (id: string, name: string, value: number, token: string) => {
+export const updateConfigAmountType = async (id: string, data: any, token: string) => {
     try {
         const response = await fetch(`${API_URL}/config/${id}`, {
             method: "PATCH",
@@ -73,7 +73,7 @@ export const updateConfigAmountType = async (id: string, name: string, value: nu
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ name, value }),
+            body: JSON.stringify(data),
         });
 
         if (!response.ok) {
