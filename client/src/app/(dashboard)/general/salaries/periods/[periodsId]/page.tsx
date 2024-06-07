@@ -102,6 +102,7 @@ const ListEmployeePage: React.FC = () => {
             const token = user?.token || '';
             const data = await calculateIpsForAllEmployees(periodsId as string, token);
             console.log(data);
+            fetchPayrolls();
         }
         catch (error) {
             console.error('Error al calcular IPS:', error);
@@ -120,6 +121,7 @@ const ListEmployeePage: React.FC = () => {
             const token = user?.token || '';
             const data = await calculateBonificationForAllEmployees(periodsId as string, token);
             console.log(data);
+            fetchPayrolls();
         }
         catch (error) {
             console.error('Error al calcular bonificaciones:', error);
@@ -138,6 +140,7 @@ const ListEmployeePage: React.FC = () => {
             const token = user?.token || '';
             const data = await closePayrollPeriod(periodsId as string, token);
             console.log(data);
+            fetchPayrolls();
         }
         catch (error) {
             console.error('Error al cerrar periodo:', error);
@@ -210,16 +213,16 @@ const ListEmployeePage: React.FC = () => {
                 }}
             />
 
-            <Button onClick={() => setShowModalGenerar(true)}>
+            <Button isDisabled={payments?.isEnded} onClick={() => setShowModalGenerar(true)}>
                 Generar Salario
             </Button>
-            <Button isDisabled={payments.isEnded} onClick={() => setShowModalIps(true)}>
+            <Button isDisabled={payments?.isEnded} onClick={() => setShowModalIps(true)}>
                 Generar IPS
             </Button>
-            <Button onClick={() => setShowModalBonificacion(true)}>
+            <Button isDisabled={payments?.isEnded} onClick={() => setShowModalBonificacion(true)}>
                 Generar Bonificaciones
             </Button>
-            <Button onClick={() => setShowModalCierre(true)}>
+            <Button isDisabled={payments?.isEnded} onClick={() => setShowModalCierre(true)}>
                 Cierre
             </Button>
 
