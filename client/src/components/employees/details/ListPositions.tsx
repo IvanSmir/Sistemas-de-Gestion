@@ -15,7 +15,7 @@ import {
     useToast
 } from "@chakra-ui/react";
 import { EditIcon, DeleteIcon, AddIcon } from "@chakra-ui/icons";
-import { getEmployeeDetails, deletePositionDetail  } from '@/utils/detail.http';
+import { getEmployeeDetails, deletePositionDetail } from '@/utils/detail.http';
 import { useParams } from "next/navigation";
 import { useAuth } from "@/components/context/AuthProvider";
 import { AddPositionInDetails } from "./addPositionInDetails";
@@ -24,7 +24,7 @@ interface Position {
     name: string;
 }
 
-interface EmployeeDetailsProps{
+interface EmployeeDetailsProps {
     id: string;
     name: string;
 }
@@ -69,7 +69,7 @@ export const EmployeeDetailsList: React.FC = () => {
             });
         });
     }, [fetchEmployeesDetails]);
-    
+
     const handleEditClick = (employee: EmployeeDetails, event: React.MouseEvent) => {
         event.stopPropagation();
         setSelectedEmployeeDetails(employee);
@@ -105,11 +105,11 @@ export const EmployeeDetailsList: React.FC = () => {
         }
     };
 
-    const getStatus =(startDate:string, endDate:string)=>{
+    const getStatus = (startDate: string, endDate: string) => {
         const currentDate = new Date();
         const start = new Date(startDate);
         const end = new Date(endDate);
-        return currentDate >= start && currentDate <= end? "Activo" : "Inactivo";
+        return currentDate >= start && currentDate <= end ? "Activo" : "Inactivo";
     };
 
     return (

@@ -48,7 +48,6 @@ export const updateEmployee = async (
   }
 };
 
-
 export const getEmployeeDetails = async (id: string, token: string) => {
   try {
     const response = await fetch(`${API_URL}/employee-details/employee/${id}`, {
@@ -70,6 +69,26 @@ export const getEmployeeDetails = async (id: string, token: string) => {
   }
 };
 
+export const getEmployeeDetailById = async (id: string, token: string) => {
+  try {
+    const response = await fetch(`${API_URL}/employee-details/${id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al obtener los detalles del empleado");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    throw new Error((error as Error).message || "Error al obtener empleado");
+  }
+};
 
 export const createPositionDetails = async (data: any, token: string) => {
   try {
@@ -80,7 +99,7 @@ export const createPositionDetails = async (data: any, token: string) => {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data), 
+      body: JSON.stringify(data),
     });
 
     if (!response.ok) {
@@ -93,7 +112,6 @@ export const createPositionDetails = async (data: any, token: string) => {
     throw new Error((error as Error).message || "Error al guardar cargo");
   }
 };
-
 
 export const getEmployeeIncomeDetails = async (id: string, token: string) => {
   try {
@@ -140,7 +158,11 @@ export const getEmployeeExpenseDetails = async (id: string, token: string) => {
   }
 };
 
-export const updatePositionDetails = async (id: string, positionDetailsData: any, token:string)=>{
+export const updatePositionDetails = async (
+  id: string,
+  positionDetailsData: any,
+  token: string
+) => {
   try {
     console.log("Token usado para crear:", token);
     const response = await fetch(`${API_URL}/employee-details/${id}`, {
@@ -162,21 +184,21 @@ export const updatePositionDetails = async (id: string, positionDetailsData: any
       (error as Error).message || "Error al guardar cargo editado"
     );
   }
-}
+};
 
-export const deletePositionDetail = async(id: string, token: string)=>{
-  try{
-    const response = await fetch(`${API_URL}/employee-details/${id}`,{
+export const deletePositionDetail = async (id: string, token: string) => {
+  try {
+    const response = await fetch(`${API_URL}/employee-details/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
-      }
+      },
     });
     if (!response.ok) {
       throw new Error("Error al borrar posiciones");
     }
-  
+
     const data = await response.json();
     return data;
   } catch (error: any) {

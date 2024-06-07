@@ -35,7 +35,7 @@ export class PayrollService {
           DetailsWithoutVerification: true,
         },
         orderBy: {
-          createdAt: 'desc',
+          createdAt: 'asc',
         },
       });
       return payrolls;
@@ -61,12 +61,16 @@ export class PayrollService {
               employeeId: true,
               userId: true,
               amount: true,
-              payrollItems: {
+              employee: {
                 select: {
                   id: true,
-                  payrollDetailId: true,
-                  isIncome: true,
-                  amount: true,
+                  person: {
+                    select: {
+                      id: true,
+                      name: true,
+                      ciRuc: true,
+                    },
+                  },
                 },
               },
             },
