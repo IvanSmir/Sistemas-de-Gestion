@@ -23,6 +23,7 @@ import { useAuth } from "@/components/context/AuthProvider";
 import { updatePositionDetails, getEmployeeDetailById } from "@/utils/detail.http";
 import { useParams } from "next/navigation";
 import { getPositionTypes } from "@/utils/position.utils";
+import { getConfigAmount } from "@/utils/configBasic.http";
 
 const SALARIO_MINIMO = 2680373;
 
@@ -62,12 +63,17 @@ export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({ is
     const [initialStartDate, setInitialStartDate] = useState(new Date().toISOString().split('T')[0]);
     const [isLoading, setIsLoading] = useState(true); // Estado para controlar la carga
     const salaryType = watch('salaryType');
+    const [salarioMinimo, setSalarioMinimo] = useState(2680373);
 
     const fetchDataPosition = useCallback(async () => {
         const { user } = auth;
         const token = user?.token || '';
         const positionTypesResponse = await getPositionTypes(token);
         setIsPosition(positionTypesResponse.data);
+        const data = await getConfigAmount(token);
+        const value = data.filter((item: any) => item.name === 'Salario Minimo')[0].value;
+        console.log(value);
+        setSalarioMinimo(value);
     }, [auth]);
 
     const fetchPositionDetails = useCallback(async () => {
@@ -146,6 +152,12 @@ export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({ is
         }
     }, [isOpen, fetchDataPosition, fetchPositionDetails, id]);
 
+    useEffect(() => {
+        if (salaryType === 'minimum') {
+            setValue('amount', salarioMinimo);
+        }
+    }, [salaryType, setValue, salarioMinimo]);
+
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
@@ -196,9 +208,9 @@ export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({ is
                                     <Input
                                         type="number"
                                         id="amount"
-                                        value={SALARIO_MINIMO}
+                                        value={salarioMinimo}
                                         {...register('amount', {
-                                            value: SALARIO_MINIMO,
+                                            value: salarioMinimo,
                                         })}
                                     />
                                 ) : (

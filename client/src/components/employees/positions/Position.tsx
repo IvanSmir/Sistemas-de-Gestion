@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Button, FormControl, FormLabel, Input, Select, FormErrorMessage } from '@chakra-ui/react';
 import PositionEmployee from "@/types/positionEmployee";
 import { FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form";
+import { getConfigAmount } from "@/utils/configBasic.http";
 
 const ApiUrl = process.env.NEXT_PUBLIC_API_URL;
 const SALARIO_MINIMO = 2680373;
@@ -18,21 +19,25 @@ interface FormPositionProps {
 export const FormPosition: React.FC<FormPositionProps> = ({ register, errors, setValue }) => {
     const [positions, setPositions] = useState<{ id: string, name: string }[]>([]);
     const [salaryType, setSalaryType] = useState<string>("");
+    const [salarioMinimo, setSalarioMinimo] = useState(2680373);
 
     useEffect(() => {
         const fetchPositions = async () => {
             const response = await fetch(`${ApiUrl}/positions?limit=1000&page=1`);
             const data = await response.json();
             setPositions(data.data);
+            const datas = await getConfigAmount('token');
+            const value = datas.filter((item: any) => item.name === 'Salario Minimo')[0].value;
+            setSalarioMinimo(value);
         };
         fetchPositions();
     }, []);
 
     useEffect(() => {
         if (salaryType === "minimum") {
-            setValue('amount', SALARIO_MINIMO);
+            setValue('amount', salarioMinimo);
         }
-    }, [salaryType, setValue]);
+    }, [salaryType, setValue, salarioMinimo]);
 
     return (
         <form>

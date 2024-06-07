@@ -12,7 +12,7 @@ import {
 import { NavItem } from "./NavItem";
 import { useState } from "react";
 import { IconType } from "react-icons";
-import { FiChevronDown, FiCompass, FiHome, FiSettings, FiUsers } from "react-icons/fi";
+import { FiChevronDown, FiCompass, FiDollarSign, FiHome, FiSettings, FiUsers } from "react-icons/fi";
 import { GrTransaction } from "react-icons/gr";
 
 interface LinkItemProps {
@@ -38,6 +38,7 @@ const LinkItems: Array<LinkItemProps> = [
             }
         ]
     },
+    { name: 'Salarios', icon: FiDollarSign, href: '/general/salaries/periods' },
     { name: 'Settings', icon: FiSettings, href: '/ConfigBasic' },
 ];
 
@@ -84,8 +85,8 @@ export const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
                                 link.name === 'Movimientos'
                                     ? handleMovementsClick
                                     : link.name === 'Tipos de movimientos'
-                                    ? handleTransactionTypeClick
-                                    : undefined
+                                        ? handleTransactionTypeClick
+                                        : undefined
                             }
                             flex="1"
                         >

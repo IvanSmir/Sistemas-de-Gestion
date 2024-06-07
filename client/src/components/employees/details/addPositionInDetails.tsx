@@ -23,6 +23,7 @@ import { positionSchema } from "@/validations/positionSchema";
 import { createPositionDetails } from "@/utils/detail.http";
 import { useParams } from "next/navigation";
 import { getPositionTypes } from "@/utils/position.utils";
+import { getConfigAmount } from "@/utils/configBasic.http";
 
 const SALARIO_MINIMO = 2680373;
 
@@ -60,6 +61,7 @@ export const AddPositionInDetails: React.FC<AddPositionInDetailsProps> = ({ isOp
 
   const [isDisabled, setIsDisabled] = useState(false); // Initially set to false
   const [initialStartDate, setInitialStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [salarioMinimo, setSalarioMinimo] = useState(2680373);
   const salaryType = watch('salaryType');
 
   const fetchDataPosition = useCallback(async () => {
@@ -68,6 +70,11 @@ export const AddPositionInDetails: React.FC<AddPositionInDetailsProps> = ({ isOp
     const token = user?.token || '';
     const positionTypesResponse = await getPositionTypes(token);
     setIsPosition(positionTypesResponse.data);
+    const data = await getConfigAmount(token);
+    console.log(data);
+    const value = data.filter((item: any) => item.name === 'Salario Minimo')[0].value;
+    console.log(value);
+    setSalarioMinimo(value);
   }, [auth, id]);
 
   const onSubmit = async (data: PositionFormValues) => {
@@ -138,6 +145,12 @@ export const AddPositionInDetails: React.FC<AddPositionInDetailsProps> = ({ isOp
     setValue('endDate', new Date().toISOString().split('T')[0]);
   }, [auth, setValue, fetchDataPosition]);
 
+  useEffect(() => {
+    if (salaryType === 'minimum') {
+      setValue('amount', salarioMinimo);
+    }
+  }, [salaryType, setValue, salarioMinimo]);
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -183,11 +196,12 @@ export const AddPositionInDetails: React.FC<AddPositionInDetailsProps> = ({ isOp
               <FormLabel htmlFor="amount">Salario:</FormLabel>
               {salaryType === 'minimum' ? (
                 <Input
+                  isDisabled={true}
                   type="number"
                   id="amount"
-                  value={SALARIO_MINIMO}
+                  value={salarioMinimo}
                   {...register('amount', {
-                    value: SALARIO_MINIMO,
+                    value: salarioMinimo,
                   })}
                 />
               ) : (
