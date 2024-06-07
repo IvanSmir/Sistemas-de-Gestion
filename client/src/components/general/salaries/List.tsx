@@ -1,43 +1,53 @@
 'use client'
-import { TableContainer, Table, Tbody, Td, Th, Thead, Tr, Box, Flex, Button } from '@chakra-ui/react';
+import { TableContainer, Table, Tbody, Td, Th, Thead, Tr, Box, Flex, Button, Checkbox } from '@chakra-ui/react';
 import React, { ChangeEvent, useState } from 'react'
 import Pagination from '../../lists/Pagination';
 import Link from 'next/link';
 import VerifiedModal from './VerifiedModal';
-import Period from "@/types/period";
+import PayrollDetail from "@/types/period";
+import { useParams } from 'next/navigation';
 // Definimos los tipos para las props
 type PaymentsProps = {
-    data: { id: string;[key: string]: any }[]; // Cada dato tiene un ID y valores dinámicos
-    columnMapping: { [header: string]: string }; // Mapeo de headers a claves de datos
-    payments: Period[];
+    payments: PayrollDetail[];
+    isEnded: boolean;
 }
 
-export const TableEmployee: React.FC<PaymentsProps> = ({ data, columnMapping, payments }) => {
-    const headers = Object.keys(columnMapping);
+export const TableEmployee: React.FC<PaymentsProps> = ({ payments, isEnded }) => {
 
-
+    const { periodsId } = useParams();
     return (
         <Box marginTop={6} width={{ base: "100%", sm: "90%", md: "80%", lg: "100%", xl: "100%", "2xl": "100%" }} >
             <TableContainer>
                 <Table variant="simple" fontSize={{ base: "12px", sm: "13px", md: "14px", lg: "15px", xl: "16px", "2xl": "17px" }}>
-                    <Thead >
+                    <Thead>
                         <Tr>
-                            <Th>
-
-                            </Th>
+                            <Th >Nombre</Th>
+                            <Th >CI/RUC</Th>
+                            <Th>Detalle</Th>
+                            <Th>Recibo</Th>
+                            <Th>Verificado</Th>
 
                         </Tr>
                     </Thead>
                     <Tbody>
                         {payments.map((datum) => (
                             <Tr key={datum.id}>
-                                {headers.map((header) => (
-                                    <Td key={`${datum.id}-${header}`} textAlign="center" verticalAlign="middle">{datum[columnMapping[header]]}</Td>
-                                ))}
+                                <Td>{datum.employee.person.name}</Td>
+                                <Td>{datum.employee.person.ciRuc}</Td>
                                 <Td>
-                                    <Link className='text-blue-500' href={`/employees/${datum.employeeId}`}>
+                                    <Link className='text-blue-500' href={`/general/salaries/periods/${periodsId}/${datum.id}`}>
                                         Detalles
                                     </Link>
+                                </Td>
+                                <Td>
+                                    <Link href={`/general/salaries/periods/details/${datum.id}`}>
+                                        Recibo
+                                    </Link>
+                                </Td>
+                                <Td>
+                                    <Checkbox isDisabled colorScheme='green' defaultChecked>
+                                        Checkbox
+                                    </Checkbox>
                                 </Td>
                             </Tr>
                         ))}
