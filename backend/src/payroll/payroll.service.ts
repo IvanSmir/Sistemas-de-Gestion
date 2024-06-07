@@ -35,7 +35,7 @@ export class PayrollService {
           DetailsWithoutVerification: true,
         },
         orderBy: {
-          createdAt: 'asc',
+          createdAt: 'desc',
         },
       });
       return payrolls;
@@ -131,7 +131,7 @@ export class PayrollService {
 
       // Creación de ítems de nómina para salarios
       const salaries = await this.prismaService.employeeDetails.findMany({
-        where: { employeeId, isActive: true },
+        where: { employeeId, isActive: true, endDate: { gte: new Date() } },
         select: { salary: true, position: { select: { name: true } } },
       });
 

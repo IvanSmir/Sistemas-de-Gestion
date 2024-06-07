@@ -16,6 +16,9 @@ const PeriodPage = () => {
     const [activePeriod, setActivePeriod] = useState<Boolean>(false);
 
     const createPayrolls = async () => {
+        if (activePeriod) {
+            return;
+        }
         try {
             const { user } = auth;
             const token = user?.token || '';
