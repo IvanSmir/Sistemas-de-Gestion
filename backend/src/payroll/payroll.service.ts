@@ -649,6 +649,7 @@ export class PayrollService {
             },
             userId: true,
             amount: true,
+            isVerified: true,
             payrollItems: {
               select: {
                 id: true,

@@ -1,6 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { useForm, UseFormRegister, FieldErrors, UseFormHandleSubmit, UseFormSetValue } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Avatar, Box, Button, Divider, Flex, FormControl, FormLabel, Input, Link, Select, Tabs, TabList, TabPanel, TabPanels, Tab, useToast, Wrap, WrapItem, FormErrorMessage } from '@chakra-ui/react';
 import { List } from '@/components/relatives/List';
 import { useParams, useRouter } from 'next/navigation';
@@ -9,14 +10,15 @@ import { useAuth } from '@/components/context/AuthProvider';
 import Employee from "@/types/employee";
 import { EmployeeDetailsList } from './ListPositions';
 import { FinanceDetailsList } from './TransactionsList';
+import { employeeSchema } from '@/validations/employeeSchema';
 
 export const EmployeeDetails = () => {
     const { id } = useParams();
     const toast = useToast();
     const auth = useAuth();
     const router = useRouter();
-    const { register, handleSubmit, setValue, formState: { errors, isDirty, isValid } } = useForm<Employee>({
-        mode: 'onChange',
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm<Employee>({
+        resolver: zodResolver(employeeSchema),
     });
 
     const [isEditing, setIsEditing] = useState(false);
@@ -32,9 +34,9 @@ export const EmployeeDetails = () => {
                     const data = await getEmployeeId(employeeId, token);
                     setValue('name', data.person.name || '');
                     setValue('email', data.person.email || '');
-                    setValue('gender', data.person.gender === 'male' ? 'Masculino' : 'Femenino');
+                    setValue('gender', data.person.gender);
                     setValue('address', data.person.address || '');
-                    setValue('phone', data.person.phone || '');
+                    setValue('phone', (data.person.phone ? data.person.phone.slice(4) : '')); // Elimina los 4 primeros dígitos
                     setValue('ciRuc', data.person.ciRuc || '');
                     setEmployeeCiRuc(data.person.ciRuc);
                     setValue('enterDate', data.enterDate ? data.enterDate.split('T')[0] : '');
@@ -77,7 +79,6 @@ export const EmployeeDetails = () => {
             const { user } = auth;
             const token = user?.token || '';
             const employeeId = typeof id === "string" ? id : "";
-            data.gender = data.gender === 'Masculino' ? 'male' : 'female';
             toast({
                 title: 'Guardando empleado',
                 description: 'Por favor espere...',
@@ -85,6 +86,8 @@ export const EmployeeDetails = () => {
                 duration: null,
                 isClosable: true,
             });
+
+            data.phone = '+595' + data.phone.slice(0);
 
             await updateEmployee(employeeId, data, token);
             toast.closeAll();
@@ -99,6 +102,7 @@ export const EmployeeDetails = () => {
             setIsEditing(false);
         } catch (error) {
             console.error('Error saving employee:', error);
+            toast.closeAll();
             toast({
                 title: 'Error',
                 description: 'Failed to save employee.',
@@ -131,29 +135,34 @@ export const EmployeeDetails = () => {
                                     </WrapItem>
                                 </Wrap>
                             </Box>
-                            <Input
-                                id="name"
-                                {...register('name', { required: 'El nombre es obligatorio' })}
-                                isReadOnly={!isEditing}
-                                fontWeight="bold"
-                                textAlign={{ lg: "center", base: "center", sm: "left", md: "left" }}
-                                className="input mb-4 disabled-dark:black"
-                                mb={4}
-                            />
-                            <Flex>
-                                <FormLabel fontSize="14px" htmlFor="gender">Sexo:</FormLabel>
-                                <Select
-                                    id="gender"
-                                    {...register('gender', { required: 'El sexo es obligatorio' })}
+                            <FormControl isInvalid={!!errors.name} mb={4}>
+                                <Input
+                                    id="name"
+                                    {...register('name', { required: 'El nombre es obligatorio' })}
                                     isReadOnly={!isEditing}
+                                    fontWeight="bold"
+                                    textAlign={{ lg: "center", base: "center", sm: "left", md: "left" }}
+                                    className="input mb-4 disabled-dark:black"
                                     mb={4}
-                                    placeholder='Seleccione el sexo'
-                                >
-                                    <option value="Masculino">Masculino</option>
-                                    <option value="Femenino">Femenino</option>
-                                </Select>
-                            </Flex>
-                            <FormErrorMessage>{errors.gender && errors.gender.message}</FormErrorMessage>
+                                />
+                                <FormErrorMessage>{errors.name && errors.name.message}</FormErrorMessage>
+                            </FormControl>
+                            <FormControl isInvalid={!!errors.gender} mb={4}>
+                                <Flex>
+                                    <FormLabel fontSize="14px" htmlFor="gender">Sexo:</FormLabel>
+                                    <Select
+                                        id="gender"
+                                        {...register('gender', { required: 'El sexo es obligatorio' })}
+                                        isReadOnly={!isEditing}
+                                        mb={4}
+                                        placeholder='Seleccione el sexo'
+                                    >
+                                        <option value="male">Masculino</option>
+                                        <option value="female">Femenino</option>
+                                    </Select>
+                                </Flex>
+                                <FormErrorMessage>{errors.gender && errors.gender.message}</FormErrorMessage>
+                            </FormControl>
                         </Box>
 
                         <Box bg={"white"} p={5} borderRadius="md" width="70%">
@@ -167,8 +176,7 @@ export const EmployeeDetails = () => {
                                     <Flex gap={2}>
                                         <Button
                                             bg={"gray.300"}
-                                            onClick={handleSubmit(handleSave)}
-                                            isDisabled={!isDirty || !isValid}
+                                            type="submit"
                                         >
                                             Guardar
                                         </Button>
@@ -182,69 +190,81 @@ export const EmployeeDetails = () => {
                             </Flex>
                             <Flex justifyContent={"space-evenly"} gap={4} mb={4}>
                                 <Box mb={8}>
-                                    <Flex>
-                                        <FormLabel fontSize="14px" htmlFor="ciRuc">Ruc/Ci:</FormLabel>
-                                        <Input
-                                            id="ciRuc"
-                                            {...register('ciRuc', { required: 'El Ruc/Ci es obligatorio' })}
-                                            isReadOnly={true}
-                                            mb={4}
-                                        />
-                                        <FormErrorMessage>{errors.ciRuc && errors.ciRuc.message}</FormErrorMessage>
-                                    </Flex>
-                                    <Flex>
-                                        <FormLabel fontSize="14px" htmlFor="enterDate">Fecha Ingreso:</FormLabel>
-                                        <Input
-                                            type="date"
-                                            id="enterDate"
-                                            {...register('enterDate', { required: 'La fecha de ingreso es obligatoria' })}
-                                            isReadOnly={!isEditing}
-                                        />
-                                        <FormErrorMessage>{errors.enterDate && errors.enterDate.message}</FormErrorMessage>
-                                    </Flex>
-                                    <Flex>
-                                        <FormLabel fontSize="14px" htmlFor="birthDate">Fecha Nacimiento:</FormLabel>
-                                        <Input
-                                            type="date"
-                                            id="birthDate"
-                                            {...register('birthDate', { required: 'La fecha de nacimiento es obligatoria' })}
-                                            isReadOnly={!isEditing}
-                                        />
-                                        <FormErrorMessage>{errors.birthDate && errors.birthDate.message}</FormErrorMessage>
-                                    </Flex>
+                                    <FormControl isInvalid={!!errors.ciRuc} mb={4}>
+                                        <Flex>
+                                            <FormLabel fontSize="14px" htmlFor="ciRuc">Ruc/Ci:</FormLabel>
+                                            <Input
+                                                id="ciRuc"
+                                                {...register('ciRuc', { required: 'El Ruc/Ci es obligatorio' })}
+                                                isReadOnly={true}
+                                                mb={4}
+                                            />
+                                            <FormErrorMessage>{errors.ciRuc && errors.ciRuc.message}</FormErrorMessage>
+                                        </Flex>
+                                    </FormControl>
+                                    <FormControl isInvalid={!!errors.enterDate} mb={4}>
+                                        <Flex>
+                                            <FormLabel fontSize="14px" htmlFor="enterDate">Fecha Ingreso:</FormLabel>
+                                            <Input
+                                                type="date"
+                                                id="enterDate"
+                                                {...register('enterDate', { required: 'La fecha de ingreso es obligatoria' })}
+                                                isReadOnly={!isEditing}
+                                            />
+                                            <FormErrorMessage>{errors.enterDate && errors.enterDate.message}</FormErrorMessage>
+                                        </Flex>
+                                    </FormControl>
+                                    <FormControl isInvalid={!!errors.birthDate} mb={4}>
+                                        <Flex>
+                                            <FormLabel fontSize="14px" htmlFor="birthDate">Fecha Nacimiento:</FormLabel>
+                                            <Input
+                                                type="date"
+                                                id="birthDate"
+                                                {...register('birthDate', { required: 'La fecha de nacimiento es obligatoria' })}
+                                                isReadOnly={!isEditing}
+                                            />
+                                            <FormErrorMessage>{errors.birthDate && errors.birthDate.message}</FormErrorMessage>
+                                        </Flex>
+                                    </FormControl>
                                 </Box>
                                 <Box>
-                                    <Flex>
-                                        <FormLabel fontSize="14px" htmlFor="address">Dirección:</FormLabel>
-                                        <Input
-                                            id="address"
-                                            {...register('address', { required: 'La dirección es obligatoria' })}
-                                            isReadOnly={!isEditing}
-                                        />
-                                        <FormErrorMessage>{errors.address && errors.address.message}</FormErrorMessage>
-                                    </Flex>
-                                    <Flex marginTop={4}>
-                                        <FormLabel fontSize="14px" htmlFor="email">Correo:</FormLabel>
-                                        <Input
-                                            id="email"
-                                            {...register('email', { required: 'El correo es obligatorio' })}
-                                            isReadOnly={!isEditing}
-                                            mb={4}
-                                        />
-                                        <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
-                                    </Flex>
-                                    <Flex>
-                                        <FormLabel fontSize="14px" htmlFor="phone">Teléfono:</FormLabel>
-                                        <Input
-                                            id="phone"
-                                            {...register('phone', { required: 'El teléfono es obligatorio' })}
-                                            isReadOnly={!isEditing}
-                                        />
-                                        <FormErrorMessage>{errors.phone && errors.phone.message}</FormErrorMessage>
-                                    </Flex>
+                                    <FormControl isInvalid={!!errors.address} mb={4}>
+                                        <Flex>
+                                            <FormLabel fontSize="14px" htmlFor="address">Dirección:</FormLabel>
+                                            <Input
+                                                id="address"
+                                                {...register('address', { required: 'La dirección es obligatoria' })}
+                                                isReadOnly={!isEditing}
+                                            />
+                                            <FormErrorMessage>{errors.address && errors.address.message}</FormErrorMessage>
+                                        </Flex>
+                                    </FormControl>
+                                    <FormControl isInvalid={!!errors.email} mb={4}>
+                                        <Flex>
+                                            <FormLabel fontSize="14px" htmlFor="email">Correo:</FormLabel>
+                                            <Input
+                                                id="email"
+                                                {...register('email', { required: 'El correo es obligatorio' })}
+                                                isReadOnly={!isEditing}
+                                                mb={4}
+                                            />
+                                            <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
+                                        </Flex>
+                                    </FormControl>
+                                    <FormControl isInvalid={!!errors.phone} mb={4}>
+                                        <Flex>
+                                            <FormLabel fontSize="14px" htmlFor="phone">Teléfono:</FormLabel>
+                                            <Input
+                                                id="phone"
+                                                {...register('phone', { required: 'El teléfono es obligatorio' })}
+                                                isReadOnly={!isEditing}
+                                            />
+                                            <FormErrorMessage>{errors.phone && errors.phone.message}</FormErrorMessage>
+                                        </Flex>
+                                    </FormControl>
                                 </Box>
                             </Flex>
-                           
+
                         </Box>
 
                     </Flex>
