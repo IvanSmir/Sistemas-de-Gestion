@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { Button, Modal, ModalBody, ModalContent, ModalOverlay, useDisclosure } from '@chakra-ui/react';
+import { Button, Flex, Modal, ModalBody, ModalContent, ModalOverlay, useDisclosure } from '@chakra-ui/react';
 import { FormRelative } from '@/components/relatives/add/FormRelativeStepper';
 import { TablePerson } from '@/components/lists/TablePerson';
 import Relative from '@/types/relative';
@@ -54,7 +54,10 @@ export const ModalRelative: React.FC<FormRelativeProps> = ({ relative, setRelati
 
     return (
         <>
-            <Button onClick={onOpen}>Agregar</Button>
+            <Flex justifyContent={"end"}>
+
+                <Button m={4} bg={"gray.600"} colorScheme='white' onClick={onOpen}>Agregar</Button>
+            </Flex>
             <TablePerson data={transformedData} columnMapping={columnMapping} />
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
