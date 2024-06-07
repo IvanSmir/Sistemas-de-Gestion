@@ -104,18 +104,21 @@ export class PayrollService {
         await this.prismaService.payrollItems.deleteMany({
           where: { payrollDetailId: { in: payrollDetailIds } },
         });
-        await this.prismaService.payrollDetails.deleteMany({
-          where: { id: { in: payrollDetailIds } },
-        });
       }
 
-      const payrollDetails = await this.prismaService.payrollDetails.create({
-        data: {
-          periodId,
-          employeeId,
-          userId: user.id,
-        },
-      });
+      let payrollDetails;
+
+      if (payrollDetailIds.length > 0) {
+        payrollDetails = existingPayrollDetails[0];
+      } else {
+        payrollDetails = await this.prismaService.payrollDetails.create({
+          data: {
+            periodId,
+            employeeId,
+            userId: user.id,
+          },
+        });
+      }
 
       await this.prismaService.payrollPeriods.update({
         where: { id: periodId },

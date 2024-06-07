@@ -156,7 +156,6 @@ const Sueldo = () => {
             generateBonusPayrollDetails(periodsId, detailsId, user?.token ?? '')
                 .then(a => {
                     console.log("retorno de generar bonus" + a)
-
                     setRefresh(!refresh)
                     toast.closeAll();
                     toast({
@@ -166,6 +165,7 @@ const Sueldo = () => {
                         duration: 5000,
                         isClosable: true,
                     });
+
                 })
         } catch {
             toast({
@@ -180,19 +180,27 @@ const Sueldo = () => {
 
     const handleClickSalary = () => {
         try {
+            toast.closeAll();
+            toast({
+                title: 'Generando',
+                description: 'Por favor espere...',
+                status: 'loading',
+                duration: null,
+                isClosable: true,
+            });
             salaryPayrollDetails(periodsId, employeeId, user?.token ?? '')
                 .then(a => {
                     console.log("retorno de generar bonus" + a)
-
+                    toast.closeAll();
+                    toast({
+                        title: 'Salario Generado',
+                        description: 'El proceso ha sido culminado con exito.',
+                        status: 'success',
+                        duration: 5000,
+                        isClosable: true,
+                    });
+                    setRefresh(!refresh)
                 })
-            setRefresh(!refresh)
-            toast({
-                title: 'Bonus Generado',
-                description: 'El proceso ha sido culminado con exito.',
-                status: 'success',
-                duration: 5000,
-                isClosable: true,
-            });
         } catch {
             toast({
                 title: 'Error',
