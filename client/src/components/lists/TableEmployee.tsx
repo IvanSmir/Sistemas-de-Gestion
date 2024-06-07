@@ -5,6 +5,7 @@ import Pagination from './Pagination'
 import Link from 'next/link';
 import VerifiedModal from '../general/salaries/VerifiedModal';
 import Period from "@/types/period";
+import { AddIcon } from '@chakra-ui/icons';
 // Definimos los tipos para las props
 type TableEmployeeProps = {
     data: { id: string;[key: string]: any }[]; // Cada dato tiene un ID y valores dinámicos
@@ -48,24 +49,16 @@ export const TableEmployee: React.FC<TableEmployeeProps> = ({ data, columnMappin
     };
 
     return (
+
         <Box marginTop={6} width={{ base: "100%", sm: "90%", md: "80%", lg: "100%", xl: "100%", "2xl": "100%" }} height={"70vh"}>
             <Flex justifyContent="end" mb={6} flexWrap="wrap">
 
 
                 <Link href="/employees/add">
                     <Button
-                        rounded={23}
-                        mr={5}
-                        fontSize={{ base: 11, sm: 12, md: 13, lg: 14, xl: 15, "2xl": 16 }}
-                        py={{ base: 3, sm: 3.5, md: 4, lg: 4.5, xl: 5, "2xl": 5.5 }}
-                        px={{ base: 6, sm: 6.5, md: 7, lg: 7.5, xl: 8, "2xl": 8.5 }}
-                        bgColor="#AA546D"
-                        _hover={{ bgColor: "#c1738e" }}
-                        gap={2}
-                        color="white"
-                        mt={{ base: "10px", md: "0" }}
+                        rounded={23} mr={5} fontSize={13} py={3} px={5} bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} gap={2} color='white'
                     >
-                        Agregar Funcionario
+                        <AddIcon />Agregar Funcionario
                     </Button>
                 </Link>
 
