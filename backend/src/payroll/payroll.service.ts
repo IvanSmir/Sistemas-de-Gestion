@@ -56,6 +56,7 @@ export class PayrollService {
           DetailsWithoutVerification: true,
           payrollDetails: {
             select: {
+              isVerified: true,
               id: true,
               periodId: true,
               employeeId: true,
