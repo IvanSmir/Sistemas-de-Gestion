@@ -40,13 +40,16 @@ interface ModalProps {
     fetchDataFamily: () => void;
 }
 
+const normalizeRUC = (ruc: string) => ruc.replace(/\./g, '');
+const denormalizeCi = (ci: string) => ci.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
 export const EditForm: React.FC<ModalProps> = ({ isOpen, onClose, familyMember, fetchDataFamily }) => {
     const toast = useToast();
     const { id } = useParams();
     const [error, setError] = useState<string | null>(null);
     const auth = useAuth();
     const [familyTypes, setFamilyTypes] = useState<FamilyTypes[]>([]);
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm<Relative>({ resolver: zodResolver(relativeSchema) });
+    const { register, handleSubmit, setValue, formState: { errors }, trigger } = useForm<Relative>({ resolver: zodResolver(relativeSchema) });
 
     const fetchData = useCallback(async () => {
         const { user } = auth;
@@ -64,10 +67,11 @@ export const EditForm: React.FC<ModalProps> = ({ isOpen, onClose, familyMember, 
         setValue('birthDate', familyMember.person.birthDate.split('T')[0]);
         setValue('gender', familyMember.person.gender);
         setValue('familyTypeId', familyMember.familyType.id);
-        setValue('ciRuc', familyMember.person.ciRuc);
+        setValue('ciRuc', normalizeRUC(familyMember.person.ciRuc));
     }, [setValue, fetchData, familyMember]);
 
     const onSubmit: SubmitHandler<Relative> = async (data) => {
+        data.ciRuc = denormalizeCi(data.ciRuc);
         const updateData = {
             ...data,
             familyTypeId: data.familyTypeId,
@@ -108,6 +112,15 @@ export const EditForm: React.FC<ModalProps> = ({ isOpen, onClose, familyMember, 
         }
     };
 
+    const handleButtonClick = async () => {
+        const isValid = await trigger();
+        console.log('isValid', isValid);
+        console.log('errors', errors);
+        if (isValid) {
+            handleSubmit(onSubmit)();
+        }
+    };
+
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
@@ -115,7 +128,7 @@ export const EditForm: React.FC<ModalProps> = ({ isOpen, onClose, familyMember, 
                 <ModalHeader>Editar Familiar</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                    <form onSubmit={handleSubmit(onSubmit)}>
+                    <form>
                         <FormControl isInvalid={!!errors.name}>
                             <FormLabel htmlFor="name">Nombre:</FormLabel>
                             <Input type="text" id="name" {...register('name')} />
@@ -158,7 +171,7 @@ export const EditForm: React.FC<ModalProps> = ({ isOpen, onClose, familyMember, 
                             </Select>
                             <FormErrorMessage>{errors.familyTypeId && errors.familyTypeId.message}</FormErrorMessage>
                         </FormControl>
-                        <Button mt={4} color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} type='submit' display="block" mx="auto">Guardar</Button>
+                        <Button mt={4} color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} onClick={handleButtonClick} display="block" mx="auto">Guardar</Button>
                     </form>
                 </ModalBody>
             </ModalContent>
