@@ -450,6 +450,11 @@ export class PayrollService {
 
   async createPayments(periodId: string, user: Users) {
     try {
+      const period = await this.prismaService.payrollPeriods.update({
+        where: { id: periodId },
+        data: { DetailsWithoutVerification: 0 },
+      });
+
       const employees = await this.prismaService.employees.findMany({
         where: { isDeleted: false },
         select: { id: true },
