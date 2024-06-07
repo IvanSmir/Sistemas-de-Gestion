@@ -11,13 +11,17 @@ export const positionSchema = z.object({
   ),
 
   endDate: z
-    .preprocess(
-      (arg) => new Date(arg as string),
+    .union([
       z
-        .date()
-        .refine((date) => !isNaN(date.getTime()), { message: "Invalid date" })
-    )
-    .optional(),
+        .string()
+        .transform((val) => new Date(val))
+        .optional(),
+      z.date().optional(),
+    ])
+    .refine((date) => date === undefined || !isNaN(date.getTime()), {
+      message: "Invalid date",
+    }),
+
   startDate: z
     .preprocess(
       (arg) => new Date(arg as string),

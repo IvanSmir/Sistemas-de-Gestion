@@ -460,10 +460,24 @@ export class PayrollService {
 
       const employees = await this.prismaService.employees.findMany({
         where: { isDeleted: false },
-        select: { id: true },
+        select: { id: true, EmployeeDetails: true },
       });
 
       const payrollDetailsPromises = employees.map(async (employee) => {
+        if (!employee.EmployeeDetails) return;
+
+        let noRole = true;
+        for (const role of employee.EmployeeDetails) {
+          if (
+            role.endDate > new Date() ||
+            role.endDate == new Date('1900-06-03T00:00:00.000Z')
+          ) {
+            noRole = false;
+            break;
+          }
+        }
+        if (noRole) return;
+
         const payments = await this.createPaymentforEmployee(
           periodId,
           employee.id,

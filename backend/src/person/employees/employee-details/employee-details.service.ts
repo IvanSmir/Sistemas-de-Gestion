@@ -36,6 +36,13 @@ export class EmployeeDetailsService {
           data: {
             ...createEmployeeDetailDto,
             userId: user.id,
+            endDate:
+              new Date(createEmployeeDetailDto.endDate) ===
+                new Date('1900-06-03T00:00:00.000Z') ||
+              new Date(createEmployeeDetailDto.endDate) ===
+                new Date('1900-06-03T00:00:00.000Z')
+                ? null
+                : new Date(createEmployeeDetailDto.endDate),
           },
           select: this.selectOptions,
         });

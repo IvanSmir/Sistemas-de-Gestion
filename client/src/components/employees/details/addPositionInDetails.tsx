@@ -43,8 +43,8 @@ interface AddPositionInDetailsProps {
 interface PositionFormValues {
   employeeId: string;
   positionId: string;
-  startDate: string; // Change to string to handle input date values
-  endDate: string;   // Change to string to handle input date values
+  startDate: string;
+  endDate: string | undefined;
   salaryType: 'minimum' | 'base';
   amount: number | string;
 }
@@ -86,7 +86,7 @@ export const AddPositionInDetails: React.FC<AddPositionInDetailsProps> = ({ isOp
         employeeId: id,
         positionId: data.positionId,
         startDate: new Date(data.startDate),
-        endDate: new Date(data.endDate),
+        endDate: new Date(data.endDate as string),
         salaryType: data.salaryType,
         salary: typeof data.amount === 'number' ? data.amount : Number(data.amount), // Ensure salary is a number
       };
@@ -142,7 +142,7 @@ export const AddPositionInDetails: React.FC<AddPositionInDetailsProps> = ({ isOp
     setValue('salaryType', 'base');
     setValue('startDate', new Date().toISOString().split('T')[0]);
     setValue('amount', '');
-    setValue('endDate', new Date().toISOString().split('T')[0]);
+    setValue('endDate', undefined);
   }, [auth, setValue, fetchDataPosition]);
 
   useEffect(() => {
