@@ -138,7 +138,7 @@ export class PayrollController {
     @Param('periodDetailsId', ParseUUIDPipe) periodDetailsId: string,
     @GetUser() user: Users,
   ) {
-    return this.payrollService.verifyPayrollDetails(user, periodDetailsId);
+    return this.payrollService.verifyPayrollDetails(user, periodDetailsId, id);
   }
 
   @Post(':id/familyBonification')
