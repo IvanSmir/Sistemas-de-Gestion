@@ -58,9 +58,9 @@ const transformData = (data: Root[]): Root[] => {
             ...datum.person
         }
     }));
+
+
 };
-
-
 const ListEmployeePage: React.FC = () => {
     const router = useRouter();
 
@@ -70,6 +70,7 @@ const ListEmployeePage: React.FC = () => {
     const [payments, setPayments] = useState<PayrollPeriod | undefined>(undefined);
     const [loading, setLoading] = useState(false);
     const [total, setTotal] = useState(0);
+    const [fecha, setFecha] = useState<string>('');
 
     const columnMapping = {
         'Nombre': 'name',
@@ -252,6 +253,9 @@ const ListEmployeePage: React.FC = () => {
             });
             console.log("data33333", data);
             setPayments(data);
+            setFecha(data.periodStart.split('T')[0]);
+
+
         } catch (error) {
             console.error('Error al obtener los empleados:', error);
         } finally {
@@ -266,7 +270,6 @@ const ListEmployeePage: React.FC = () => {
     const handleBack = () => {
         router.back();
     }
-
     useEffect(() => {
         fetchPayrolls()
     }, [fetchPayrolls]);
@@ -308,7 +311,7 @@ const ListEmployeePage: React.FC = () => {
                 }}
             />
             <Flex width={"90%"} flexDirection={"column"}>
-                <Heading color={"gray.600"} mt={4} marginLeft={5} width={"100%"}>Generacion de Salarios</Heading>
+                <Heading color={"gray.600"} mt={4} marginLeft={5} width={"100%"}>Generacion de Salarios del Periodo {fecha}</Heading>
 
                 <Box marginTop={2} width={{ base: "100%", sm: "90%", md: "80%", lg: "100%", xl: "100%", "2xl": "100%" }} height={"70vh"}>
 
