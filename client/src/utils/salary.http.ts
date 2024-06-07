@@ -82,3 +82,66 @@ export const getPayrollDetails = async (periodId: string, token: string) => {
         throw new Error((error as Error).message || "Error al obtener salarios");
     }
 };
+
+export const calculateBonificationForAllEmployees = async (id: string, token: string) => {
+    try {
+        const response = await fetch(`${API_URL}/payroll/ ${id}/familyBonification`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Error al calcular bonificaciones");
+        }
+
+
+        return response.json();
+    } catch (error: any) {
+        throw new Error((error as Error).message || "Error al calcular bonificaciones");
+    }
+};
+
+export const calculateIpsForAllEmployees = async (id: string, token: string) => {
+    try {
+        const response = await fetch(`${API_URL}/payroll/ ${id}/ips`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Error al calcular IPS");
+        }
+
+
+        return response.json();
+    } catch (error: any) {
+        throw new Error((error as Error).message || "Error al calcular IPS");
+    }
+};
+
+export const closePayrollPeriod = async (id: string, token: string) => {
+    try {
+        const response = await fetch(`${API_URL}/payroll/${id}/closePayrollPeriod`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Error al cerrar periodo");
+        }
+
+
+        return response.json();
+    } catch (error: any) {
+        throw new Error((error as Error).message || "Error al cerrar periodo");
+    }
+};

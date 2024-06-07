@@ -9,11 +9,10 @@ import { useParams } from 'next/navigation';
 // Definimos los tipos para las props
 type PaymentsProps = {
     payments: PayrollDetail[];
-    isEnded: boolean;
 }
 
-export const TableEmployee: React.FC<PaymentsProps> = ({ payments, isEnded }) => {
-
+export const TableSalaries: React.FC<PaymentsProps> = ({ payments }) => {
+    console.log('payments', payments);
     const { periodsId } = useParams();
     return (
         <Box marginTop={6} width={{ base: "100%", sm: "90%", md: "80%", lg: "100%", xl: "100%", "2xl": "100%" }} >
@@ -30,27 +29,28 @@ export const TableEmployee: React.FC<PaymentsProps> = ({ payments, isEnded }) =>
                         </Tr>
                     </Thead>
                     <Tbody>
-                        {payments.map((datum) => (
-                            <Tr key={datum.id}>
-                                <Td>{datum.employee.person.name}</Td>
-                                <Td>{datum.employee.person.ciRuc}</Td>
-                                <Td>
-                                    <Link className='text-blue-500' href={`/general/salaries/periods/${periodsId}/${datum.id}`}>
-                                        Detalles
-                                    </Link>
-                                </Td>
-                                <Td>
-                                    <Link href={`/general/salaries/periods/details/${datum.id}`}>
-                                        Recibo
-                                    </Link>
-                                </Td>
-                                <Td>
-                                    <Checkbox isDisabled colorScheme='green' defaultChecked>
-                                        Checkbox
-                                    </Checkbox>
-                                </Td>
-                            </Tr>
-                        ))}
+                        {payments?.length === 0 ? <Tr><Td>No hay salarios registrados</Td></Tr>
+
+
+                            : payments?.map((datum) => (
+                                <Tr key={datum.id}>
+                                    <Td>{datum.employee.person.name}</Td>
+                                    <Td>{datum.employee.person.ciRuc}</Td>
+                                    <Td>
+                                        <Link className='text-blue-500' href={`/general/salaries/periods/${periodsId}/${datum.id}`}>
+                                            Detalles
+                                        </Link>
+                                    </Td>
+                                    <Td>
+                                        <Link href={`/general/salaries/periods/details/${datum.id}`}>
+                                            Recibo
+                                        </Link>
+                                    </Td>
+                                    <Td>
+                                        <Checkbox isDisabled colorScheme='green' checked={datum.isVerified} />
+                                    </Td>
+                                </Tr>
+                            ))}
                     </Tbody>
                 </Table>
             </TableContainer>

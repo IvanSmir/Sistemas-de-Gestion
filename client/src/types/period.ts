@@ -5,6 +5,7 @@ export default interface PayrollDetail {
   userId: string
   amount: any
   employee: Employee
+  isVerified: boolean
 }
 
 export interface Employee {
