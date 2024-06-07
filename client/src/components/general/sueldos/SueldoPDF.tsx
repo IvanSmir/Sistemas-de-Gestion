@@ -158,10 +158,15 @@ interface Sueldo {
     egreso: string;
 }
 
+interface Employee {
+    ciRuc: string;
+    name: string;
+}
 
 interface SueldoPDFProps {
     sueldo: Sueldo[];
     currentDate: Date;
+    employee: Employee
 }
 
 const unidades = [' ', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve'];
@@ -207,12 +212,18 @@ const formatDate = (date: Date): string => {
     return `Fecha: ${day} de ${month} de ${year}`;
 };
 
-const SueldoPDF: React.FC<SueldoPDFProps> = ({ sueldo, currentDate }) => {
+const SueldoPDF: React.FC<SueldoPDFProps> = ({ sueldo, currentDate, employee }) => {
     const totalIngresos = sueldo.map(s => Number(s.ingreso)).reduce((a, b) => a + b, 0);
     const totalEgresos = sueldo.map(s => Number(s.egreso)).reduce((a, b) => a + b, 0);
     const totalAPagar = totalIngresos - totalEgresos;
-    const totalAPagarEnTexto = numberToWords(totalAPagar);
+    let totalAPagarEnTexto = "";
 
+    if(`${totalAPagar}`.includes(".")){
+        const numberArr = `${totalAPagar}`.split('.')
+        totalAPagarEnTexto = `${numberToWords(Number(numberArr[0]))} con ${numberToWords(Number(numberArr[1]))} centavos de `
+    }else{
+        totalAPagarEnTexto = numberToWords(totalAPagar);
+    }
 
     const formattedDate = formatDate(currentDate);
 
@@ -228,7 +239,7 @@ const SueldoPDF: React.FC<SueldoPDFProps> = ({ sueldo, currentDate }) => {
                     <Text style={styles.heading}>Recibo de Sueldo </Text>
                     <Text style={styles.headingDate}> {formattedDate}</Text>
                     <View style={styles.separator} />
-                    <Text style={styles.funcionarioDetails}>Funcionario: JUAN PEREZ    CI: 4559688</Text>
+                    <Text style={styles.funcionarioDetails}>Funcionario: {employee.name}    CI: {employee.ciRuc.replaceAll(".","")}</Text>
                     <View style={styles.tableHeaderCell}>
                     </View>
                     <View style={styles.tableHeaderCell}>

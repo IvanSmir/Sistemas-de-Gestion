@@ -58,3 +58,22 @@ export const getIsEmployee = async (id: string, token: string) => {
     throw new Error((error as Error).message || "Error al obtener empleado");
   }
 };
+
+export const getEmployeeByTerm = async (term: string, token: string) => {
+  try {
+    const response = await fetch(`${API_URL}/${term}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al obtener empleado");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    throw new Error((error as Error).message || "Error al obtener empleado");
+  }
+};

@@ -1,5 +1,5 @@
 'use client'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Button, IconButton, Input, Heading, InputGroup, Box, InputLeftElement, useToast } from '@chakra-ui/react'
 import { DeleteIcon, EditIcon, SearchIcon } from '@chakra-ui/icons'
 import { Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableContainer, } from '@chakra-ui/react'
@@ -7,16 +7,74 @@ import { Tag, TagLabel, TagLeftIcon, TagRightIcon } from '@chakra-ui/react'
 import { text } from 'stream/consumers'
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import SueldoPDF from './SueldoPDF';
-import Link from 'next/link';
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/components/context/AuthProvider";
-
+import { useParams } from 'next/navigation'
+import { getPayroll, getPayrollDetail } from '@/utils/payroll'
+import { getEmployeeByTerm } from '@/utils/employee.http'
 const Sueldo = () => {
+
+    const sueldo1 = [
+        {
+            _id: "1",
+
+            concepto: "Sueldo",
+            ingreso: "2500000",
+            egreso: "0",
+
+        }
+    ]
+
+    const params = useParams()
 
     const [isVerified, setIsVerified] = useState(false);
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [isClosed, setIsClosed] = useState(false);
+    const [sueldo, setSueldo] = useState(sueldo1);
+    const [employeeId, setEmployeeId] = useState("");
+    const [employee, setEmployee] = useState({
+        ciRuc: '',
+        name: ''
+    });
     const toast = useToast();
+
+    const periodsId = `${params.periodsId}`
+    const { user } = useAuth();
+
+    useEffect(()=>{
+        getPayroll(periodsId ?? "", user?.token ?? "")
+            .then((a)=>{console.log(a)})
+    },[periodsId])
+
+    const detailsId = `${params.detailsId}`
+
+    useEffect(()=>{
+        getPayrollDetail(periodsId ?? "", detailsId ?? '', user?.token ?? "")
+            .then((a)=>{
+                console.log(a)
+                setSueldo(a.payrollItems.map(pi=>({
+                    _id: pi.id,
+                    concepto: pi.id,
+                    ingreso: pi.isIncome? `${pi.amount}` : "0",
+                    egreso: pi.isIncome? "0" : `${pi.amount}`,
+
+                })))
+                setEmployeeId(a.employeeId)
+            })
+    },[periodsId])
+
+    useEffect(()=>{
+        if(employeeId.length > 1){
+            getEmployeeByTerm(employeeId, user?.token ?? '')
+                .then(e=>{
+                    console.log(e)
+                    setEmployee({
+                        ciRuc: e.person.ciRuc ?? '',
+                        name: e.person.name ?? ''
+                    })
+                })
+        }
+    }, [employeeId])
 
     const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selected = new Date(event.target.value);
@@ -45,37 +103,7 @@ const Sueldo = () => {
         });
     };
 
-    const sueldo = [
-        {
-            _id: "1",
-
-            concepto: "Sueldo",
-            ingreso: "2500000",
-            egreso: "0",
-
-        },
-        {
-            _id: "2",
-            concepto: "Bonificacion",
-            ingreso: "50000",
-            egreso: "0",
-        },
-        {
-            _id: "3",
-            concepto: "Adelanto",
-            ingreso: "0",
-            egreso: "700000",
-
-        },
-        {
-            _id: "4",
-
-            concepto: "Retiro",
-            ingreso: "0",
-            egreso: "15000",
-
-        },
-    ]
+    
 
 
 
@@ -109,11 +137,13 @@ const Sueldo = () => {
                         <div className="flex gap-2">
                             <Button fontSize={12} borderRadius='full' background='pink.100' onClick={() => {
                                 console.log("bonificacion")
-                            }}>Volver</Button>
-                            <Button fontSize={12} borderRadius='full' background='pink.200' onClick={() => {
+                            }}>Generar IPS</Button>
+                            <Button fontSize={12} borderRadius='full' background='pink.100' onClick={() => {
                                 console.log("general sueldo")
-                            }}>Cierre-sueldo</Button>
-
+                            }}>G. Bonificacion</Button>
+                           <Button fontSize={12} borderRadius='full' background='pink.200' onClick={() => {
+                                console.log("general sueldo")
+                            }}>Generar sueldo</Button>
                         </div>
 
                     </div>
@@ -136,11 +166,11 @@ const Sueldo = () => {
                         <div className="flex gap-2">
                             <div className="pl-2 flex flex-col">
                                 <span>Nombre:</span>
-                                <Input type='search' width={200} placeholder='Nombre' />
+                                <Input type='search' value={employee.name} width={200} disabled placeholder='Nombre' />
                             </div>
                             <div className="flex flex-col">
                                 <span>CI:</span>
-                                <Input type='search' width={200} placeholder='CI' />
+                                <Input type='search' value={employee.ciRuc} width={200} disabled placeholder='CI' />
                             </div>
                         </div>
 
@@ -211,7 +241,7 @@ const Sueldo = () => {
                         )}
                         {isClosed && (
                             <PDFDownloadLink
-                                document={<SueldoPDF sueldo={sueldo} currentDate={selectedDate} />}
+                                document={<SueldoPDF sueldo={sueldo} currentDate={selectedDate} employee={employee} />}
                                 fileName="sueldo.pdf"
                             >
                                 {({ blob, url, loading, error }) =>
