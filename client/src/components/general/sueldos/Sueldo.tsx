@@ -225,11 +225,13 @@ const Sueldo = () => {
                 <Box backgroundColor="white" borderRadius="2xl" padding="8px" marginTop={6}>
                     <div className="flex justify-between px-5 mt-2 mb-3">
                         <Button onClick={handleBack} background='gray.200'>Volver</Button>
-                        <div className="flex gap-2">
-                            <Button fontSize={12} borderRadius='full' background='pink.100' onClick={handleClickIps}>Generar IPS</Button>
-                            <Button fontSize={12} borderRadius='full' background='pink.100' onClick={handleClickBonus}>G. Bonificacion</Button>
-                            <Button fontSize={12} borderRadius='full' background='pink.200' onClick={handleClickSalary}>Generar sueldo</Button>
-                        </div>
+                        {!isClosed && (
+                            <div className="flex gap-2">
+
+                                <Button fontSize={12} borderRadius='full' background='pink.100' onClick={handleClickIps}>Generar IPS</Button>
+                                <Button fontSize={12} borderRadius='full' background='pink.100' onClick={handleClickBonus}>G. Bonificacion</Button>
+                                <Button fontSize={12} borderRadius='full' background='pink.200' onClick={handleClickSalary}>Generar sueldo</Button>
+                            </div>)}
                     </div>
                     <div className="flex justify-between px-5 mt-3 mb-3">
                         <h1 className=" text-2xl">Detalle de Sueldo</h1>
