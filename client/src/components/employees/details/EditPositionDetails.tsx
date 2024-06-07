@@ -7,7 +7,6 @@ import {
     Input,
     Select,
     Button,
-    Box,
     ModalOverlay,
     ModalContent,
     Modal,
@@ -21,10 +20,10 @@ import { employeeDetailsSchema } from "@/validations/employeeDetailsSchema";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from "@/components/context/AuthProvider";
-import { positionSchema } from "@/validations/positionSchema";
-import { updatePositionDetails, getEmployeeDetails } from "@/utils/detail.http";
+import { updatePositionDetails, getEmployeeDetailById } from "@/utils/detail.http";
 import { useParams } from "next/navigation";
 import { getPositionTypes } from "@/utils/position.utils";
+
 const SALARIO_MINIMO = 2680373;
 
 interface EditPositionInDetailsProps {
@@ -33,33 +32,37 @@ interface EditPositionInDetailsProps {
     fetchData: () => void;
     positionId: string | null;
 }
-interface PositionType {
+
+interface PositionIDProps {
     id: string;
     name: string;
 }
-interface PositionFormValues{
+
+interface PositionFormValues {
     employeeId: string;
-    positionId : string;
+    positionId: string;
     startDate: string;
     endDate: string;
     salaryType: 'minimum' | 'base';
-    salary: number | string;
+    amount: number | string;
 }
 
-export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({isOpen, onClose, fetchData, positionId}) => {
+export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({ isOpen, onClose, fetchData, positionId, }) => {
+    console.log('positionId', positionId);
     const toast = useToast();
     const auth = useAuth();
     const { id } = useParams();
-   
-    const [isPosition, setIsPosition] = useState<PositionType[]>([]);
-   
-    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<PositionFormValues>({ 
-      resolver: zodResolver(employeeDetailsSchema)
+
+    const [isPosition, setIsPosition] = useState<PositionIDProps[]>([]);
+    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<PositionFormValues>({
+        resolver: zodResolver(employeeDetailsSchema)
     });
-    const [isDisabled, setIsDisabled] = useState(true);
+
+    const [isDisabled, setIsDisabled] = useState(false);
     const [initialStartDate, setInitialStartDate] = useState(new Date().toISOString().split('T')[0]);
+    const [isLoading, setIsLoading] = useState(true); // Estado para controlar la carga
     const salaryType = watch('salaryType');
-  
+
     const fetchDataPosition = useCallback(async () => {
         const { user } = auth;
         const token = user?.token || '';
@@ -71,17 +74,19 @@ export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({isO
         if (positionId) {
             const { user } = auth;
             const token = user?.token || '';
-            const positionDetails = await getEmployeeDetails(positionId, token);
+            const positionDetails = await getEmployeeDetailById(positionId, token);
+            console.log('positionDetails', positionDetails);
             if (positionDetails && positionDetails.position) {
-              setValue('employeeId', positionDetails.employeeId);
-              setValue('positionId', positionDetails.position.id);
-              setValue('startDate', positionDetails.startDate);
-              setValue('endDate', positionDetails.endDate);
-              setValue('salaryType', positionDetails.salaryType);
-              setValue('salary', positionDetails.salary);
-          }
-          
+                setValue('employeeId', positionDetails.employeeId || '');
+                setValue('positionId', positionDetails.positionId || '');
+                setValue('startDate', positionDetails.startDate ? positionDetails.startDate.split('T')[0] : '');
+                setValue('endDate', positionDetails.startDate ? positionDetails.endDate.split('T')[0] : '');
+                setValue('salaryType', positionDetails.salaryType || '');
+                setValue('amount', positionDetails.salary || '');
+            }
+            console.log('positionDetails', positionDetails);
         }
+        setIsLoading(false);
     }, [positionId, auth, setValue]);
 
     const onSubmit = async (values: PositionFormValues) => {
@@ -96,18 +101,18 @@ export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({isO
                 duration: null,
                 isClosable: true,
             });
-            
+
             const updatedPosition = {
                 id: positionId,
                 employeeId: id,
                 position: { id: values.positionId, name: '' },
-                startDate: values.startDate,
-                endDate: values.endDate,
+                startDate: new Date(values.startDate),
+                endDate: new Date(values.endDate),
                 salaryType: values.salaryType,
-                salary: typeof values.salary === 'number' ? values.salary : Number(values.salary),
+                salary: typeof values.amount === 'number' ? values.amount : Number(values.amount),
             };
-            
-            await updatePositionDetails(positionId as string,updatedPosition, token);
+
+            await updatePositionDetails(positionId as string, updatedPosition, token);
             setIsDisabled(false);
             toast.closeAll();
             toast({
@@ -134,78 +139,80 @@ export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({isO
     };
 
     useEffect(() => {
-        fetchDataPosition();
-        fetchPositionDetails();
-    }, [fetchDataPosition, fetchPositionDetails]);
+        if (isOpen) {
+            setIsLoading(true);
+            fetchDataPosition();
+            fetchPositionDetails();
+        }
+    }, [isOpen, fetchDataPosition, fetchPositionDetails, id]);
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader>Editar</ModalHeader>
-                <ModalCloseButton/>
+                <ModalCloseButton />
                 <ModalBody>
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        <FormControl isInvalid={!!errors.positionId}>
-                            <FormLabel htmlFor="positionId">Posición:</FormLabel>
-                            <Select id="positionId" {...register('positionId')}>
-                                {isPosition.map((type) => (
-                                    <option key={type.id} value={type.id}>
-                                        {type.name}
-                                    </option>
-                                ))}
-                            </Select>
-                            <FormErrorMessage>{errors.positionId && errors.positionId.message}</FormErrorMessage>
-                        </FormControl>
-                        
-                        <FormControl isInvalid={!!errors.salaryType}>
-                            <FormLabel htmlFor="salaryType">Tipo de salario:</FormLabel>
-                            <Select id="salaryType" {...register('salaryType')}>
-                                <option value="minimum">Mínimo</option>
-                                <option value="base">Base</option>
-                            </Select>
-                        </FormControl>
-                        
-                        <FormControl>
-                            <FormLabel htmlFor="startDate">Fecha inicio:</FormLabel>
-                            <Input id="startDate" {...register('startDate')} />
-                            <FormErrorMessage>{errors.startDate && errors.startDate.message}</FormErrorMessage>
-                        </FormControl>
+                    {isLoading ? (
+                        <div>Cargando...</div> // Mostrar un mensaje de carga mientras los datos se cargan
+                    ) : (
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                            <FormControl isInvalid={!!errors.positionId}>
+                                <FormLabel htmlFor="positionId">Posición:</FormLabel>
+                                <Select id="positionId" {...register('positionId')}>
+                                    {isPosition.map((type) => (
+                                        <option key={type.id} value={type.id}>
+                                            {type.name}
+                                        </option>
+                                    ))}
+                                </Select>
+                                <FormErrorMessage>{errors.positionId && errors.positionId.message}</FormErrorMessage>
+                            </FormControl>
 
-                        <FormControl>
-                            <FormLabel htmlFor="endDate">Fecha fin:</FormLabel>
-                            <Input id="endDate" {...register('endDate')} />
-                            <FormErrorMessage>{errors.endDate && errors.endDate.message}</FormErrorMessage>
-                        </FormControl>
+                            <FormControl isInvalid={!!errors.salaryType}>
+                                <FormLabel htmlFor="salaryType">Tipo de salario:</FormLabel>
+                                <Select id="salaryType" {...register('salaryType')}>
+                                    <option value="minimum">Mínimo</option>
+                                    <option value="base">Base</option>
+                                </Select>
+                                <FormErrorMessage>{errors.salaryType && errors.salaryType.message}</FormErrorMessage>
+                            </FormControl>
 
-                        <FormControl>
-                            <FormLabel htmlFor="salary">Salario:</FormLabel>
-                            {salaryType === 'minimum' ? (
-                                <Input
-                                    type="number"
-                                    id="salary"
-                                    value={SALARIO_MINIMO}
-                                    {...register('salary', {
-                                        value: SALARIO_MINIMO,
-                                    })}
-                                />
-                            ) : (
-                                <Input type="number" id="salary" {...register('salary')} />
-                            )}
-                            <FormErrorMessage>{errors.salary && errors.salary.message}</FormErrorMessage>
-                        </FormControl>
-                        
-                        <Box display="flex" justifyContent="flex-end" mt={4}>
-                            <Button mr={3} onClick={onClose} colorScheme="gray">
-                                Cancelar
-                            </Button>
-                            <Button colorScheme="teal" type='submit'>
+                            <FormControl isInvalid={!!errors.startDate}>
+                                <FormLabel htmlFor="startDate">Fecha inicio:</FormLabel>
+                                <Input id="startDate" {...register('startDate')} type="date" />
+                                <FormErrorMessage>{errors.startDate && errors.startDate.message}</FormErrorMessage>
+                            </FormControl>
+
+                            <FormControl isInvalid={!!errors.endDate}>
+                                <FormLabel htmlFor="endDate">Fecha fin:</FormLabel>
+                                <Input id="endDate" {...register('endDate')} type="date" />
+                                <FormErrorMessage>{errors.endDate && errors.endDate.message}</FormErrorMessage>
+                            </FormControl>
+
+                            <FormControl isInvalid={!!errors.amount}>
+                                <FormLabel htmlFor="amount">Salario:</FormLabel>
+                                {salaryType === 'minimum' ? (
+                                    <Input
+                                        type="number"
+                                        id="amount"
+                                        value={SALARIO_MINIMO}
+                                        {...register('amount', {
+                                            value: SALARIO_MINIMO,
+                                        })}
+                                    />
+                                ) : (
+                                    <Input type="number" id="amount" {...register('amount')} />
+                                )}
+                                <FormErrorMessage>{errors.amount && errors.amount.message}</FormErrorMessage>
+                            </FormControl>
+                            <Button mt={4} color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} isDisabled={isDisabled} type="submit" display="block" mx="auto">
                                 Guardar
                             </Button>
-                        </Box>
-                    </form>
+                        </form>
+                    )}
                 </ModalBody>
             </ModalContent>
         </Modal>
-    )
+    );
 }
