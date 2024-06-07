@@ -5,7 +5,9 @@ import { TableEmployee } from '@/components/lists/TableEmployee';
 import { getEmployees } from '@/utils/employee.http';
 import { useToast } from '@chakra-ui/react';
 import { useParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { getPayrollDetails } from '@/utils/salary.http';
+import Period from '@/types/period';
 
 interface Person {
     ciRuc: string;
@@ -47,37 +49,18 @@ const transformData = (data: Root[]): Root[] => {
     }));
 };
 
+
 const ListEmployeePage: React.FC = () => {
     const toast = useToast();
-    const { id } = useParams();
-    const [error, setError] = useState<string | null>(null);
+    const { periodsId } = useParams();
     const auth = useAuth();
+    const [periods, setPeriods] = useState<Period[]>([]);
 
     const [employeeData, setEmployeeData] = useState<Root[]>([]);
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
     const [isSalary, setIsSalary] = useState(true);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const data = await getEmployees(1);
-
-                const datafinal = data.data as Root[];
-
-                setTotal(data.totalPages);
-                setEmployeeData(transformData(datafinal));
-                console.log(data);
-                setLoading(false);
-
-            } catch (error) {
-                console.error('Error al obtener los empleados:', error);
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, []);
 
     const columnMapping = {
         'Nombre': 'name',
@@ -85,13 +68,27 @@ const ListEmployeePage: React.FC = () => {
         'Correo Electrónico': 'email',
     };
 
+
+    const fetchPayrolls = useCallback(async () => {
+        try {
+            const { user } = auth;
+            const token = user?.token || '';
+            const data = await getPayrollDetails(periodsId as string, token);
+            console.log(data);
+            setPeriods(data);
+        } catch (error) {
+            console.error('Error al obtener los empleados:', error);
+        }
+    }, [periodsId, auth]);
+
+
+    useEffect(() => {
+        fetchPayrolls()
+    }, [fetchPayrolls]);
+
     return (
         <div className='w-[70vw]'>
-            {loading ? (
-                <p>Cargando...</p>
-            ) : (
-                <TableEmployee data={employeeData} columnMapping={columnMapping} setEmployeeData={setEmployeeData} total={total} isSalary={isSalary} />
-            )}
+
         </div>
     );
 };

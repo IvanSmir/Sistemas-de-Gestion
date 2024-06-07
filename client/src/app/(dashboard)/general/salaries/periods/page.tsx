@@ -18,7 +18,6 @@ const PeriodPage = () => {
             const token = user?.token || '';
             const data = await createPayroll(token);
             console.log(data);
-            setPeriods([...periods, data]);
         } catch (error) {
             console.error('Error adding period:', error);
             toast({
@@ -56,22 +55,31 @@ const PeriodPage = () => {
         <>
 
 
-            <Card w={"200px"} h={"200px"} _hover={{ bg: 'gray.50' }} display={"flex"} justifyContent={"center"} alignItems={"center"}>
-                <CardBody
-                    width={"100%"} height={"100%"} p={4} display="flex" justifyContent="center" alignItems="center">
-                    <IconButton
-                        border={"1px solid #c2c2c2"}
-                        borderRadius="md"
-                        bgColor={"white"}
-                        onClick={createPeriod}
-                        icon={<AddIcon boxSize={8} />}
-                        aria-label='Agregar periodo'
-                        width={"100%"}
-                        height={"100%"}
-                        _hover={{ bg: 'transparent' }}
+
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4} mt={4}>
+                <Card w={"300px"} h={"250px"} _hover={{ bg: 'gray.50' }} display={"flex"} justifyContent={"center"} alignItems={"center"}>
+                    <CardBody
+                        width={"100%"} height={"100%"} p={4} display="flex" justifyContent="center" alignItems="center">
+                        <IconButton
+                            border={"1px solid #c2c2c2"}
+                            borderRadius="md"
+                            bgColor={"white"}
+                            onClick={createPeriod}
+                            icon={<AddIcon boxSize={8} />}
+                            aria-label='Agregar periodo'
+                            width={"100%"}
+                            height={"100%"}
+                            _hover={{ bg: 'transparent' }}
+                        />
+                    </CardBody>
+                </Card>
+                {periods.map((period) => (
+                    <PeriodCard
+                        key={period.id}
+                        period={period}
                     />
-                </CardBody>
-            </Card>
+                ))}
+            </SimpleGrid>
 
         </>
     );
