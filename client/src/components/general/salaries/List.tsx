@@ -55,7 +55,7 @@ export const TableSalaries: React.FC<PaymentsProps> = ({ payments }) => {
                                         </Link>
                                     </Td>
                                     <Td display={"flex"} justifyContent={"center"}>
-                                        {datum.isVerified ? <IoIosCheckmarkCircle color='green' /> : <IoIosCloseCircle color='red' />}
+                                        {datum.isVerified ? <IoIosCheckmarkCircle size={"1.4rem"} color='green' /> : <IoIosCloseCircle size={"1.4rem"} color='red' />}
                                     </Td>
                                 </Tr>
                             ))}

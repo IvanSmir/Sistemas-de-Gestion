@@ -21,7 +21,7 @@ export const PeriodCard: React.FC<PeriodProps> = ({ period }) => {
 
             </CardHeader>
             <CardBody>
-                <Text>Estado: {period.isEnded ? 'Finalizado' : 'En proceso'}</Text>
+                <Text as={"b"}>Estado: {period.isEnded ? <Text as={"s"} color='gray.400'>Finalizado</Text> : <Text as={"b"} color='green.500'>En proceso</Text>}</Text>
             </CardBody>
             <CardFooter>
                 <Link href={`/general/salaries/periods/${period.id}`}>

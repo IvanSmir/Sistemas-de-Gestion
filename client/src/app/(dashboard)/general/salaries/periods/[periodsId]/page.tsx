@@ -4,7 +4,6 @@ import { useAuth } from '@/components/context/AuthProvider';
 import { TableEmployee } from '@/components/lists/TableEmployee';
 import { getEmployees } from '@/utils/employee.http';
 import { Box, Button, useToast } from '@chakra-ui/react';
-import { useParams } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { getPayrollDetails, createPayments, calculateIpsForAllEmployees, calculateBonificationForAllEmployees, closePayrollPeriod } from '@/utils/salary.http';
 import Period from '@/types/period';
@@ -17,6 +16,7 @@ import CierreModalConfirm from '@/components/general/salaries/CierreModal';
 import BonificacionModalConfirm from '@/components/general/salaries/BonificacionModal';
 import GenerarModalConfirm from '@/components/general/salaries/GenerarModal';
 import { PayrollPeriod } from '@/types/payments';
+import { useRouter, useParams } from 'next/navigation'
 
 interface Person {
     ciRuc: string;
@@ -35,6 +35,7 @@ interface Root {
 }
 
 const transformedDate = (fecha: string): number => {
+
     const today = new Date();
     const birth = new Date(fecha);
     let age = today.getFullYear() - birth.getFullYear();
@@ -60,6 +61,8 @@ const transformData = (data: Root[]): Root[] => {
 
 
 const ListEmployeePage: React.FC = () => {
+    const router = useRouter();
+
     const toast = useToast();
     const { periodsId } = useParams();
     const auth = useAuth();
@@ -259,6 +262,9 @@ const ListEmployeePage: React.FC = () => {
     const [showModalIps, setShowModalIps] = useState(false);
     const [showModalBonificacion, setShowModalBonificacion] = useState(false);
     const [showModalCierre, setShowModalCierre] = useState(false);
+    const handleBack = () => {
+        router.back();
+    }
 
     useEffect(() => {
         fetchPayrolls()
@@ -299,51 +305,58 @@ const ListEmployeePage: React.FC = () => {
                     handleBonification();
                 }}
             />
-            <Box display={"flex"} justifyContent={"end"} gap={4} margin={10}>
-                {payments?.payrollDetails ?
-                    payments?.payrollDetails?.length > 0 && (
-                        <Button
-                            fontSize={13}
-                            borderRadius='full'
-                            textColor={'white'}
-                            background='pink.500'
-                            isDisabled={payments?.isEnded || loading}
-                            onClick={() => setShowModalCierre(true)}
-                        >
-                            Cierre
-                        </Button>
-                    ) : (
-                        <>
-                        </>
-                    )}
-                <Button
-                    fontSize={13}
-                    borderRadius='full'
-                    textColor={'white'}
-                    background='pink.400'
-                    isDisabled={payments?.isEnded || loading}
-                    onClick={() => setShowModalGenerar(true)}
-                >
-                    Generar Salario
-                </Button>
-                <Button
-                    fontSize={13}
-                    borderRadius='full'
-                    background='pink.100'
-                    isDisabled={payments?.isEnded || loading}
-                    onClick={() => setShowModalBonificacion(true)}
-                >
-                    Generar Bonificaciones
-                </Button>
-                <Button
-                    fontSize={13}
-                    borderRadius='full'
-                    background='pink.100'
-                    isDisabled={payments?.isEnded || loading}
-                    onClick={() => setShowModalIps(true)}
-                >
-                    Generar IPS
-                </Button>
+            <Box display={"flex"} justifyContent={"space-between"} gap={4} margin={10}>
+                <div>
+                    <Button onClick={handleBack} background='gray.200'>Volver</Button>
+
+                </div>
+                <div>
+
+                    {payments?.payrollDetails ?
+                        payments?.payrollDetails?.length > 0 && (
+                            <Button
+                                fontSize={13}
+                                borderRadius='full'
+                                textColor={'white'}
+                                background='pink.500'
+                                isDisabled={payments?.isEnded || loading}
+                                onClick={() => setShowModalCierre(true)}
+                            >
+                                Cierre
+                            </Button>
+                        ) : (
+                            <>
+                            </>
+                        )}
+                    <Button
+                        fontSize={13}
+                        borderRadius='full'
+                        textColor={'white'}
+                        background='pink.400'
+                        isDisabled={payments?.isEnded || loading}
+                        onClick={() => setShowModalGenerar(true)}
+                    >
+                        Generar Salario
+                    </Button>
+                    <Button
+                        fontSize={13}
+                        borderRadius='full'
+                        background='pink.100'
+                        isDisabled={payments?.isEnded || loading}
+                        onClick={() => setShowModalBonificacion(true)}
+                    >
+                        Generar Bonificaciones
+                    </Button>
+                    <Button
+                        fontSize={13}
+                        borderRadius='full'
+                        background='pink.100'
+                        isDisabled={payments?.isEnded || loading}
+                        onClick={() => setShowModalIps(true)}
+                    >
+                        Generar IPS
+                    </Button>
+                </div>
             </Box>
 
             <Box display={"flex"} justifyContent={"center"} >
