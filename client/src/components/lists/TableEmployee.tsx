@@ -69,7 +69,7 @@ export const TableEmployee: React.FC<TableEmployeeProps> = ({ data, columnMappin
                 </Flex>
                 <Box backgroundColor="white" borderRadius="2xl" padding="8px">
 
-                    <TableContainer>
+                    <TableContainer height={"60vh"}>
                         <Table variant="simple" fontSize="14px">
                             <Thead>
                                 <Tr>

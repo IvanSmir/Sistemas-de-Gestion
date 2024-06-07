@@ -137,12 +137,13 @@ export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors, se
 
             <div className="flex gap-4">
                 <div className="flex-1">
+
                     <FormControl width={{ lg: "100", base: "80%", md: "100%" }} isInvalid={!!errors.ciRuc}>
                         <FormLabel htmlFor="ruc">CI/RUC:</FormLabel>
-                        <Flex justifyContent={"space-between"} gap={{ lg: 4, base: 4, md: 1 }}>
+                        <Flex gap={{ lg: 4, base: 4, md: 1 }}>
 
                             <Input
-                                flex={1}
+                                flex={1 / 3}
                                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                                 type="text"
                                 id="ciRuc"
@@ -150,7 +151,7 @@ export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors, se
                                 value={ruc}
                                 onChange={(e) => setRuc(e.target.value)}
                             />
-                            <Button flex={1 / 2} onClick={isRuc}>
+                            <Button bg={"gray.700"} colorScheme='white' onClick={isRuc}>
                                 Verificar
                             </Button>
 
@@ -249,32 +250,7 @@ export const FormEmployee: React.FC<FormEmployeeProps> = ({ register, errors, se
                     </div>
 
                 </div>
-                <div className="w-1/4 gap-4">
-                    <FormControl isInvalid={!!errors.image}>
-                        <FormLabel htmlFor="image">Foto de Perfil:</FormLabel>
-                        <div className="flex flex-col h-56 justify-center">
-                            <div className="flex justify-center">
-                                <Image
 
-                                    className="object-cover bg-no-repeat"
-                                    src="/subir.png"
-                                    alt="subir.png"
-                                    width={128}
-                                    height={128}
-                                />
-                            </div>
-                            <Input
-                                isDisabled={isDisabled}
-                                type="text"
-                                id="image"
-                                {...register('image')}
-
-                            />
-                            <Button mt={4} colorScheme='gray'>Subir Imagen</Button>
-                        </div>
-                        <FormErrorMessage>{getErrorMessage(errors.image)}</FormErrorMessage>
-                    </FormControl>
-                </div>
             </div>
         </form>
     );

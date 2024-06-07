@@ -188,7 +188,7 @@ export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelati
                                 value={ruc}
                                 onChange={(e) => setRuc(e.target.value)}
                             />
-                            <Button onClick={isRuc}>
+                            <Button bg={"gray.700"} colorScheme='white' onClick={isRuc}>
                                 Verificar
                             </Button>
                         </div>
@@ -205,19 +205,19 @@ export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelati
                             />
                             <FormErrorMessage>{errors.name && errors.name.message}</FormErrorMessage>
                         </FormControl>
+                        <FormControl isInvalid={!!errors.familyTypeId}>
+                            <FormLabel htmlFor="relationshipType">Parentesco:</FormLabel>
+                            <Select
+                                id="familyTypeId"
+                                {...register('familyTypeId')}
+                            >
+                                {familyTypes.map((type) => (
+                                    <option key={type.id} value={type.id}>{type.name}</option>
+                                ))}
+                            </Select>
+                            <FormErrorMessage>{errors.familyTypeId && errors.familyTypeId.message}</FormErrorMessage>
+                        </FormControl>
                     </div>
-                    <FormControl isInvalid={!!errors.familyTypeId}>
-                        <FormLabel htmlFor="relationshipType">Parentesco:</FormLabel>
-                        <Select
-                            id="familyTypeId"
-                            {...register('familyTypeId')}
-                        >
-                            {familyTypes.map((type) => (
-                                <option key={type.id} value={type.id}>{type.name}</option>
-                            ))}
-                        </Select>
-                        <FormErrorMessage>{errors.familyTypeId && errors.familyTypeId.message}</FormErrorMessage>
-                    </FormControl>
                     <FormControl isInvalid={!!errors.gender}>
                         <FormLabel htmlFor="gender">Género:</FormLabel>
                         <Select
@@ -275,7 +275,7 @@ export const FormRelative: React.FC<FormRelativeProps> = ({ relatives, setRelati
                 </div>
             </div>
             <ModalFooter>
-                <Button type="submit" colorScheme="blue" mr={3}>
+                <Button type="submit" bg="#AA546D" colorScheme="white" mr={3}>
                     Guardar
                 </Button>
                 <Button onClick={onClose}>Cancelar</Button>

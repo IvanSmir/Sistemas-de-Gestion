@@ -270,7 +270,7 @@ export const Form: React.FC<ModalProps> = ({ isOpen, onClose, employeeCiRuc, rel
                                     value={ruc}
                                     onChange={(e) => setRuc(e.target.value)}
                                 />
-                                <Button onClick={isRuc}>Verificar</Button>
+                                <Button bg={"gray.700"} colorScheme='white' onClick={isRuc}>Verificar</Button>
                             </Flex>
                             <FormErrorMessage>{errors.ciRuc && errors.ciRuc.message}</FormErrorMessage>
                         </FormControl>
