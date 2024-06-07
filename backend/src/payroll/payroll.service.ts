@@ -35,7 +35,7 @@ export class PayrollService {
           DetailsWithoutVerification: true,
         },
         orderBy: {
-          createdAt: 'desc',
+          createdAt: 'asc',
         },
       });
       return payrolls;
