@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -45,7 +45,7 @@ interface PositionFormValues {
     startDate: string;
     endDate: string;
     salaryType: 'minimum' | 'base';
-    amount: number | string;
+    salary: number | string;
 }
 
 export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({ isOpen, onClose, fetchData, positionId, }) => {
@@ -55,15 +55,16 @@ export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({ is
     const { id } = useParams();
 
     const [isPosition, setIsPosition] = useState<PositionIDProps[]>([]);
-    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<PositionFormValues>({
+    const { register, handleSubmit, watch, setValue, trigger, formState: { errors } } = useForm<PositionFormValues>({
         resolver: zodResolver(employeeDetailsSchema)
     });
 
     const [isDisabled, setIsDisabled] = useState(false);
     const [initialStartDate, setInitialStartDate] = useState(new Date().toISOString().split('T')[0]);
-    const [isLoading, setIsLoading] = useState(true); // Estado para controlar la carga
+    const [isLoading, setIsLoading] = useState(true);
     const salaryType = watch('salaryType');
     const [salarioMinimo, setSalarioMinimo] = useState(2680373);
+    const [values, setValues] = useState<any>(null);
 
     const fetchDataPosition = useCallback(async () => {
         const { user } = auth;
@@ -72,7 +73,6 @@ export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({ is
         setIsPosition(positionTypesResponse.data);
         const data = await getConfigAmount(token);
         const value = data.filter((item: any) => item.name === 'Salario Minimo')[0].value;
-        console.log(value);
         setSalarioMinimo(value);
     }, [auth]);
 
@@ -81,21 +81,32 @@ export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({ is
             const { user } = auth;
             const token = user?.token || '';
             const positionDetails = await getEmployeeDetailById(positionId, token);
-            console.log('positionDetails', positionDetails);
             if (positionDetails && positionDetails.position) {
                 setValue('employeeId', positionDetails.employeeId || '');
                 setValue('positionId', positionDetails.positionId || '');
                 setValue('startDate', positionDetails.startDate ? positionDetails.startDate.split('T')[0] : '');
-                setValue('endDate', positionDetails.startDate ? positionDetails.endDate.split('T')[0] : '');
+                setValue('endDate', positionDetails.endDate ? positionDetails.endDate.split('T')[0] : '');
                 setValue('salaryType', positionDetails.salaryType || '');
-                setValue('amount', positionDetails.salary || '');
+                setValue('salary', positionDetails.salary || '');
             }
-            console.log('positionDetails', positionDetails);
         }
         setIsLoading(false);
     }, [positionId, auth, setValue]);
 
-    const onSubmit = async (values: PositionFormValues) => {
+    const onSubmit = async () => {
+        console.log('Triggering validation...');
+        const isValid = await trigger();
+        console.log('Validation result:', isValid);
+        if (!isValid) {
+            console.log('Validation errors:', errors);
+            return;
+        }
+
+        handleSubmit((data) => {
+            console.log('Form data after submission:', data);
+            setValues(data);
+        })();
+
         try {
             const { user } = auth;
             const token = user?.token || '';
@@ -109,13 +120,11 @@ export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({ is
             });
 
             const updatedPosition = {
-                id: positionId,
-                employeeId: id,
-                position: { id: values.positionId, name: '' },
+                positionId: values.positionId,
                 startDate: new Date(values.startDate),
                 endDate: new Date(values.endDate),
                 salaryType: values.salaryType,
-                salary: typeof values.amount === 'number' ? values.amount : Number(values.amount),
+                salary: typeof values.salary === 'number' ? values.salary : Number(values.salary),
             };
 
             await updatePositionDetails(positionId as string, updatedPosition, token);
@@ -154,7 +163,7 @@ export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({ is
 
     useEffect(() => {
         if (salaryType === 'minimum') {
-            setValue('amount', salarioMinimo);
+            setValue('salary', salarioMinimo);
         }
     }, [salaryType, setValue, salarioMinimo]);
 
@@ -166,9 +175,9 @@ export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({ is
                 <ModalCloseButton />
                 <ModalBody>
                     {isLoading ? (
-                        <div>Cargando...</div> // Mostrar un mensaje de carga mientras los datos se cargan
+                        <div>Cargando...</div>
                     ) : (
-                        <form onSubmit={handleSubmit(onSubmit)}>
+                        <form>
                             <FormControl isInvalid={!!errors.positionId}>
                                 <FormLabel htmlFor="positionId">Posición:</FormLabel>
                                 <Select id="positionId" {...register('positionId')}>
@@ -202,23 +211,21 @@ export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({ is
                                 <FormErrorMessage>{errors.endDate && errors.endDate.message}</FormErrorMessage>
                             </FormControl>
 
-                            <FormControl isInvalid={!!errors.amount}>
-                                <FormLabel htmlFor="amount">Salario:</FormLabel>
+                            <FormControl isInvalid={!!errors.salary}>
+                                <FormLabel htmlFor="salary">Salario:</FormLabel>
                                 {salaryType === 'minimum' ? (
                                     <Input
                                         type="number"
                                         id="amount"
                                         value={salarioMinimo}
-                                        {...register('amount', {
-                                            value: salarioMinimo,
-                                        })}
+                                        {...register('salary')}
                                     />
                                 ) : (
-                                    <Input type="number" id="amount" {...register('amount')} />
+                                    <Input type="number" id="salary" {...register('salary')} />
                                 )}
-                                <FormErrorMessage>{errors.amount && errors.amount.message}</FormErrorMessage>
+                                <FormErrorMessage>{errors.salary && errors.salary.message}</FormErrorMessage>
                             </FormControl>
-                            <Button mt={4} color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} isDisabled={isDisabled} type="submit" display="block" mx="auto">
+                            <Button mt={4} color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }} isDisabled={isDisabled} onClick={onSubmit} display="block" mx="auto">
                                 Guardar
                             </Button>
                         </form>

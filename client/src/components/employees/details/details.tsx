@@ -12,6 +12,9 @@ import { EmployeeDetailsList } from './ListPositions';
 import { FinanceDetailsList } from './TransactionsList';
 import { employeeSchema } from '@/validations/employeeSchema';
 
+const normalizeRUC = (ruc: string) => ruc.replace(/\./g, '');
+const denormalizeCi = (ci: string) => ci.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
 export const EmployeeDetails = () => {
     const { id } = useParams();
     const toast = useToast();
@@ -37,7 +40,7 @@ export const EmployeeDetails = () => {
                     setValue('gender', data.person.gender);
                     setValue('address', data.person.address || '');
                     setValue('phone', (data.person.phone ? data.person.phone.slice(4) : '')); // Elimina los 4 primeros dígitos
-                    setValue('ciRuc', data.person.ciRuc || '');
+                    setValue('ciRuc', normalizeRUC(data.person.ciRuc || ''));
                     setEmployeeCiRuc(data.person.ciRuc);
                     setValue('enterDate', data.enterDate ? data.enterDate.split('T')[0] : '');
                     setValue('birthDate', data.person.birthDate ? data.person.birthDate.split('T')[0] : '');
@@ -89,6 +92,8 @@ export const EmployeeDetails = () => {
 
             data.phone = '+595' + data.phone.slice(0);
 
+            console.log('data', data);
+            data.ciRuc = denormalizeCi(data.ciRuc);
             await updateEmployee(employeeId, data, token);
             toast.closeAll();
 
@@ -156,6 +161,7 @@ export const EmployeeDetails = () => {
                                         isReadOnly={!isEditing}
                                         mb={4}
                                         placeholder='Seleccione el sexo'
+                                        isDisabled={!isEditing}
                                     >
                                         <option value="male">Masculino</option>
                                         <option value="female">Femenino</option>
@@ -198,6 +204,7 @@ export const EmployeeDetails = () => {
                                                 {...register('ciRuc', { required: 'El Ruc/Ci es obligatorio' })}
                                                 isReadOnly={true}
                                                 mb={4}
+                                                value={employeeCiRuc}
                                             />
                                             <FormErrorMessage>{errors.ciRuc && errors.ciRuc.message}</FormErrorMessage>
                                         </Flex>

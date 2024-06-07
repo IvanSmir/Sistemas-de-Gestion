@@ -124,14 +124,33 @@ export class EmployeeDetailsService {
   ) {
     try {
       if (!isUUID(id)) throw new BadRequestException('Invalid term');
+      console.log('updateEmployeeDetailDto', updateEmployeeDetailDto);
+
       const result = await this.prisma.$transaction(async (prisma) => {
         const employeeDetail = await prisma.employeeDetails.update({
           where: { id, isDeleted: false },
-          data: { ...updateEmployeeDetailDto, userId: user.id },
-          select: this.selectOptions,
+          data: {
+            ...updateEmployeeDetailDto,
+          },
+          select: {
+            id: true,
+            employeeId: true,
+            position: {
+              select: {
+                name: true,
+              },
+            },
+            positionId: true,
+            startDate: true,
+            endDate: true,
+            salaryType: true,
+            salary: true,
+          },
         });
+
         if (!employeeDetail)
           throw new BadRequestException('EmployeeDetail not found');
+
         return employeeDetail;
       });
 
