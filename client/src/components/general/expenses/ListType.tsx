@@ -17,6 +17,7 @@ import {
     Button,
     useDisclosure,
     useToast,
+    Heading,
 } from "@chakra-ui/react";
 import ModalEliminar from "@/components/relatives/ModalEliminar";
 
@@ -67,9 +68,9 @@ export const ListExpenseTypes: React.FC = () => {
             setExpenses([...expenses, expenseType]);
             setNewExpenseType(null);
             onAddClose();
-        }    
+        }
     };
-    
+
 
     const handleDeleteExpense = (expense: ExpenseType, event: React.MouseEvent) => {
         event.stopPropagation();
@@ -122,58 +123,62 @@ export const ListExpenseTypes: React.FC = () => {
     };
 
     return (
-        <Box backgroundColor={'white'} width={1000} borderRadius="2xl" padding="8px" margin="auto">
-            <Flex justifyContent="space-between" mb={6}>
-                <Flex gap={2}>
-                    {/* Aquí puedes agregar un filtro por nombre si lo necesitas */}
+        <Flex width={"90%"} flexDirection={"column"}>
+            <Heading color={"gray.600"} mt={4} marginLeft={5} width={"100%"}>Tipos de Ingresos</Heading>
+
+            <Box backgroundColor={'white'} top={160} left={300} width={"100%"} height={426} borderRadius="2xl" padding="8px" mt={10} >
+                <Flex justifyContent="space-between" mb={6}>
+                    <Flex gap={2}>
+                        {/* Aquí puedes agregar un filtro por nombre si lo necesitas */}
+                    </Flex>
+                    <Button onClick={handleAddExpenseType} color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }}>Agregar Tipo de Egreso</Button>
                 </Flex>
-                <Button onClick={handleAddExpenseType}  color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }}>Agregar Tipo de Egreso</Button>
-            </Flex>
-            <TableContainer>
-                <Table variant="simple" fontSize="14px">
-                    <Thead>
-                        <Tr>
-                            <Th>Nombre</Th>
-                            <Th>Acciones</Th>
-                        </Tr>
-                    </Thead>
-                    <Tbody>
-                        {expenses.map((expense, index) => (
-                            <Tr key={index}>
-                                <Td>{expense.name}</Td>
-                                <Td>
-                                    <EditIcon mr={2} cursor="pointer" onClick={() => handleEditExpenseType(expense)} />
-                                    <DeleteIcon cursor="pointer" onClick={(event) => handleDeleteExpense(expense, event)} />
-                                </Td>
+                <TableContainer>
+                    <Table variant="simple" fontSize="14px">
+                        <Thead>
+                            <Tr>
+                                <Th>Nombre</Th>
+                                <Th>Acciones</Th>
                             </Tr>
-                        ))}
-                    </Tbody>
-                </Table>
-            </TableContainer>
-            {newExpenseType && (
-                <ModalExpenseType
-                    isOpen={isAddOpen}
-                    onClose={onAddClose}
-                    onSave={handleSaveExpenseType}
-                    onChange={handleChange}
-                    initialData={newExpenseType}
+                        </Thead>
+                        <Tbody>
+                            {expenses.map((expense, index) => (
+                                <Tr key={index}>
+                                    <Td>{expense.name}</Td>
+                                    <Td>
+                                        <EditIcon mr={2} cursor="pointer" onClick={() => handleEditExpenseType(expense)} />
+                                        <DeleteIcon cursor="pointer" onClick={(event) => handleDeleteExpense(expense, event)} />
+                                    </Td>
+                                </Tr>
+                            ))}
+                        </Tbody>
+                    </Table>
+                </TableContainer>
+                {newExpenseType && (
+                    <ModalExpenseType
+                        isOpen={isAddOpen}
+                        onClose={onAddClose}
+                        onSave={handleSaveExpenseType}
+                        onChange={handleChange}
+                        initialData={newExpenseType}
+                    />
+                )}
+                {selectedExpense && (
+                    <ModalExpenseType
+                        isOpen={isEditOpen}
+                        onClose={onEditClose}
+                        onSave={handleSaveExpenseType}
+                        onChange={handleChange}
+                        initialData={selectedExpense}
+                    />
+                )}
+                <ModalEliminar
+                    isOpen={isDeleteOpen}
+                    onClose={onDeleteClose}
+                    onConfirm={confirmDeleteExpense}
                 />
-            )}
-            {selectedExpense && (
-                <ModalExpenseType
-                    isOpen={isEditOpen}
-                    onClose={onEditClose}
-                    onSave={handleSaveExpenseType}
-                    onChange={handleChange}
-                    initialData={selectedExpense}
-                />
-            )}
-            <ModalEliminar
-                isOpen={isDeleteOpen}
-                onClose={onDeleteClose}
-                onConfirm={confirmDeleteExpense}
-            />
-        </Box>
+            </Box>
+        </Flex>
     );
 };
 

@@ -13,13 +13,14 @@ import {
     Td,
     Button,
     useDisclosure,
+    Heading,
 } from "@chakra-ui/react";
 import { EditIcon, DeleteIcon, AddIcon } from "@chakra-ui/icons";
-import {getEmployeeExpenseDetails,getEmployeeIncomeDetails,} from "@/utils/detail.http";
+import { getEmployeeExpenseDetails, getEmployeeIncomeDetails, } from "@/utils/detail.http";
 import { useAuth } from "@/components/context/AuthProvider";
 import { useParams } from "next/navigation";
 import { IncomeExpenseForm } from "../employees/details/addIncomeExpense";
-import {getExpenseTypes,deleteExpense,} from "@/utils/finance.http";
+import { getExpenseTypes, deleteExpense, } from "@/utils/finance.http";
 import ModalEliminar from "@/components/relatives/ModalEliminar";
 import { EditIncomeExpenseForm } from "@/components/transaction/EditIncomeExpense";
 import { useToast } from '@chakra-ui/react';
@@ -78,7 +79,7 @@ export const ExpenseList: React.FC = () => {
             console.log(error);
         }
     }, [id, auth]);
-    
+
 
     useEffect(() => {
         fetchFinanceDetails();
@@ -95,12 +96,12 @@ export const ExpenseList: React.FC = () => {
         setIdToDelete(expense.id);
         onDeleteOpen();
     };
-    
+
     const confirmDeleteExpense = async () => {
         if (idToDelete) {
             const { user } = auth;
             const token = user?.token || '';
-    
+
             try {
                 await deleteExpense(idToDelete, token);
                 setExpenses(expenses.filter(item => item.id !== idToDelete));
@@ -125,72 +126,76 @@ export const ExpenseList: React.FC = () => {
         }
         onDeleteClose();
     };
-    
+
     const handleEditExpense = (expense: ExpenseDetails) => {
         setEditDetails(expense);
         setIsIncomeorExpense('expense');
         setTypes(expensesType);
         onEditOpen();
     };
-    
+
 
     return (
-        <Box backgroundColor={'white'} borderRadius="2xl" padding="4px" mt={8} width={1000}>
+        <Flex width={"90%"} flexDirection={"column"}>
+            <Heading color={"gray.600"} mt={4} marginLeft={5} width={"100%"}>Egresos del Funcionario</Heading>
 
-            {/* Tabla de Egresos */}
-            <TableContainer>
-                <Flex justifyContent="end" mb={5}>
-                    <Button onClick={handleAddExpenseClick} padding={5} color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }}>
-                        <AddIcon />Agregar Egreso
-                    </Button>
-                </Flex>
-                <Table variant="simple" fontSize="14px">
-                    <Thead>
-                        <Tr>
-                            <Th>Tipo de Egreso</Th>
-                            <Th>Monto</Th>
-                            <Th>Fecha</Th>
-                        </Tr>
-                    </Thead>
-                    <Tbody>
-                        {expenses?.map((expense, index) => (
-                            <Tr key={index}>
-                                <Td>{expense.expenseType.name}</Td>
-                                <Td>{expense.amount}</Td>
-                                <Td>{new Date(expense.date).toLocaleDateString()}</Td>
-                                <Td>
-                                    <EditIcon mr={2} cursor="pointer" onClick={() => handleEditExpense(expense)}/>
-                                    <DeleteIcon cursor="pointer" onClick={(e) => handleDeleteExpense(expense, e)} />
-                                </Td>
+            <Box backgroundColor={'white'} top={160} left={300} width={"100%"} height={426} borderRadius="2xl" padding="8px" mt={10} >
+
+                {/* Tabla de Egresos */}
+                <TableContainer>
+                    <Flex justifyContent="end" mb={5}>
+                        <Button onClick={handleAddExpenseClick} padding={5} color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }}>
+                            <AddIcon />Agregar Egreso
+                        </Button>
+                    </Flex>
+                    <Table variant="simple" fontSize="14px">
+                        <Thead>
+                            <Tr>
+                                <Th>Tipo de Egreso</Th>
+                                <Th>Monto</Th>
+                                <Th>Fecha</Th>
                             </Tr>
-                        ))}
-                    </Tbody>
-                </Table>
-            </TableContainer>
+                        </Thead>
+                        <Tbody>
+                            {expenses?.map((expense, index) => (
+                                <Tr key={index}>
+                                    <Td>{expense.expenseType.name}</Td>
+                                    <Td>{expense.amount}</Td>
+                                    <Td>{new Date(expense.date).toLocaleDateString()}</Td>
+                                    <Td>
+                                        <EditIcon mr={2} cursor="pointer" onClick={() => handleEditExpense(expense)} />
+                                        <DeleteIcon cursor="pointer" onClick={(e) => handleDeleteExpense(expense, e)} />
+                                    </Td>
+                                </Tr>
+                            ))}
+                        </Tbody>
+                    </Table>
+                </TableContainer>
 
-            <IncomeExpenseForm
-                fetchData={fetchFinanceDetails}
-                isOpen={isAddOpen}
-                onClose={onAddClose}
-                isIncomeorExpense={isIncomeorExpense}
-                types={types}
-            />
-            <ModalEliminar
-                isOpen={isDeleteOpen}
-                onClose={onDeleteClose}
-                onConfirm={confirmDeleteExpense}
-            />
-            <EditIncomeExpenseForm
-                isOpen={isEditOpen}
-                onClose={onEditClose}
-                isIncomeorExpense={isIncomeorExpense}
-                types={types}
-                details={editDetails}
-                itemId={editDetails ? editDetails.id : null}
-                fetchData={fetchFinanceDetails}
-            />
+                <IncomeExpenseForm
+                    fetchData={fetchFinanceDetails}
+                    isOpen={isAddOpen}
+                    onClose={onAddClose}
+                    isIncomeorExpense={isIncomeorExpense}
+                    types={types}
+                />
+                <ModalEliminar
+                    isOpen={isDeleteOpen}
+                    onClose={onDeleteClose}
+                    onConfirm={confirmDeleteExpense}
+                />
+                <EditIncomeExpenseForm
+                    isOpen={isEditOpen}
+                    onClose={onEditClose}
+                    isIncomeorExpense={isIncomeorExpense}
+                    types={types}
+                    details={editDetails}
+                    itemId={editDetails ? editDetails.id : null}
+                    fetchData={fetchFinanceDetails}
+                />
 
 
-        </Box>
+            </Box>
+        </Flex>
     );
 };

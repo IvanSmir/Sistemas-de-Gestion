@@ -1,5 +1,5 @@
 'use client'
-import { TableContainer, Table, Tbody, Td, Th, Thead, Tr, Box, Flex, Select, Button, Input } from '@chakra-ui/react';
+import { TableContainer, Table, Tbody, Td, Th, Thead, Tr, Box, Flex, Select, Button, Input, Heading } from '@chakra-ui/react';
 import React, { ChangeEvent, useState } from 'react'
 import Pagination from '../lists/Pagination';
 import Link from 'next/link';
@@ -30,8 +30,10 @@ export const List: React.FC<TableEmployeeProps> = ({ data, columnMapping, setEmp
     };
 
     return (
-        <Box marginTop={6} width={{ base: "100%", sm: "90%", md: "80%", lg: "100%", xl: "100%", "2xl": "100%" }} >
-            <Box backgroundColor="white" borderRadius="2xl" padding="8px">
+        <Flex width={"90%"} flexDirection={"column"}>
+            <Heading color={"gray.600"} mt={4} marginLeft={5} width={"100%"}>Ingresos</Heading>
+
+            <Box backgroundColor={'white'} top={160} left={300} width={"100%"} height={426} borderRadius="2xl" padding="8px" mt={10} >
                 <TableContainer>
                     <Table variant="simple" fontSize={{ base: "12px", sm: "13px", md: "14px", lg: "15px", xl: "16px", "2xl": "17px" }}>
                         <Thead>
@@ -63,6 +65,7 @@ export const List: React.FC<TableEmployeeProps> = ({ data, columnMapping, setEmp
                 </TableContainer>
             </Box>
             <Pagination setEmployeedata={setEmployeeData} total={total} />
-        </Box>
+
+        </Flex >
     );
 }

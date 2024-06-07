@@ -2,7 +2,7 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { EditIcon, DeleteIcon, AddIcon } from "@chakra-ui/icons";
 import { IncomeType as ModalIncomeType } from "@/components/general/incomes/incomeType";
-import { getIncomeTypes, deleteIncomeType} from '@/utils/finance.http';
+import { getIncomeTypes, deleteIncomeType } from '@/utils/finance.http';
 import { useAuth } from '@/components/context/AuthProvider';
 import ModalEliminar from "@/components/relatives/ModalEliminar";
 import {
@@ -17,7 +17,8 @@ import {
     Td,
     Button,
     useDisclosure,
-    useToast
+    useToast,
+    Heading
 } from "@chakra-ui/react";
 
 interface IncomeType {
@@ -93,7 +94,7 @@ export const ListIncomeTypes: React.FC = () => {
         }
         onDeleteClose();
     };
-    
+
     const handleSaveIncomeType = (incomeType: IncomeType) => {
         if (incomeType.id) {
             // Actualizar el tipo de ingreso existente en el estado
@@ -109,8 +110,8 @@ export const ListIncomeTypes: React.FC = () => {
             onAddClose();
         }
     };
-    
-    
+
+
     const handleEditIncomeType = (income: IncomeType) => {
         setSelectedIncome(income);
         onEditOpen();
@@ -119,14 +120,14 @@ export const ListIncomeTypes: React.FC = () => {
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
         const updatedValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
-    
+
         if (selectedIncome) {
             setSelectedIncome({
                 ...selectedIncome,
                 [name]: updatedValue,
             });
         }
-        
+
         if (newIncomeType) {
             setNewIncomeType({
                 ...newIncomeType,
@@ -134,60 +135,64 @@ export const ListIncomeTypes: React.FC = () => {
             });
         }
     };
-    
-    
+
+
 
     return (
-        <Box backgroundColor={'white'} width={1000} borderRadius="2xl" padding="8px" margin="auto">
-            <Flex justifyContent="space-between" mb={6}>
-                <Flex gap={2}>
-                </Flex>
-                <Button onClick={handleAddIncomeType}  color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }}>Agregar Tipo de Ingreso</Button>
-            </Flex>
-            <TableContainer>
-                <Table variant="simple" fontSize="14px">
-                    <Thead>
-                        <Tr>
-                            <Th>Nombre</Th>
-                            <Th>Es deducible</Th>
-                            <Th>Acciones</Th>
-                        </Tr>
-                    </Thead>
-                    <Tbody>
-                        {incomes.map((incomeType, index) => (
-                            <Tr key={index}>
-                                <Td>{incomeType.name}</Td>
-                                <Td>{incomeType.deductible ? 'Si' : 'No'}</Td>
-                                <Td>
-                                    <EditIcon mr={2} cursor="pointer"  onClick={() => handleEditIncomeType(incomeType)}/>
-                                    <DeleteIcon cursor="pointer" onClick={(event) => handleDeleteIncome(incomeType, event)} />
-                                </Td>
-                            </Tr>
-                        ))}
-                    </Tbody>
-                </Table>
-            </TableContainer>
-            
-            <ModalIncomeType
-                isOpen={isAddOpen}
-                onClose={onAddClose}
-                onChange={handleChange}
-                onSave={handleSaveIncomeType}
-                initialData={newIncomeType}
-            />
+        <Flex width={"90%"} flexDirection={"column"}>
+            <Heading color={"gray.600"} mt={4} marginLeft={5} width={"100%"}>Tipos de Ingresos</Heading>
 
-            <ModalIncomeType
-                isOpen={isEditOpen}
-                onClose={onEditClose}
-                onChange={handleChange}
-                onSave={handleSaveIncomeType}
-                initialData={selectedIncome}
-            />
-            <ModalEliminar
-                isOpen={isDeleteOpen}
-                onClose={onDeleteClose}
-                onConfirm={confirmDeleteIncome}
-            />
-        </Box>
+            <Box backgroundColor={'white'} top={160} left={300} width={"100%"} height={426} borderRadius="2xl" padding="8px" mt={10} >
+                <Flex justifyContent="space-between" mb={6}>
+                    <Flex gap={2}>
+                    </Flex>
+                    <Button onClick={handleAddIncomeType} color="white" bgColor='#AA546D' _hover={{ bgColor: "#c1738e" }}>Agregar Tipo de Ingreso</Button>
+                </Flex>
+                <TableContainer>
+                    <Table variant="simple" fontSize="14px">
+                        <Thead>
+                            <Tr>
+                                <Th>Nombre</Th>
+                                <Th>Es deducible</Th>
+                                <Th>Acciones</Th>
+                            </Tr>
+                        </Thead>
+                        <Tbody>
+                            {incomes.map((incomeType, index) => (
+                                <Tr key={index}>
+                                    <Td>{incomeType.name}</Td>
+                                    <Td>{incomeType.deductible ? 'Si' : 'No'}</Td>
+                                    <Td>
+                                        <EditIcon mr={2} cursor="pointer" onClick={() => handleEditIncomeType(incomeType)} />
+                                        <DeleteIcon cursor="pointer" onClick={(event) => handleDeleteIncome(incomeType, event)} />
+                                    </Td>
+                                </Tr>
+                            ))}
+                        </Tbody>
+                    </Table>
+                </TableContainer>
+
+                <ModalIncomeType
+                    isOpen={isAddOpen}
+                    onClose={onAddClose}
+                    onChange={handleChange}
+                    onSave={handleSaveIncomeType}
+                    initialData={newIncomeType}
+                />
+
+                <ModalIncomeType
+                    isOpen={isEditOpen}
+                    onClose={onEditClose}
+                    onChange={handleChange}
+                    onSave={handleSaveIncomeType}
+                    initialData={selectedIncome}
+                />
+                <ModalEliminar
+                    isOpen={isDeleteOpen}
+                    onClose={onDeleteClose}
+                    onConfirm={confirmDeleteIncome}
+                />
+            </Box>
+        </Flex>
     );
 };
