@@ -7,6 +7,7 @@ import { Button, useDisclosure } from "@chakra-ui/react";
 const ListPositionsPage = () => {
 
     const { isOpen, onOpen, onClose } = useDisclosure();
+
     return (
 
         <>

@@ -30,8 +30,8 @@ interface IncomeType {
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-    onSave: (incomeType: IncomeType) => void;
+    onChange?: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+    onSave?: (incomeType: IncomeType) => void;
     initialData?: IncomeType | null;
 }
 
@@ -59,7 +59,7 @@ export const IncomeType: React.FC<ModalProps> = ({ isOpen, onClose, onChange, on
         const { name, value, type, checked } = e.target;
         const updatedValue = type === 'checkbox' ? checked : value;
         setIncomeType({ ...income, [name]: updatedValue });
-        onChange(e);
+        if (onChange) onChange(e);
     };
 
 
@@ -86,7 +86,7 @@ export const IncomeType: React.FC<ModalProps> = ({ isOpen, onClose, onChange, on
                 if (income.id) {
                     // Update existing income type
                     const response = await updateIncomeType(income.id, data, token);
-                    onSave(response);
+                    if (onSave) onSave(response);
                     toast.close(loadingToast);
                     toast({
                         title: "Guardado",
@@ -98,7 +98,7 @@ export const IncomeType: React.FC<ModalProps> = ({ isOpen, onClose, onChange, on
                 } else {
                     // Create new income type
                     const response = await createIncomeType(data, token);
-                    onSave(response);
+                     if (onSave) onSave(response);
                     toast.close(loadingToast);
                     toast({
                         title: "Guardado",
