@@ -271,9 +271,9 @@ const SueldoPDF: React.FC<SueldoPDFProps> = ({ sueldo, currentDate, employee, re
                         <View style={styles.separator1} />
                         {sueldo.map(item => (
                             <View style={styles.tableRow} key={item._id}>
-                                <View style={styles.tableColConcept}><Text style={styles.tableCell}>{item.concepto}</Text></View>
-                                <View style={styles.tableColAmount}><Text style={styles.tableCell1}>{item.ingreso}</Text></View>
-                                <View style={styles.tableColAmount}><Text style={styles.tableCell1}>{item.egreso}</Text></View>
+                                <View style={styles.tableColConcept}><Text style={styles.tableCell}>{(+item.concepto).toLocaleString('es-ES')}</Text></View>
+                                <View style={styles.tableColAmount}><Text style={styles.tableCell1}>{(+item.ingreso).toLocaleString('es-ES')}</Text></View>
+                                <View style={styles.tableColAmount}><Text style={styles.tableCell1}>{(+item.egreso).toLocaleString('es-ES')}</Text></View>
                             </View>
                         ))}
                     </View>
@@ -282,19 +282,19 @@ const SueldoPDF: React.FC<SueldoPDFProps> = ({ sueldo, currentDate, employee, re
                     <View style={styles.totalsContainer}>
                         <View style={styles.totalRow}>
                             <Text style={styles.totalLabel}>TOTAL INGRESOS:</Text>
-                            <Text style={styles.totalValue}>{totalIngresos} Gs</Text>
+                            <Text style={styles.totalValue}>{(+totalIngresos).toLocaleString('es-ES')} Gs</Text>
                         </View>
                         <View style={styles.totalRow}>
                             <Text style={styles.totalLabel}>TOTAL EGRESOS:</Text>
-                            <Text style={styles.totalValue}>{totalEgresos} Gs</Text>
+                            <Text style={styles.totalValue}>{(+totalEgresos).toLocaleString('es-ES')} Gs</Text>
                         </View>
                         <View style={styles.totalRow}>
                             <Text style={styles.totalLabel}>TOTAL A PAGAR:</Text>
-                            <Text style={styles.totalValue}>{totalAPagar} Gs</Text>
+                            <Text style={styles.totalValue}>{(+totalAPagar).toLocaleString('es-ES')} Gs</Text>
                         </View>
                     </View>
                 </View><View style={styles.reciboContainer}>
-                    <Text>     Recibi de la empresa LA FERRETERIA un monto total de {totalAPagar} Gs, son {totalAPagarEnTexto}guaraníes.</Text>
+                    <Text>     Recibi de la empresa LA FERRETERIA un monto total de {(+totalAPagar).toLocaleString('es-ES')} Gs, son {totalAPagarEnTexto} guaraníes.</Text>
                 </View>
                 <View style={styles.signatureContainer}>
                     <View style={{ textAlign: 'center', width: '30%' }}>

@@ -68,8 +68,8 @@ const Sueldo = () => {
                 setSueldo(a.payrollItems.map((pi: { id: string; isIncome: boolean; amount: number; description: string }) => ({
                     _id: pi.id,
                     concepto: pi.description,
-                    ingreso: pi.isIncome ? pi.amount.toFixed(2) : "0",
-                    egreso: pi.isIncome ? "0" : pi.amount.toFixed(2),
+                    ingreso: pi.isIncome ? pi.amount.toFixed(0) : "0",
+                    egreso: pi.isIncome ? "0" : pi.amount.toFixed(0),
                 })))
                 setIsVerified(a.isVerified)
                 setEmployeeId(a.employeeId)
@@ -341,9 +341,9 @@ const Sueldo = () => {
                                     {
                                         sueldo.map(sueldo => (
                                             <Tr key={sueldo._id}>
-                                                <Td className=' py-1'>{sueldo.concepto}</Td>
-                                                <Td className=' py-1'>{sueldo.ingreso}</Td>
-                                                <Td className=' py-1'>{sueldo.egreso}</Td>
+                                                <Td className=' py-1'>{(+sueldo.concepto).toLocaleString('es-ES')}</Td>
+                                                <Td className=' py-1 '>{(+sueldo.ingreso).toLocaleString('es-ES')}</Td>
+                                                <Td className=' py-1 '>{(+sueldo.egreso).toLocaleString('es-ES')}</Td>
                                             </Tr>)
                                         )
                                     }
@@ -357,15 +357,15 @@ const Sueldo = () => {
                         <div className="flex flex-col font-semibold text-[17px] gap-2">
                             <div className="flex justify-end">
                                 <span>TOTAL INGRESOS:</span>
-                                <div className="min-w-40 text-right">{sueldo.map(s => Number(s.ingreso)).reduce((a, b) => a + b).toFixed(2)} Gs</div>
+                                <div className="min-w-40 text-right">{sueldo.map(s => Number(s.ingreso)).reduce((a, b) => a + b).toLocaleString('es-ES')} Gs</div>
                             </div>
                             <div className="flex justify-end">
                                 <span>TOTAL EGRESOS:</span>
-                                <div className="min-w-40 text-right">{sueldo.map(s => Number(s.egreso)).reduce((a, b) => a + b).toFixed(2)} Gs</div>
+                                <div className="min-w-40 text-right">{sueldo.map(s => Number(s.egreso)).reduce((a, b) => a + b).toLocaleString('es-ES')} Gs</div>
                             </div>
                             <div className="flex justify-end">
                                 <span> TOTAL A PAGAR:</span>
-                                <div className="min-w-40 text-right">{(sueldo.map(s => Number(s.ingreso)).reduce((a, b) => a + b) - sueldo.map(s => Number(s.egreso)).reduce((a, b) => a + b)).toFixed(2)} Gs</div>
+                                <div className="min-w-40 text-right">{(sueldo.map(s => Number(s.ingreso)).reduce((a, b) => a + b) - sueldo.map(s => Number(s.egreso)).reduce((a, b) => a + b)).toLocaleString('es-ES')} Gs</div>
                             </div>
                         </div>
                     </div>
