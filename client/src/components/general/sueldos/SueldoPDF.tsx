@@ -23,12 +23,12 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'space-between',
         marginBottom: 15,
-        textAlign: 'center',
+       textAlign: 'center',
     },
     headingDate: {
         fontSize: 12,
         marginBottom: 15,
-        textAlign: 'left',
+       textAlign: 'left',
     },
 
     companyName: {
@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         paddingRight: 15,
         alignItems: 'flex-end',
+        paddingHorizontal: 20,
     },
     totalRow: {
         flexDirection: 'row',
@@ -137,14 +138,16 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: 'bold',
         marginBottom: 2,
-
+        //textAlign: 'right',
     },
     totalLabel: {
         marginRight: 10,
+        textAlign: 'left',
     },
     totalValue: {
         minWidth: 40,
         textAlign: 'right',
+        flex: 1,
     },
     watermark: {
         position: 'absolute',
@@ -271,7 +274,7 @@ const SueldoPDF: React.FC<SueldoPDFProps> = ({ sueldo, currentDate, employee, re
                         <View style={styles.separator1} />
                         {sueldo.map(item => (
                             <View style={styles.tableRow} key={item._id}>
-                                <View style={styles.tableColConcept}><Text style={styles.tableCell}>{(+item.concepto).toLocaleString('es-ES')}</Text></View>
+                                <View style={styles.tableColConcept}><Text style={styles.tableCell}>{(item.concepto).toLocaleString('es-ES')}</Text></View>
                                 <View style={styles.tableColAmount}><Text style={styles.tableCell1}>{(+item.ingreso).toLocaleString('es-ES')}</Text></View>
                                 <View style={styles.tableColAmount}><Text style={styles.tableCell1}>{(+item.egreso).toLocaleString('es-ES')}</Text></View>
                             </View>
