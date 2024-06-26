@@ -14,6 +14,7 @@ import { useState } from "react";
 import { IconType } from "react-icons";
 import { FiChevronDown, FiCompass, FiDollarSign, FiHome, FiSettings, FiUsers } from "react-icons/fi";
 import { GrTransaction } from "react-icons/gr";
+import { FaBalanceScale } from "react-icons/fa";
 
 interface LinkItemProps {
     name: string;
@@ -39,6 +40,7 @@ const LinkItems: Array<LinkItemProps> = [
         ]
     },
     { name: 'Salarios', icon: FiDollarSign, href: '/general/salaries/periods' },
+    { name: 'Asientos Contables', icon: FaBalanceScale, href: '/entries' },
     { name: 'Settings', icon: FiSettings, href: '/ConfigBasic' },
 ];
 
