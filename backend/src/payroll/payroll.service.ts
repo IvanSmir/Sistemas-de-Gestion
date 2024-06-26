@@ -57,6 +57,18 @@ export class PayrollService {
           payrollDetails: {
             select: {
               isVerified: true,
+              payrollItems:{
+                where: {
+                  isDeleted: false
+                },
+                select:{
+                  amount: true,
+                  description: true,
+                  isIncome: true,
+                  isIps: true,
+                  isBonification: true
+                }
+              },
               id: true,
               periodId: true,
               employeeId: true,
