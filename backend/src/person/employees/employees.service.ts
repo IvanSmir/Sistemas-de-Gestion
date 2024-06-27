@@ -62,7 +62,7 @@ export class EmployeesService {
     }
   }
 
-  async findAll(paginationDto: PaginationDto) {
+  async findAll(paginationDto: PaginationDto, query: string) {
     const { page = 1, limit = 10 } = paginationDto;
     try {
       const totalCount = await this.prismaService.employees.count({
@@ -74,10 +74,27 @@ export class EmployeesService {
         select: this.selectOptions,
         where: {
           isDeleted: false,
+          OR: [
+            {
+              person: {
+                ciRuc: {
+                  contains: query,
+                  mode: 'insensitive',
+                },
+              },
+            },
+            {
+              person: {
+              name: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            }}
+          ],
         },
         orderBy: {
           createdAt: 'desc',
-        },
+        }
       });
       return {
         data: employees,

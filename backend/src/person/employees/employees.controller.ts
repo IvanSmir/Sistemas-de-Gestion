@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  Search,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -14,6 +15,7 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiCookieAuth,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { EmployeesService } from './employees.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
@@ -23,6 +25,7 @@ import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { Users } from '@prisma/client';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { CreateFullDto } from './dto/create-full.dto';
+import { SearchDto } from 'src/common/dtos/search.dto';
 
 @ApiTags('Employees')
 @Controller('employees')
@@ -48,9 +51,13 @@ export class EmployeesController {
     description: 'Employees retrieved successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  findAll(@Query() paginationDto: PaginationDto) {
-    console.log('paginationDto', paginationDto);
-    return this.employeesService.findAll(paginationDto);
+  findAll(@Query() search: SearchDto) {
+    console.log('paginationDto', SearchDto);
+    const pagination = {
+      limit: search.limit,
+      page: search.page,
+    };
+    return this.employeesService.findAll(pagination, search.term);
   }
 
   @Get(':term')
