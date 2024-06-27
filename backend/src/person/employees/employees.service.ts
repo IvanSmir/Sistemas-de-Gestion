@@ -62,7 +62,7 @@ export class EmployeesService {
     }
   }
 
-  async findAll(paginationDto: PaginationDto) {
+  async findAll(paginationDto: PaginationDto, query: string) {
     const { page = 1, limit = 10 } = paginationDto;
     try {
       const totalCount = await this.prismaService.employees.count({
@@ -74,10 +74,27 @@ export class EmployeesService {
         select: this.selectOptions,
         where: {
           isDeleted: false,
+          OR: [
+            {
+              person: {
+                ciRuc: {
+                  contains: query,
+                  mode: 'insensitive',
+                },
+              },
+            },
+            {
+              person: {
+              name: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            }}
+          ],
         },
         orderBy: {
           createdAt: 'desc',
-        },
+        }
       });
       return {
         data: employees,
@@ -204,6 +221,24 @@ export class EmployeesService {
       this.handleDbErrorService.handleDbError(error, 'Employee', id);
     }
   }
+
+  async reactivateEmployee(id: string, user: Users) {
+    try {
+      const result = await this.prismaService.$transaction(async (prisma) => {
+        const employee = await prisma.employees.update({
+          where: { id, isDeleted: true },
+          data: { isDeleted: false, userId: user.id },
+        });
+
+        return { message: 'Employee reactivated successfully' };
+      });
+
+      return result;
+    } catch (error) {
+      this.handleDbErrorService.handleDbError(error, 'Employee', id);
+    }
+  }
+
   async createFull(createFullEmployeeDto: CreateFullDto, user: Users) {
     try {
       const {

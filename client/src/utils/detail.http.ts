@@ -48,6 +48,26 @@ export const updateEmployee = async (
   }
 };
 
+export const reactivateEmployee = async (id: string, token: string) => {
+  try {
+    const response = await fetch(`${API_URL}/employees/reactivate/${id}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al reactivar empleado");
+    }
+
+    return response.json();
+  } catch (error: any) {
+    throw new Error((error as Error).message || "Error al reactivar empleado");
+  }
+};
+
 export const getEmployeeDetails = async (id: string, token: string) => {
   try {
     const response = await fetch(`${API_URL}/employee-details/employee/${id}`, {
@@ -203,5 +223,25 @@ export const deletePositionDetail = async (id: string, token: string) => {
     return data;
   } catch (error: any) {
     throw new Error((error as Error).message || "Error al obtener posiciones");
+  }
+};
+
+export const deleteEmployee = async (id: string, token: string) => {
+  try {
+    const response = await fetch(`${API_URL}/employees/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Error al borrar empleado");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    throw new Error((error as Error).message || "Error al obtener empleado");
   }
 };

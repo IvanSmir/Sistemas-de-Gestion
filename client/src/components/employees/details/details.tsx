@@ -5,12 +5,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Avatar, Box, Button, Divider, Flex, FormControl, FormLabel, Input, Link, Select, Tabs, TabList, TabPanel, TabPanels, Tab, useToast, Wrap, WrapItem, FormErrorMessage } from '@chakra-ui/react';
 import { List } from '@/components/relatives/List';
 import { useParams, useRouter } from 'next/navigation';
-import { getEmployeeId, updateEmployee } from '@/utils/detail.http';
+import { getEmployeeId, updateEmployee, deleteEmployee } from '@/utils/detail.http';
 import { useAuth } from '@/components/context/AuthProvider';
 import Employee from "@/types/employee";
 import { EmployeeDetailsList } from './ListPositions';
 import { FinanceDetailsList } from './TransactionsList';
 import { employeeSchema } from '@/validations/employeeSchema';
+import ConfirmDeleteEmployeeModal from './confirmDelete';
 
 const normalizeRUC = (ruc: string) => ruc.replace(/\./g, '');
 const denormalizeCi = (ci: string) => ci.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
@@ -26,6 +27,16 @@ export const EmployeeDetails = () => {
 
     const [isEditing, setIsEditing] = useState(false);
     const [employeeCiRuc, setEmployeeCiRuc] = useState('');
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+
+    const onCloseDeleteConfirmModal = () => {
+        setIsDeleteConfirmOpen(false);
+    };
+
+    const onConfirmDeleteModal = () => {
+        setIsDeleteConfirmOpen(false);
+        handleDelete();
+    };
 
     useEffect(() => {
         const fetchEmployee = async () => {
@@ -118,6 +129,47 @@ export const EmployeeDetails = () => {
         }
     };
 
+    const onDelete = () => {
+        setIsDeleteConfirmOpen(true);
+    };
+
+    const handleDelete = async () => {
+        try {
+            const { user } = auth;
+            const token = user?.token || '';
+            const employeeId = typeof id === "string" ? id : "";
+            toast({
+                title: 'Eliminando empleado',
+                description: 'Por favor espere...',
+                status: 'loading',
+                duration: null,
+                isClosable: true,
+            });
+
+            await deleteEmployee(employeeId, token);
+            toast.closeAll();
+
+            toast({
+                title: 'Success',
+                description: 'Employee deleted successfully!',
+                status: 'success',
+                duration: 5000,
+                isClosable: true,
+            });
+            router.push('/employees');
+        } catch (error) {
+            console.error('Error deleting employee:', error);
+            toast.closeAll();
+            toast({
+                title: 'Error',
+                description: 'Failed to delete employee.',
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
+        }
+    };
+
     return (
         <Box bg={"gray.200"} mb={6}>
             <Flex>
@@ -174,9 +226,15 @@ export const EmployeeDetails = () => {
                         <Box bg={"white"} p={5} borderRadius="md" width="70%">
                             <Flex justifyContent={"end"} mb={4}>
                                 {!isEditing && (
-                                    <Button bg={"gray.300"} onClick={handleEdit}>
-                                        Editar
-                                    </Button>
+                                    <Flex gap={2}>
+                                        <Button bg={"red.300"} _hover={{ bgColor: "#c1738e" }} onClick={onDelete}>
+                                            Eliminar
+                                        </Button>
+                                        <Button bg={"gray.300"} onClick={handleEdit}>
+                                            Editar
+                                        </Button>
+                                    </ Flex>
+
                                 )}
                                 {isEditing && (
                                     <Flex gap={2}>
@@ -292,6 +350,11 @@ export const EmployeeDetails = () => {
                     </TabPanel>
                 </TabPanels>
             </Tabs>
+            <ConfirmDeleteEmployeeModal
+                isOpen={isDeleteConfirmOpen}
+                onClose={onCloseDeleteConfirmModal}
+                onConfirm={onConfirmDeleteModal}
+            />
         </Box>
     );
 }
