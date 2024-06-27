@@ -336,7 +336,7 @@ const Pagination: React.FC<PaginationProps> = ({ page, setPage, total }) => {
             const newSelected = page - 1
             setPage(newSelected)
         }
-    }, [page])
+    }, [page, setPage])
 
     const handleUpperSelect = useCallback(() => {
         if (page < total) {
@@ -344,7 +344,7 @@ const Pagination: React.FC<PaginationProps> = ({ page, setPage, total }) => {
             const newSelected = page + 1
             setPage(newSelected)
         }
-    }, [page, total])
+    }, [page, total, setPage])
 
     const getClassNameBySelected = useCallback((page = false) => {
         if (page) return "w-[2.7%] flex text-center items-center justify-center aspect-square rounded-lg text-white bg-[#AA546D]"
