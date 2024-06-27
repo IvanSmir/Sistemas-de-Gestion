@@ -99,6 +99,7 @@ export class PersonService {
           enterDate: isEmployee.enterDate,
           isEmployee: true,
           idEmployee: isEmployee.id,
+          isDeleted: isEmployee.isDeleted,
         };
       }
       return {

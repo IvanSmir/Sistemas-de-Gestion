@@ -186,19 +186,24 @@ model Expenses {
 }
 
 model PayrollDetails {
-  id           String         @id @default(uuid())
-  period       PayrollPeriods @relation(fields: [periodId], references: [id])
-  periodId     String
-  payrollItems PayrollItems[]
-  employee     Employees      @relation(fields: [employeeId], references: [id])
-  employeeId   String
-  amount       Float?
-  isVerified   Boolean        @default(false)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  isDeleted    Boolean        @default(false)
-  user         Users          @relation(fields: [userId], references: [id])
-  userId       String
+  id                 String         @id @default(uuid())
+  period             PayrollPeriods @relation(fields: [periodId], references: [id])
+  periodId           String
+  payrollItems       PayrollItems[]
+  employee           Employees      @relation(fields: [employeeId], references: [id])
+  employeeId         String
+  amount             Float?
+  amountIps          Float?
+  amountBonification Float?
+  amountIncome       Float?
+  amountExpense      Float?
+  amountSalary       Float?
+  isVerified         Boolean        @default(false)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  isDeleted          Boolean        @default(false)
+  user               Users          @relation(fields: [userId], references: [id])
+  userId             String
 }
 
 model PayrollItems {
@@ -218,18 +223,19 @@ model PayrollItems {
 }
 
 model PayrollPeriods {
-  id                         String           @id @default(uuid())
+  id                         String            @id @default(uuid())
   periodStart                DateTime
   periodEnd                  DateTime?
-  createdAt                  DateTime         @default(now())
-  updatedAt                  DateTime         @updatedAt
-  user                       Users            @relation(fields: [userId], references: [id])
+  createdAt                  DateTime          @default(now())
+  updatedAt                  DateTime          @updatedAt
+  user                       Users             @relation(fields: [userId], references: [id])
   userId                     String
   payrollDetails             PayrollDetails[]
-  isDeleted                  Boolean          @default(false)
-  isEnded                    Boolean          @default(false)
-  DetailsWithoutVerification Int              @default(0)
+  isDeleted                  Boolean           @default(false)
+  isEnded                    Boolean           @default(false)
+  DetailsWithoutVerification Int               @default(0)
   totalAmount                Float?
+  AccountingEntry            AccountingEntry[]
 }
 
 model BasicConfig {
@@ -244,12 +250,14 @@ model BasicConfig {
 }
 
 model AccountingEntry {
-  id          String   @id @default(uuid())
-  paymentDate DateTime @default(now())
-  netAmount   Float
-  type        String
-  name        String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isDeleted   Boolean  @default(false)
+  id              String         @id @default(uuid())
+  paymentDate     DateTime       @default(now())
+  netAmount       Float
+  type            String
+  name            String
+  payrollperiod   PayrollPeriods @relation(fields: [payrollperiodId], references: [id])
+  payrollperiodId String
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  isDeleted       Boolean        @default(false)
 }

@@ -90,6 +90,21 @@ export class EmployeesController {
     return this.employeesService.remove(id, user);
   }
 
+  @Post('reactivate/:id')
+  @Auth()
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Reactivate an employee' })
+  @ApiResponse({
+    status: 200,
+    description: 'Employee reactivated successfully.',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Employee not found.' })
+  reactivate(@Param('id') id: string, @GetUser() user: Users) {
+    return this.employeesService.reactivateEmployee(id, user);
+  }
+
   @Post('complete')
   @Auth()
   @ApiBearerAuth()

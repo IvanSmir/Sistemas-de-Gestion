@@ -48,6 +48,26 @@ export const updateEmployee = async (
   }
 };
 
+export const reactivateEmployee = async (id: string, token: string) => {
+  try {
+    const response = await fetch(`${API_URL}/employees/reactivate/${id}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al reactivar empleado");
+    }
+
+    return response.json();
+  } catch (error: any) {
+    throw new Error((error as Error).message || "Error al reactivar empleado");
+  }
+};
+
 export const getEmployeeDetails = async (id: string, token: string) => {
   try {
     const response = await fetch(`${API_URL}/employee-details/employee/${id}`, {

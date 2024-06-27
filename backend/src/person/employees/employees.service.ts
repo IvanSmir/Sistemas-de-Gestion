@@ -204,6 +204,24 @@ export class EmployeesService {
       this.handleDbErrorService.handleDbError(error, 'Employee', id);
     }
   }
+
+  async reactivateEmployee(id: string, user: Users) {
+    try {
+      const result = await this.prismaService.$transaction(async (prisma) => {
+        const employee = await prisma.employees.update({
+          where: { id, isDeleted: true },
+          data: { isDeleted: false, userId: user.id },
+        });
+
+        return { message: 'Employee reactivated successfully' };
+      });
+
+      return result;
+    } catch (error) {
+      this.handleDbErrorService.handleDbError(error, 'Employee', id);
+    }
+  }
+
   async createFull(createFullEmployeeDto: CreateFullDto, user: Users) {
     try {
       const {
