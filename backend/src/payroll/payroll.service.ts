@@ -57,17 +57,17 @@ export class PayrollService {
           payrollDetails: {
             select: {
               isVerified: true,
-              payrollItems:{
+              payrollItems: {
                 where: {
-                  isDeleted: false
+                  isDeleted: false,
                 },
-                select:{
+                select: {
                   amount: true,
                   description: true,
                   isIncome: true,
                   isIps: true,
-                  isBonification: true
-                }
+                  isBonification: true,
+                },
               },
               id: true,
               periodId: true,
@@ -572,7 +572,6 @@ export class PayrollService {
       const closeIncome = await Promise.all(closeIncomePromises);
       const closeExpense = await Promise.all(closeExpensePromises);
 
-
       const totalAmount = payrollDetails.reduce((acc, payrollDetail) => {
         const payrollItems = payrollDetail.payrollItems;
         console.log('payrollItems', payrollItems);
@@ -584,7 +583,6 @@ export class PayrollService {
           }
         }, acc);
       }, 0);
-  
 
       console.log('totalAmount', totalAmount);
 
@@ -697,6 +695,7 @@ export class PayrollService {
           name: 'Pago de Salarios',
           type: 'DEBE',
           paymentDate: payrollPeriod.periodEnd,
+          payrollperiodId: payrollPeriod.id,
         },
       });
 
@@ -707,6 +706,7 @@ export class PayrollService {
             name: 'Banco',
             type: 'HABER',
             paymentDate: payrollPeriod.periodEnd,
+            payrollperiodId: payrollPeriod.id,
           },
         },
       );
