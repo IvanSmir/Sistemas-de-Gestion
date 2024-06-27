@@ -3,9 +3,11 @@ import { TableContainer, Table, Tbody, Td, Th, Thead, Tr, Box, Flex, Button, Hea
 import React, { ChangeEvent, useState } from 'react'
 import Pagination from './Pagination'
 import Link from 'next/link';
+import * as XLSX from 'xlsx';
 import VerifiedModal from '../general/salaries/VerifiedModal';
 import Period from "@/types/period";
 import { AddIcon } from '@chakra-ui/icons';
+import {DownloadExcel} from '../employees/reportEmployee/report';
 // Definimos los tipos para las props
 type TableEmployeeProps = {
     data: { id: string;[key: string]: any }[]; // Cada dato tiene un ID y valores dinámicos
@@ -55,6 +57,8 @@ export const TableEmployee: React.FC<TableEmployeeProps> = ({ data, columnMappin
             <Box marginTop={6} width={{ base: "100%", sm: "90%", md: "80%", lg: "100%", xl: "100%", "2xl": "100%" }} height={"70vh"}>
                 <Flex justifyContent="end" mb={6} flexWrap="wrap">
 
+                    <DownloadExcel/>
+                    
 
                     <Link href="/employees/add">
                         <Button
