@@ -1020,13 +1020,21 @@ export class PayrollService {
           amountBonification: true,
           amountExpense: true,
           amountIps: true,
+          amount: true,
         },
         orderBy: {
           amount: 'desc',
         },
         take: 3,
       });
-      return payrollDetails;
+
+      const result = payrollDetails.map((payrollDetail) => {
+        const amountTotal = payrollDetail.amount;
+        const name = payrollDetail.employee.person.name;
+        const ciRuc = payrollDetail.employee.person.ciRuc;
+        return { amountTotal, name, ciRuc };
+      });
+      return result;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Payroll', '');
     }
