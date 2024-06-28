@@ -39,9 +39,9 @@ const ReportModal = ({ isOpen, onClose, reportData }: ReportmodalProps) => {
             case 'resumenBonificacion':
                 return reportData.totalBonification || "Resumen de bonificación  es 0.";
             case 'resumenSalario':
-                return (reportData.totalIncome) || "Resumen de salario no disponible, o es 0.";
+                return (reportData.totalSalary) || "Resumen de salario no disponible, o es 0.";
             case 'resumenTotal':
-                return (reportData.totalAmount) || 'REsumen total no disponible, o es 0';
+                return (reportData.totalAmount) || 'Resumen total no disponible, o es 0';
             default:
                 return JSON.stringify(reportData, null, 2) || "Cargando datos del informe...";
         }
@@ -62,7 +62,7 @@ const ReportModal = ({ isOpen, onClose, reportData }: ReportmodalProps) => {
                     </Select>
                     <Box>
 
-                        <pre>Total: {renderReportContent()} Gs.</pre>
+                        <pre>Total: {renderReportContent().toLocaleString('es-PY') + ' Gs.' + (selectedReport == 'resumenSalario' ? '\nsin descontar IPS y bonificaciones' : '')}</pre>
 
                     </Box>
                 </ModalBody>

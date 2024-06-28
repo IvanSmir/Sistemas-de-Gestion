@@ -49,12 +49,11 @@ export class CreateEmployeeDetailDto {
   })
   salary: number;
 
-  @IsDate()
+  @IsBoolean()
   @ApiProperty({
-    type: Date,
-    description: 'The end date of the position',
-    example: '2021-09-01T00:00:00Z',
+    type: Boolean,
+    description: 'Whether the position is active',
+    example: true,
   })
-  @Transform(({ value }) => new Date(value))
-  endDate?: Date;
+  active: boolean;
 }

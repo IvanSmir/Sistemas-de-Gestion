@@ -8,16 +8,7 @@ export const employeeDetailsSchema = z.object({
   positionId: z
     .string()
     .uuid({ message: "El ID de la posición debe ser un UUID válido" }),
-  endDate: z
-    .preprocess(
-      (arg) => {
-        if (arg) return new Date(arg as string);
-      },
-      z
-        .date()
-        .refine((date) => !isNaN(date.getTime()), { message: "Invalid date" })
-    )
-    .optional(),
+  active: z.boolean(),
   startDate: z
     .preprocess(
       (arg) => {

@@ -14,7 +14,8 @@ import {
     ModalCloseButton,
     ModalBody,
     FormErrorMessage,
-    useToast
+    useToast,
+    Switch
 } from '@chakra-ui/react';
 import { employeeDetailsSchema } from "@/validations/employeeDetailsSchema";
 import { useForm } from 'react-hook-form';
@@ -43,7 +44,7 @@ interface PositionFormValues {
     employeeId: string;
     positionId: string;
     startDate: string;
-    endDate: string;
+    active: boolean;
     salaryType: 'minimum' | 'base';
     salary: number | string;
 }
@@ -85,9 +86,9 @@ export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({ is
                 setValue('employeeId', positionDetails.employeeId || '');
                 setValue('positionId', positionDetails.positionId || '');
                 setValue('startDate', positionDetails.startDate ? positionDetails.startDate.split('T')[0] : '');
-                setValue('endDate', positionDetails.endDate ? positionDetails.endDate.split('T')[0] : '');
                 setValue('salaryType', positionDetails.salaryType || '');
                 setValue('salary', positionDetails.salary || '');
+                setValue('active', positionDetails.active);
             }
         }
         setIsLoading(false);
@@ -122,9 +123,9 @@ export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({ is
             const updatedPosition = {
                 positionId: values.positionId,
                 startDate: new Date(values.startDate),
-                endDate: new Date(values.endDate),
                 salaryType: values.salaryType,
                 salary: typeof values.salary === 'number' ? values.salary : Number(values.salary),
+                active: values.active
             };
 
             await updatePositionDetails(positionId as string, updatedPosition, token);
@@ -205,10 +206,10 @@ export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({ is
                                 <FormErrorMessage>{errors.startDate && errors.startDate.message}</FormErrorMessage>
                             </FormControl>
 
-                            <FormControl isInvalid={!!errors.endDate}>
-                                <FormLabel htmlFor="endDate">Fecha fin:</FormLabel>
-                                <Input id="endDate" {...register('endDate')} type="date" />
-                                <FormErrorMessage>{errors.endDate && errors.endDate.message}</FormErrorMessage>
+                            <FormControl isInvalid={!!errors.active}>
+                                <FormLabel htmlFor="active">Activo</FormLabel>
+                                <Switch id="active" {...register('active')} type="switch" />
+                                <FormErrorMessage>{errors.active && errors.active.message}</FormErrorMessage>
                             </FormControl>
 
                             <FormControl isInvalid={!!errors.salary}>

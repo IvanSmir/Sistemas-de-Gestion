@@ -31,18 +31,14 @@ export class EmployeeDetailsService {
 
   async create(createEmployeeDetailDto: CreateEmployeeDetailDto, user: Users) {
     try {
+      const { active, ...createEmployeeDetailDto2 } = createEmployeeDetailDto;
       const result = await this.prisma.$transaction(async (prisma) => {
         const employeeDetail = await prisma.employeeDetails.create({
           data: {
-            ...createEmployeeDetailDto,
+            ...createEmployeeDetailDto2,
             userId: user.id,
-            endDate:
-              new Date(createEmployeeDetailDto.endDate) ===
-                new Date('1900-06-03T00:00:00.000Z') ||
-              new Date(createEmployeeDetailDto.endDate) ===
-                new Date('1900-06-03T00:00:00.000Z')
-                ? null
-                : new Date(createEmployeeDetailDto.endDate),
+            isActive: createEmployeeDetailDto.active,
+            endDate: createEmployeeDetailDto.active ? null : new Date(),
           },
           select: this.selectOptions,
         });
@@ -132,12 +128,15 @@ export class EmployeeDetailsService {
     try {
       if (!isUUID(id)) throw new BadRequestException('Invalid term');
       console.log('updateEmployeeDetailDto', updateEmployeeDetailDto);
-
+      const { active, positionId, ...updateEmployeeDetailDto2 } =
+        updateEmployeeDetailDto;
       const result = await this.prisma.$transaction(async (prisma) => {
         const employeeDetail = await prisma.employeeDetails.update({
           where: { id, isDeleted: false },
           data: {
-            ...updateEmployeeDetailDto,
+            ...updateEmployeeDetailDto2,
+            positionId: positionId,
+            endDate: updateEmployeeDetailDto.active ? null : new Date(),
           },
           select: {
             id: true,

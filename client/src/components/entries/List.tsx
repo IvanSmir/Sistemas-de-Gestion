@@ -71,7 +71,7 @@ export const List: React.FC = () => {
                 {periodInfo && (
                     <Flex justifyContent="center" alignItems="center" mb={4}>
                         <Flex direction="column" textAlign="center">
-                            <Heading color="gray.600" fontSize="24px" mb={2}>{periodInfo.name}</Heading>
+                            <Heading color="gray.600" fontSize="24px" mb={2}>Asientos de Sueldos y Salarios</Heading>
                             <Heading color="gray.600" fontSize="sm">{`Fecha de Periodo: ${periodInfo.paymentDate}`}</Heading>
                         </Flex>
                     </Flex>

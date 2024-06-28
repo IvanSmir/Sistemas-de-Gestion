@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { act, useCallback, useEffect, useState } from "react";
 import {
   FormControl,
   FormLabel,
@@ -14,7 +14,8 @@ import {
   ModalCloseButton,
   ModalBody,
   FormErrorMessage,
-  useToast
+  useToast,
+  Switch
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -44,7 +45,7 @@ interface PositionFormValues {
   employeeId: string;
   positionId: string;
   startDate: string;
-  endDate: string | undefined;
+  active: boolean;
   salaryType: 'minimum' | 'base';
   amount: number | string;
 }
@@ -86,8 +87,8 @@ export const AddPositionInDetails: React.FC<AddPositionInDetailsProps> = ({ isOp
         employeeId: id,
         positionId: data.positionId,
         startDate: new Date(data.startDate),
-        endDate: new Date(data.endDate as string),
         salaryType: data.salaryType,
+        active: data.active == undefined ? true : data.active,
         salary: typeof data.amount === 'number' ? data.amount : Number(data.amount), // Ensure salary is a number
       };
 
@@ -116,7 +117,6 @@ export const AddPositionInDetails: React.FC<AddPositionInDetailsProps> = ({ isOp
       setValue('salaryType', 'base');
       setValue('startDate', new Date().toISOString().split('T')[0]);
       setValue('amount', '');
-      setValue('endDate', new Date().toISOString().split('T')[0]);
       fetchData();
       onClose();
     } catch (error) {
@@ -142,7 +142,7 @@ export const AddPositionInDetails: React.FC<AddPositionInDetailsProps> = ({ isOp
     setValue('salaryType', 'base');
     setValue('startDate', new Date().toISOString().split('T')[0]);
     setValue('amount', '');
-    setValue('endDate', undefined);
+    setValue('active', true);
   }, [auth, setValue, fetchDataPosition]);
 
   useEffect(() => {
@@ -186,10 +186,10 @@ export const AddPositionInDetails: React.FC<AddPositionInDetailsProps> = ({ isOp
               <FormErrorMessage>{errors.startDate && errors.startDate.message}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isInvalid={!!errors.endDate}>
-              <FormLabel htmlFor="endDate">Fecha fin:</FormLabel>
-              <Input id="endDate" {...register('endDate')} type="date" />
-              <FormErrorMessage>{errors.endDate && errors.endDate.message}</FormErrorMessage>
+            <FormControl isInvalid={!!errors.active}>
+              <FormLabel htmlFor="active">Activo</FormLabel>
+              <Switch id="active" {...register('active')} type="switch" />
+              <FormErrorMessage>{errors.active && errors.active.message}</FormErrorMessage>
             </FormControl>
 
             <FormControl isInvalid={!!errors.amount}>
