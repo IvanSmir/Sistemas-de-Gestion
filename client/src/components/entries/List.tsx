@@ -1,5 +1,6 @@
-'use client';
-import React, { useState } from 'react';
+
+'use client'
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Flex,
@@ -10,100 +11,96 @@ import {
     Tr,
     Th,
     Td,
-    Button,
-    useDisclosure,
     Heading,
 } from "@chakra-ui/react";
 import { ViewIcon } from "@chakra-ui/icons";
 import { ModalDetalles } from './ModalDetalles';
-
-interface EntryDetail {
-    account: string;
-    debe: number;
-    haber: number;
-}
+import { getLastSalaryPayments } from '@/utils/payroll';
+import { useAuth } from "../context/AuthProvider";
 
 interface SalaryPayment {
     id: string;
-    period: string;
-    description: string;
-    details: EntryDetail[];
+    createdAt: string;
+    name: string;
+    netAmount: number;
+    paymentDate: string;
+    type: 'DEBE' | 'HABER';
 }
 
-const salaryPayments: SalaryPayment[] = [
-    {
-        id: '1',
-        period: '2024-06-13',
-        description: 'Pago de salarios',
-        details: [
-            { account: 'Salarios por Pagar', debe: 0, haber: 5000 },
-            { account: 'Efectivo', debe: 5000, haber: 0 },
-        ],
-    },
-    {
-        id: '2',
-        period: '2024-07-13',
-        description: 'Pago de salarios',
-        details: [
-            { account: 'Salarios por Pagar', debe: 0, haber: 5000 },
-            { account: 'Efectivo', debe: 5000, haber: 0 },
-        ],
-    },
-    {
-        id: '3',
-        period: '2024-08-13',
-        description: 'Pago de salarios',
-        details: [
-            { account: 'Salarios por Pagar', debe: 0, haber: 5000 },
-            { account: 'Efectivo', debe: 5000, haber: 0 },
-        ],
-    },
-];
-
 export const List: React.FC = () => {
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [isOpen, setIsOpen] = useState(false);
     const [selectedPayment, setSelectedPayment] = useState<SalaryPayment | null>(null);
+    const [salaryPayments, setSalaryPayments] = useState<SalaryPayment[]>([]);
+    const [periodInfo, setPeriodInfo] = useState<{ name: string, paymentDate: string } | null>(null);
+    const auth = useAuth();
+
+    useEffect(() => {
+        const fetchSalaryPayments = async () => {
+            try {
+                const token = auth?.user?.token || '';
+                const payments = await getLastSalaryPayments(token);
+                setSalaryPayments(payments);
+                if (payments.length > 0) {
+                    const firstPayment = payments[0];
+                    setPeriodInfo({
+                        name: firstPayment.name,
+                        paymentDate: new Date(firstPayment.paymentDate).toLocaleDateString(),
+                    });
+                }
+            } catch (error) {
+                console.error('Error al obtener los pagos de salarios:', error);
+            }
+        };
+
+        fetchSalaryPayments();
+    }, [auth]);
 
     const handleViewDetails = (payment: SalaryPayment) => {
         setSelectedPayment(payment);
-        onOpen();
+        setIsOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsOpen(false);
+        setSelectedPayment(null);
     };
 
     return (
-        <Box backgroundColor={'white'} borderRadius="2xl" padding="8px" >
-                <Heading color={"gray.600"} mt={4} marginLeft={5} width={"100%"}>Asientos de Pago de Salarios</Heading>
-                    <Flex justifyContent="space-between" mb={6}>    
-                        <Flex gap={2}>
-                            {/* Aquí puedes agregar un filtro por nombre si lo necesitas */}
+        <Flex justifyContent="center" mt={20}>
+            <Box backgroundColor="white" borderRadius="2xl" padding="16px">
+                {periodInfo && (
+                    <Flex justifyContent="center" alignItems="center" mb={4}>
+                        <Flex direction="column" textAlign="center">
+                            <Heading color="gray.600" fontSize="24px" mb={2}>{periodInfo.name}</Heading>
+                            <Heading color="gray.600" fontSize="sm">{`Fecha de Periodo: ${periodInfo.paymentDate}`}</Heading>
                         </Flex>
                     </Flex>
-                    <TableContainer>
-                        <Table variant="simple" fontSize="14px">
-                            <Thead>
-                                <Tr>
-                                    <Th>Periodo</Th>
-                                    <Th>Acciones</Th>
-                                </Tr>
-                            </Thead>
-                            <Tbody>
+                )}
+                <TableContainer>
+                    <Table variant="simple" fontSize="14px">
+                        <Thead>
+                            <Tr>
+                                <Th>Tipo</Th>
+                                <Th>Debe</Th>
+                                <Th>Haber</Th>
+                            </Tr>
+                        </Thead>
+                        <Tbody>
                             {salaryPayments.map((payment) => (
                                 <Tr key={payment.id}>
-                                    <Td>{payment.period}</Td>
-                                    <Td>
-                                        <ViewIcon
-                                            cursor="pointer"
-                                            onClick={() => handleViewDetails(payment)}
-                                        >
-                                        </ViewIcon>
-                                    </Td>
+                                    <Td>{payment.name}</Td>
+                                    <Td>{payment.type === 'DEBE' ? payment.netAmount.toFixed(2) : '-'}</Td>
+                                    <Td>{payment.type === 'HABER' ? payment.netAmount.toFixed(2) : '-'}</Td>
                                 </Tr>
                             ))}
                         </Tbody>
-                        </Table>
-                    </TableContainer>
-                <ModalDetalles isOpen={isOpen} onClose={onClose} entry={selectedPayment} />
-        </Box>
+                    </Table>
+                </TableContainer>
+            </Box>
+        </Flex>
     );
 };
+
+
 
 
