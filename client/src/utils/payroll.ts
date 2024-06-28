@@ -111,3 +111,24 @@ export const salaryPayrollDetails = async (id: string, employeeId: string, token
    
     }
 };
+
+
+export const getLastSalaryPayments = async (token: string) => {
+    try {
+        const response = await fetch(`${API_URL}/lastSalaryPayments`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Error al obtener los últimos pagos de salarios");
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error: any) {
+        throw new Error((error as Error).message || "Error al obtener los últimos pagos de salarios");
+    }
+};
