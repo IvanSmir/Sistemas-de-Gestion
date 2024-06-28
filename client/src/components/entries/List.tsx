@@ -66,7 +66,7 @@ export const List: React.FC = () => {
     };
 
     return (
-        <Flex justifyContent="center" mt={20}>
+        <Flex justifyContent="center" mt={5}>
             <Box backgroundColor="white" borderRadius="2xl" padding="16px">
                 {periodInfo && (
                     <Flex justifyContent="center" alignItems="center" mb={4}>
@@ -76,26 +76,27 @@ export const List: React.FC = () => {
                         </Flex>
                     </Flex>
                 )}
-                <TableContainer>
-                    <Table variant="simple" fontSize="14px">
+                <TableContainer w="100%">
+                    <Table variant="simple" fontSize="16px" w="100%">
                         <Thead>
                             <Tr>
-                                <Th>Tipo</Th>
-                                <Th>Debe</Th>
-                                <Th>Haber</Th>
+                                <Th px={20} py={4}>Tipo</Th>
+                                <Th px={20} py={4}>Debe</Th>
+                                <Th px={20} py={4}>Haber</Th>
                             </Tr>
                         </Thead>
                         <Tbody>
                             {salaryPayments.map((payment) => (
                                 <Tr key={payment.id}>
-                                    <Td>{payment.name}</Td>
-                                    <Td>{payment.type === 'DEBE' ? payment.netAmount.toFixed(2) : '-'}</Td>
-                                    <Td>{payment.type === 'HABER' ? payment.netAmount.toFixed(2) : '-'}</Td>
+                                    <Td px={20} py={4}>{payment.name}</Td>
+                                    <Td px={20} py={4}>{payment.type === 'DEBE' ? payment.netAmount.toFixed(2) : '-'}</Td>
+                                    <Td px={20} py={4}>{payment.type === 'HABER' ? payment.netAmount.toFixed(2) : '-'}</Td>
                                 </Tr>
                             ))}
                         </Tbody>
                     </Table>
                 </TableContainer>
+
             </Box>
         </Flex>
     );
