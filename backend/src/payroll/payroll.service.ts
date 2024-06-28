@@ -994,4 +994,30 @@ export class PayrollService {
       this.handleDbErrorService.handleDbError(error, 'Payroll', '');
     }
   }
+
+  async getLastSalaryPayments() {
+    try {
+      const payrollPeriods = await this.prismaService.payrollPeriods.findMany({
+        where: {
+          isEnded: true,
+        },
+        orderBy: {
+          periodEnd: 'desc',
+        },
+        take: 1,
+      });
+      const payments = await this.prismaService.accountingEntry.findMany({
+        where: {
+          payrollperiodId: payrollPeriods[0].id,
+        },
+        orderBy: {
+          paymentDate: 'desc',
+        },
+        take: 3,
+      });
+      return payments;
+    } catch (error) {
+      this.handleDbErrorService.handleDbError(error, 'Payroll', '');
+    }
+  }
 }
