@@ -19,6 +19,7 @@ import { PayrollPeriod } from '@/types/payments';
 import { useRouter, useParams } from 'next/navigation'
 import { IoMdArrowRoundBack } from 'react-icons/io';
 import ReportModal from '@/components/general/report/ReportModal';
+import { PeriodData } from '@/types/periodType';
 
 interface Person {
     ciRuc: string;
@@ -73,7 +74,7 @@ const ListEmployeePage: React.FC = () => {
     const [total, setTotal] = useState(0);
     const [fecha, setFecha] = useState<string>('');
     const [showReportModal, setShowReportModal] = useState(false);
-    const [reportData, setReportData] = useState([]);
+    const [reportData, setReportData] = useState<PeriodData>();
 
     const columnMapping = {
         'Nombre': 'name',
@@ -256,13 +257,7 @@ const ListEmployeePage: React.FC = () => {
             });
             console.log("data33333", data);
             setPayments(data);
-            setReportData(data.payrollDetails.map((d)=>{
-                return {
-                    cin: d.employee.person.ciRuc,
-                    name: d.employee.person.name,
-                    items: d.payrollItems
-                }
-            }))
+            setReportData(data)
             setFecha(data.periodStart.split('T')[0]);
 
 
@@ -280,7 +275,7 @@ const ListEmployeePage: React.FC = () => {
     const handleBack = () => {
         router.back();
     }
-    
+
     useEffect(() => {
         fetchPayrolls()
     }, [fetchPayrolls]);
@@ -330,7 +325,7 @@ const ListEmployeePage: React.FC = () => {
             <ReportModal
                 isOpen={showReportModal}
                 onClose={() => setShowReportModal(false)}
-                reportData={reportData}
+                reportData={reportData as PeriodData}
             />
 
             <Flex width={"90%"} flexDirection={"column"}>
@@ -343,11 +338,11 @@ const ListEmployeePage: React.FC = () => {
                     <Box mb={6} display={"flex"} justifyContent={"end"} gap={4} >
 
                         <Flex gap={2}>
-                        {payments?.isEnded && (
-                            <Button colorScheme="green" mb={6} onClick={handleShowReportModal}>
-                                Ver Informe Mensual
-                            </Button>
-                         )}    
+                            {payments?.isEnded && (
+                                <Button colorScheme="green" mb={6} onClick={handleShowReportModal}>
+                                    Ver Informe Mensual
+                                </Button>
+                            )}
                             {payments?.payrollDetails ?
                                 payments?.payrollDetails?.length > 0 && (
                                     <Button

@@ -54,6 +54,12 @@ export class PayrollService {
           periodEnd: true,
           isEnded: true,
           DetailsWithoutVerification: true,
+          totalAmount: true,
+          totalIncome: true,
+          totalExpense: true,
+          totalSalary: true,
+          totalBonification: true,
+          totalIps: true,
           payrollDetails: {
             select: {
               isVerified: true,
@@ -74,6 +80,11 @@ export class PayrollService {
               employeeId: true,
               userId: true,
               amount: true,
+              amountBonification: true,
+              amountExpense: true,
+              amountIps: true,
+              amountIncome: true,
+              amountSalary: true,
               employee: {
                 select: {
                   id: true,
