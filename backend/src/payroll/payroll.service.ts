@@ -542,16 +542,85 @@ export class PayrollService {
               id: true,
               isIncome: true,
               amount: true,
+              isIps: true,
+              isBonification: true,
+              description: true,
             },
           },
         },
       });
 
-      const VerifyAllPayrollDetails =
-        await this.prismaService.payrollDetails.updateMany({
-          where: { periodId: periodId },
-          data: { isVerified: true },
+      const updatePayrollDetailsAndReceiptNumber = async (periodId: string) => {
+        await this.prismaService.$transaction(async (prisma) => {
+          const receiptConfig = await prisma.basicConfig.findFirst({
+            where: { name: 'Numero de recibo' },
+            select: { value: true },
+          });
+
+          if (!receiptConfig || !receiptConfig.value) {
+            throw new Error('Número de recibo no encontrado');
+          }
+
+          let receiptNumber = receiptConfig.value;
+
+          const payrollDetails = await prisma.payrollDetails.findMany({
+            where: { periodId: periodId },
+            include: {
+              payrollItems: true,
+            },
+          });
+
+          for (const detail of payrollDetails) {
+            let totalAmount = 0;
+            let totalIps = 0;
+            let totalSalary = 0;
+            let totalBonification = 0;
+            let totalOtherIncome = 0;
+            let totalOtherExpense = 0;
+
+            for (const item of detail.payrollItems) {
+              if (item.isIncome) {
+                totalAmount += item.amount;
+                if (item.isBonification) {
+                  totalBonification += item.amount;
+                } else if (item.description.includes('Salario')) {
+                  totalSalary += item.amount;
+                } else {
+                  totalOtherIncome += item.amount;
+                }
+              } else {
+                totalAmount -= item.amount;
+                if (item.isIps) {
+                  totalIps += item.amount;
+                } else {
+                  totalOtherExpense += item.amount;
+                }
+              }
+            }
+
+            await prisma.payrollDetails.update({
+              where: { id: detail.id },
+              data: {
+                isVerified: true,
+                receiptNumber: `${receiptNumber}`,
+                amount: totalAmount,
+                amountIps: totalIps,
+                amountSalary: totalSalary,
+                amountBonification: totalBonification,
+                amountIncome: totalOtherIncome,
+                amountExpense: totalOtherExpense,
+              },
+            });
+
+            receiptNumber += 1;
+          }
+
+          await prisma.basicConfig.update({
+            where: { name: 'Numero de recibo' },
+            data: { value: receiptNumber },
+          });
         });
+      };
 
       const closeIncomePromises = payrollDetails.map(async (payrollDetail) => {
         const incomes = await this.deactivateIncome(
@@ -569,22 +638,37 @@ export class PayrollService {
         return expenses;
       });
 
+      await updatePayrollDetailsAndReceiptNumber(periodId);
+
       const closeIncome = await Promise.all(closeIncomePromises);
       const closeExpense = await Promise.all(closeExpensePromises);
 
-      const totalAmount = payrollDetails.reduce((acc, payrollDetail) => {
-        const payrollItems = payrollDetail.payrollItems;
-        console.log('payrollItems', payrollItems);
-        return payrollItems.reduce((acc, item) => {
-          if (item.isIncome) {
-            return acc + item.amount;
-          } else {
-            return acc - item.amount;
-          }
-        }, acc);
-      }, 0);
+      let totalAmount = 0;
+      let totalIncome = 0;
+      let totalExpense = 0;
+      let totalSalary = 0;
+      let totalBonification = 0;
+      let totalIps = 0;
 
-      console.log('totalAmount', totalAmount);
+      payrollDetails.forEach((payrollDetail) => {
+        payrollDetail.payrollItems.forEach((item) => {
+          if (item.isIncome) {
+            totalAmount += item.amount;
+            totalIncome += item.amount;
+            if (item.isBonification) {
+              totalBonification += item.amount;
+            } else if (item.description.includes('Salario')) {
+              totalSalary += item.amount;
+            }
+          } else {
+            totalAmount -= item.amount;
+            totalExpense += item.amount;
+            if (item.isIps) {
+              totalIps += item.amount;
+            }
+          }
+        });
+      });
 
       const payrollPeriod = await this.prismaService.payrollPeriods.update({
         where: { id: periodId },
@@ -593,11 +677,14 @@ export class PayrollService {
           periodEnd: new Date(),
           userId: user.id,
           totalAmount: totalAmount,
+          totalIncome: totalIncome,
+          totalExpense: totalExpense,
+          totalSalary: totalSalary,
+          totalBonification: totalBonification,
+          totalIps: totalIps,
         },
       });
-
       await this.createSalaryPayment(user, periodId);
-
       return payrollPeriod;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Payroll', '');
@@ -686,23 +773,68 @@ export class PayrollService {
           periodEnd: true,
           isEnded: true,
           totalAmount: true,
+          totalBonification: true,
+          totalIncome: true,
+          totalExpense: true,
+          totalSalary: true,
+          totalIps: true,
         },
       });
 
+      // Registro del gasto por sueldos y salarios
       const salaryPayment = await this.prismaService.accountingEntry.create({
         data: {
-          netAmount: payrollPeriod.totalAmount,
-          name: 'Pago de Salarios',
+          netAmount: payrollPeriod.totalSalary,
+          name: 'Gastos de Sueldos y Salarios',
           type: 'DEBE',
           paymentDate: payrollPeriod.periodEnd,
           payrollperiodId: payrollPeriod.id,
         },
       });
 
+      const salaryExpense = await this.prismaService.accountingEntry.create({
+        data: {
+          netAmount: payrollPeriod.totalSalary,
+          name: 'Sueldos y Salarios por Pagar',
+          type: 'HABER',
+          paymentDate: payrollPeriod.periodEnd,
+          payrollperiodId: payrollPeriod.id,
+        },
+      });
+
+      // Retenciones de Ley (IPS)
+      const ipsRetained = await this.prismaService.accountingEntry.create({
+        data: {
+          netAmount: payrollPeriod.totalIps,
+          name: 'Retenciones de IPS',
+          type: 'DEBE',
+          paymentDate: payrollPeriod.periodEnd,
+          payrollperiodId: payrollPeriod.id,
+        },
+      });
+
+      const ipsPayable = await this.prismaService.accountingEntry.create({
+        data: {
+          netAmount: payrollPeriod.totalIps,
+          name: 'IPS por Pagar',
+          type: 'HABER',
+          paymentDate: payrollPeriod.periodEnd,
+          payrollperiodId: payrollPeriod.id,
+        },
+      });
+
+      // Pago de los salarios netos a los empleados
+      const netAmountToPay =
+        payrollPeriod.totalSalary +
+        payrollPeriod.totalIncome +
+        payrollPeriod.totalBonification -
+        payrollPeriod.totalExpense -
+        payrollPeriod.totalIps;
+
       const salaryPaymentBank = await this.prismaService.accountingEntry.create(
         {
           data: {
-            netAmount: payrollPeriod.totalAmount,
+            netAmount: netAmountToPay,
             name: 'Banco',
             type: 'HABER',
             paymentDate: payrollPeriod.periodEnd,
@@ -711,7 +843,47 @@ export class PayrollService {
         },
       );
 
-      return { salaryPayment, salaryPaymentBank };
+      const salaryPaymentNet = await this.prismaService.accountingEntry.create({
+        data: {
+          netAmount: netAmountToPay,
+          name: 'Pago Neto de Salarios',
+          type: 'DEBE',
+          paymentDate: payrollPeriod.periodEnd,
+          payrollperiodId: payrollPeriod.id,
+        },
+      });
+
+      // Pago a retenciones de ley (IPS)
+      const ipsPayment = await this.prismaService.accountingEntry.create({
+        data: {
+          netAmount: payrollPeriod.totalIps,
+          name: 'Pago a IPS',
+          type: 'DEBE',
+          paymentDate: payrollPeriod.periodEnd,
+          payrollperiodId: payrollPeriod.id,
+        },
+      });
+
+      const ipsBankPayment = await this.prismaService.accountingEntry.create({
+        data: {
+          netAmount: payrollPeriod.totalIps,
+          name: 'Banco',
+          type: 'HABER',
+          paymentDate: payrollPeriod.periodEnd,
+          payrollperiodId: payrollPeriod.id,
+        },
+      });
+
+      return {
+        salaryPayment,
+        salaryExpense,
+        ipsRetained,
+        ipsPayable,
+        salaryPaymentBank,
+        salaryPaymentNet,
+        ipsPayment,
+        ipsBankPayment,
+      };
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Payroll', '');
     }
@@ -735,6 +907,7 @@ export class PayrollService {
               },
             },
             isVerified: true,
+            receiptNumber: true,
             employeeId: true,
             user: {
               select: {
@@ -756,6 +929,66 @@ export class PayrollService {
         },
       );
 
+      return payrollDetails;
+    } catch (error) {
+      this.handleDbErrorService.handleDbError(error, 'Payroll', '');
+    }
+  }
+
+  async getLastPaymnets() {
+    try {
+      const payrollPeriods = await this.prismaService.payrollPeriods.findMany({
+        where: {
+          isEnded: true,
+        },
+        orderBy: {
+          periodEnd: 'desc',
+        },
+        take: 1,
+      });
+    } catch (error) {
+      this.handleDbErrorService.handleDbError(error, 'Payroll', '');
+    }
+  }
+
+  async getLastTopEmployeesByIncome() {
+    try {
+      const payrollPeriods = await this.prismaService.payrollPeriods.findMany({
+        where: {
+          isEnded: true,
+        },
+        orderBy: {
+          periodEnd: 'desc',
+        },
+        take: 1,
+      });
+      const payrollDetails = await this.prismaService.payrollDetails.findMany({
+        where: {
+          periodId: payrollPeriods[0].id,
+        },
+        select: {
+          id: true,
+          employee: {
+            select: {
+              person: {
+                select: {
+                  ciRuc: true,
+                  name: true,
+                },
+              },
+            },
+          },
+          amountIncome: true,
+          amountSalary: true,
+          amountBonification: true,
+          amountExpense: true,
+          amountIps: true,
+        },
+        orderBy: {
+          amount: 'desc',
+        },
+        take: 3,
+      });
       return payrollDetails;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Payroll', '');
