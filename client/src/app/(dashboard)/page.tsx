@@ -7,30 +7,16 @@ import { PayrollPeriod } from "@/types/payments";
 import PayrollDetail from "@/types/period";
 import { getPayrollDetails, getPayrolls } from "@/utils/salary.http";
 import { Flex, Heading, useToast } from "@chakra-ui/react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { getLastPayments } from "@/utils/graphics.http";
+import { DataPayments } from "@/types/graphics";
 
-
-interface DataPayments {
-    ips: number;
-    salary: number;
-    otherIncomes: number;
-    bonus: number;
-
-}
 
 export default function Home() {
 
 
-    const toast = useToast();
-    const { periodsId } = useParams();
-    const auth = useAuth();
-    const [dataPayments, setDataPayments] = useState<DataPayments>({
-        ips: 50000,
-        salary: 2000,
-        otherIncomes: 300,
-        bonus: 40,
-    })
+
     const [employees, setEmployees] = useState<Employee[]>([
         {
             name: "Rodrigo",
@@ -45,58 +31,71 @@ export default function Home() {
             amount: 300,
         },
     ]);
-
+    const toast = useToast();
+    const auth = useAuth();
+    const [payments, setPayments] = useState<DataPayments>();
     const [loading, setLoading] = useState(false);
 
-    const [periods, setPeriods] = useState<PayrollPeriod[]>([]);
+    const fetchLastPayments = useCallback(async () => {
+        setLoading(true);
+        try {
+            toast.closeAll();
+            toast({
+                title: 'Cargando',
+                description: 'Por favor espere...',
+                status: 'loading',
+                duration: null,
+                isClosable: true,
+            });
+            const { user } = auth;
+            const token = user?.token || '';
+            const data = await getLastPayments(token);
+            console.log(data);
+            toast.closeAll();
+            toast({
+                title: "Cargado",
+                description: "Últimos pagos cargados con éxito",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+            });
+            setPayments(data[0]);
+        } catch (error) {
+            console.error('Error al obtener los últimos pagos:', error);
+            toast({
+                title: "Error",
+                description: "Error al obtener los últimos pagos",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
+        } finally {
+            setLoading(false);
+        }
+    }, [auth, toast]);
 
 
-    // const fetchPayrolls = useCallback(async () => {
-    //     try {
-    //         const { user } = auth;
-    //         const token = user?.token || '';
-    //         const data: PayrollPeriod[] = await getPayrolls(token) as PayrollPeriod[];
+    useEffect(() => {
+        fetchLastPayments();
+    }, [fetchLastPayments]);
 
-    //         console.log(data);
-    //         setPeriods(data);
-
-
-    //         const lastPeriod = data[0];
-    //         const detail = await getPayrollDetails(lastPeriod.id, token);
-    //         setPayments(detail);
-    //         console.log("data33333", detail.payrollDetails);
-
-    //     } catch (error) {
-    //         console.error('Error fetching employee data:', error);
-    //         toast({
-    //             title: "Error",
-    //             description: "Error al obtener la lista de periodos",
-    //             status: "error",
-    //             duration: 3000,
-    //             isClosable: true,
-    //         });
-    //     }
-    // }, [auth, toast]);
-
-
-    // useEffect(() => {
-    //     fetchPayrolls();
-    // }, [fetchPayrolls]);
 
     return (
         <>
             <Flex backgroundColor={"gray.100"} p={5} width={"100%"} h={"100vh"} flexDirection={"column"} justifyContent={"start    "} alignItems={"start"}>
 
-                <Heading mb={4} color={"gray.600"} fontSize={"3xl"}>Empleados de mayor salario</Heading>
 
                 <div className="w-[100%] h- justify-evenly flex">
-                    <div className="w-[50%] max-h-[50vh] rounded-lg p-6 bg-white shadow-xl">
+
+                    <div className="w-[50%] max-h-[60vh] rounded-lg p-6 bg-white shadow-xl">
+                        <Heading mb={4} color={"gray.600"} fontSize={"3xl"}>Empleados de mayor salario</Heading>
 
                         <BarChart data={employees} />
                     </div>
-                    <div className="w-[30%] flex justify-center mb-10 max-h-[50vh] rounded-lg p-6 bg-white shadow-xl">
+                    <div className="w-[30%]  mb-10 max-h-[70vh] rounded-lg p-6 bg-white shadow-xl">
+                        <Heading mb={4} color={"gray.600"} fontSize={"3xl"}>Ultima pago</Heading>
 
-                        <PieChart data={dataPayments || []} />
+                        <PieChart totalBonification={payments?.totalBonification || 0} totalIps={payments?.totalIps || 0} totalSalary={payments?.totalSalary || 0} totalIncome={payments?.totalIncome || 0} />
                     </div>
 
                 </div>

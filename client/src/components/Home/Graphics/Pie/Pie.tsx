@@ -6,47 +6,39 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
-
+import { m } from 'framer-motion';
+import { DataPayments } from "@/types/graphics";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export interface PieChartData {
-    ips: number;
-    salary: number;
-    otherIncomes: number;
-    bonus: number;
-}
 
-export interface PieChartProps {
-    data: PieChartData;
-}
 
-const DoughnutChart: React.FC<PieChartProps> = ({ data }) => {
+const DoughnutChart: React.FC<DataPayments> = ({ totalIps, totalSalary, totalBonification, totalIncome }) => {
+    console.log(totalIps, totalSalary, totalBonification, totalIncome);
     const chartData = {
-        labels: ['IPS', 'Salary', 'Other Incomes', 'Bonus'],
+        labels: ['IPS', 'Salario', 'Bonificaciones', 'Ingresos'],
         datasets: [
             {
                 label: 'Income Distribution',
-                data: [data.ips, data.salary, data.otherIncomes, data.bonus],
+                data: [totalIps, totalSalary, totalBonification, totalIncome],
                 backgroundColor: [
-                    'rgba(20, 20, 20, 0.6)',  // White
-                    'rgba(50, 50, 50, 0.6)',     // White
-                    'rgba(80, 80, 80, 0.6)',     // Dark Gray
-                    'rgba(100, 100, 100, 0.6)',  // Light Gray
-                    'rgba(105, 105, 105, 0.6)'   // Dim Gray
+                    '#ffa3c4',
+                    '#d67c9f',
+                    '#ac547b',
+                    '#832d56',
+
+
                 ],
                 borderColor: [
-                    'rgba(192, 192, 192, 1)',  // Silver
-                    'rgba(128, 128, 128, 1)',  // Gray
-                    'rgba(169, 169, 169, 1)',  // Dark Gray
-                    'rgba(105, 105, 105, 1)'   // Dim Gray
+                    'rgba(204,75,114, 0.8)',
                 ],
-                borderWidth: 1,
+                spacing: 10,
             },
         ],
     };
 
     const options = {
         responsive: true,
+        maintainAspectRatio: true,
         plugins: {
             legend: {
                 position: 'top' as const,

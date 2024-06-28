@@ -19,14 +19,11 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
                 label: 'Salario por Empleado',
                 data: data.map(item => item.amount),
                 backgroundColor: [
-                    'rgba(20, 20, 20, 0.6)',
-                    'rgba(50, 50, 50, 0.6)',
-                    'rgba(80, 80, 80, 0.6)',
-                    'rgba(100, 100, 100, 0.6)',
-                    'rgba(105, 105, 105, 0.6)'
+                    //pink
+                    'rgba(204,75,114, 0.6)',
                 ],
                 borderColor: [
-                    'white'
+                    'rgba(204,75,114, 0.8)',
                 ],
                 borderWidth: 1, // Hacer más visible el espacio entre los segmentos
                 spacing: 10, // Hacer más visible el espacio entre los segmentos
