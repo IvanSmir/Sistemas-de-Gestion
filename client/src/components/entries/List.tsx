@@ -89,9 +89,14 @@ export const List: React.FC = () => {
                             {salaryPayments.map((payment) => (
                                 <Tr key={payment.id}>
                                     <Td px={20} py={4}>{payment.name}</Td>
-                                    <Td px={20} py={4}>{payment.type === 'DEBE' ? payment.netAmount.toFixed(2) : '-'}</Td>
-                                    <Td px={20} py={4}>{payment.type === 'HABER' ? payment.netAmount.toFixed(2) : '-'}</Td>
+                                    <Td px={20} py={4}>
+                                        {payment.type === 'DEBE' ? payment.netAmount.toLocaleString('es-PY', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-'}
+                                    </Td>
+                                    <Td px={20} py={4}>
+                                        {payment.type === 'HABER' ? payment.netAmount.toLocaleString('es-PY', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-'}
+                                    </Td>
                                 </Tr>
+
                             ))}
                         </Tbody>
                     </Table>
