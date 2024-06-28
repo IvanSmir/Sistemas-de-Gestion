@@ -146,8 +146,8 @@ const ReportPDF: React.FC<ReportPDFProps> = ({ reportData, selectedReport }) => 
                         <Text style={styles.tableColHeaderInfor}>Nombre y Apellido</Text>
                         <Text style={styles.tableColHeaderInfor}>CI</Text>
                         {(isIncome || isTotal) && <Text style={styles.tableColHeaderInfor}>Salario </Text>}
-                        {(isIncome || isTotal) && <Text style={styles.tableColHeaderInfor}>Otros Ingreso </Text>}
-                        {(isIncome || isTotal) && <Text style={styles.tableColHeaderInfor}>Otros descuentos</Text>}
+                        {(isTotal) && <Text style={styles.tableColHeaderInfor}>Otros Ingreso </Text>}
+                        {(isTotal) && <Text style={styles.tableColHeaderInfor}>Otros descuentos</Text>}
                         {(isIps || isTotal) && <Text style={styles.tableColHeaderInfor}>IPS</Text>}
                         {(isFamily || isTotal) && <Text style={styles.tableColHeaderInfor}>Bonif. Familiar</Text>}
                     </View>
@@ -156,8 +156,8 @@ const ReportPDF: React.FC<ReportPDFProps> = ({ reportData, selectedReport }) => 
                             <Text style={styles.tableColInfor1}>{d.name}</Text>
                             <Text style={styles.tableColInfor}>{d.cin}</Text>
                             {(isIncome || isTotal) && <Text style={styles.tableColInfor}>{Math.round(d.salary - d.ips - d.expense).toLocaleString('es-PY')}</Text>}
-                            {(isIncome || isTotal) && <Text style={styles.tableColInfor}>{Math.round(d.income).toLocaleString('es-PY')}</Text>}
-                            {(isIncome || isTotal) && <Text style={styles.tableColInfor}>{Math.round(d.expense).toLocaleString('es-PY')}</Text>}
+                            {(isTotal) && <Text style={styles.tableColInfor}>{Math.round(d.income).toLocaleString('es-PY')}</Text>}
+                            {(isTotal) && <Text style={styles.tableColInfor}>{Math.round(d.expense).toLocaleString('es-PY')}</Text>}
                             {(isIps || isTotal) && <Text style={styles.tableColInfor}>{Math.round(d.ips).toLocaleString('es-PY')}</Text>}
                             {(isFamily || isTotal) && <Text style={styles.tableColInfor}>{Math.round(d.bonification).toLocaleString('es-PY')}</Text>}
                         </View>
@@ -166,13 +166,13 @@ const ReportPDF: React.FC<ReportPDFProps> = ({ reportData, selectedReport }) => 
                         <Text style={styles.tableColInfor}>Total:</Text>
                         <Text style={styles.tableColInfor}></Text>
                         {(isIncome || isTotal) && <Text style={styles.tableColInfor}>{array.length > 0 ? array.map(d => Math.round(d.salary - d.ips - d.expense)).reduce((a, b) => a + b, 0).toLocaleString('es-PY') : 0}</Text>}
-                        {(isIncome || isTotal) && <Text style={styles.tableColInfor}>{array.length > 0 ? array.map(d => Math.round(d.income)).reduce((a, b) => a + b, 0).toLocaleString('es-PY') : 0}</Text>}
-                        {(isIncome || isTotal) && <Text style={styles.tableColInfor}>{array.length > 0 ? array.map(d => Math.round(d.expense)).reduce((a, b) => a + b, 0).toLocaleString('es-PY') : 0}</Text>}
+                        {(isTotal) && <Text style={styles.tableColInfor}>{array.length > 0 ? array.map(d => Math.round(d.income)).reduce((a, b) => a + b, 0).toLocaleString('es-PY') : 0}</Text>}
+                        {(isTotal) && <Text style={styles.tableColInfor}>{array.length > 0 ? array.map(d => Math.round(d.expense)).reduce((a, b) => a + b, 0).toLocaleString('es-PY') : 0}</Text>}
                         {(isIps || isTotal) && <Text style={styles.tableColInfor}>{array.length > 0 ? array.map(d => Math.round(d.ips)).reduce((a, b) => a + b, 0).toLocaleString('es-PY') : 0}</Text>}
                         {(isFamily || isTotal) && <Text style={styles.tableColInfor}>{array.length > 0 ? array.map(d => Math.round(d.bonification)).reduce((a, b) => a + b, 0).toLocaleString('es-PY') : 0}</Text>}
                     </View>
                     <View style={styles.totalRowInfor2}>
-                        <Text>Total General: {Math.round(getTotal() || 0).toLocaleString('es-PY')} Gs.</Text>
+                        <Text>Total General: {(isIncome ? array.length > 0 ? array.map(d => Math.round(d.salary - d.ips - d.expense)).reduce((a, b) => a + b, 0) : 0 : Math.round(getTotal() || 0).toLocaleString('es-PY')).toLocaleString('es-PY')} Gs.</Text>
                     </View>
                 </View>
             </Page>
