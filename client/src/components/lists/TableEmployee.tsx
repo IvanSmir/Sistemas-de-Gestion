@@ -1,16 +1,19 @@
 'use client'
-import { TableContainer, Table, Tbody, Td, Th, Thead, Tr, Box, Flex, Button, Heading } from '@chakra-ui/react';
-import React, { ChangeEvent, useState } from 'react'
-import Pagination from './Pagination'
+
+import { TableContainer, Table, Tbody, Td, Th, Thead, Tr, Box, Flex, Button, Heading, Input, FormControl, FormLabel } from '@chakra-ui/react';
+import React, { ChangeEvent, useState, useEffect } from 'react';
+import Pagination from './Pagination';
 import Link from 'next/link';
 import * as XLSX from 'xlsx';
 import VerifiedModal from '../general/salaries/VerifiedModal';
 import Period from "@/types/period";
 import { AddIcon } from '@chakra-ui/icons';
-import {DownloadExcel} from '../employees/reportEmployee/report';
-// Definimos los tipos para las props
+import { DownloadExcel } from '../employees/reportEmployee/report';
+import { getEmployeeByTerm } from '@/utils/employee.http';
+import { useAuth } from "../context/AuthProvider";
+
 type TableEmployeeProps = {
-    data: { id: string;[key: string]: any }[]; // Cada dato tiene un ID y valores dinámicos
+    data: { id: string; [key: string]: any }[]; // Cada dato tiene un ID y valores dinámicos
     columnMapping: { [header: string]: string }; // Mapeo de headers a claves de datos
     setEmployeeData?: any;
     total: number;
@@ -27,16 +30,34 @@ export const TableEmployee: React.FC<TableEmployeeProps> = ({ data, columnMappin
     const [isGenerar, setIsGenerar] = useState(false);
     const [isProcessClosed, setIsProcessClosed] = useState(false);
     const headers = Object.keys(columnMapping);
-    const [filters, setFilters] = useState<{ ci: string; ageRange: string }>({
-        ci: '',
-        ageRange: '',
-    });
+    const auth = useAuth();
+    
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filteredData, setFilteredData] = useState(data);
 
-    const handleCiFilter = (e: ChangeEvent<HTMLInputElement>) => {
-        setFilters({ ...filters, ci: e.target.value });
+    const handleTermFilter = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
     };
 
+    useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+        if (searchTerm) {
+            try {
+                const { user } = auth;
+                const token = user?.token || '';
+                const result = await getEmployeeByTerm(searchTerm, token);
+                setFilteredData(Array.isArray(result) ? result : [result]);
+            } catch (error) {
+                console.error("Error al obtener empleados:", error);
+                setFilteredData([]);
+            }
+        } else {
+            setFilteredData(data);
+        }
+    }, 300);
 
+    return () => clearTimeout(delayDebounceFn);
+}, [searchTerm, data, auth]);
 
     const handleOperation = (operationType: string) => {
         setConfirmOperation(false);
@@ -55,10 +76,19 @@ export const TableEmployee: React.FC<TableEmployeeProps> = ({ data, columnMappin
             <Heading color={"gray.600"} mt={4} marginLeft={5} width={"100%"}>Funcionarios</Heading>
 
             <Box marginTop={6} width={{ base: "100%", sm: "90%", md: "80%", lg: "100%", xl: "100%", "2xl": "100%" }} height={"70vh"}>
+            <FormControl id="filter" width={{ base: "55%", sm: "50%", md: "40%", lg: "20%" }} >
+            <FormLabel fontSize="sm">Buscar por RUC o Nombre</FormLabel>
+                    <Input
+                        value={searchTerm}
+                        onChange={handleTermFilter}
+                        size="sm" rounded={15}
+                        background='white'
+                        color='gray.600'
+                        _hover={{ bg: "gray.100" }}
+                    />
+                </FormControl>
                 <Flex justifyContent="end" mb={6} flexWrap="wrap">
-
-                    <DownloadExcel/>
-                    
+                    <DownloadExcel />
 
                     <Link href="/employees/add">
                         <Button
@@ -67,8 +97,6 @@ export const TableEmployee: React.FC<TableEmployeeProps> = ({ data, columnMappin
                             <AddIcon />Agregar Funcionario
                         </Button>
                     </Link>
-
-
 
                 </Flex>
                 <Box backgroundColor="white" borderRadius="2xl" padding="8px">
@@ -85,7 +113,7 @@ export const TableEmployee: React.FC<TableEmployeeProps> = ({ data, columnMappin
                                 </Tr>
                             </Thead>
                             <Tbody>
-                                {data.map((datum) => (
+                                {filteredData.map((datum) => (
                                     <Tr key={datum.id}>
                                         {headers.map((header) => (
                                             <Td key={`${datum.id}-${header}`} textAlign="center" verticalAlign="middle">
@@ -110,3 +138,4 @@ export const TableEmployee: React.FC<TableEmployeeProps> = ({ data, columnMappin
         </Flex>
     );
 }
+

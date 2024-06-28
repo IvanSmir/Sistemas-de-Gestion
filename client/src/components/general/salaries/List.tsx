@@ -1,6 +1,6 @@
 'use client'
-import { TableContainer, Table, Tbody, Td, Th, Thead, Tr, Box, Flex, Button, Checkbox } from '@chakra-ui/react';
-import React, { ChangeEvent, useState } from 'react'
+import { TableContainer, Table, Tbody, Td, Th, Thead, Tr, Box, Flex, Button, Checkbox, FormControl, FormLabel, Input } from '@chakra-ui/react';
+import React, { ChangeEvent, useState, useEffect } from 'react'
 import Link from 'next/link';
 import VerifiedModal from './VerifiedModal';
 import PayrollDetail from "@/types/period";
@@ -19,17 +19,57 @@ export const TableSalaries: React.FC<PaymentsProps> = ({ payments }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [recordsPerPage, setRecordsPerPage] = useState(7);
 
+    const [filters, setFilters] = useState({
+        name: '',
+        ciRuc: '',
+    });
+
+    const [filteredPayments, setFilteredPayments] = useState<PayrollDetail[]>(payments);
+
+    useEffect(() => {
+        const filtered = payments.filter((payment) => {
+            const { name, ciRuc } = payment.employee.person;
+            const nameMatch = name.toLowerCase().includes(filters.name.toLowerCase());
+            const ciRucMatch = ciRuc.toLowerCase().includes(filters.ciRuc.toLowerCase());
+            return nameMatch && ciRucMatch;
+        });
+        setFilteredPayments(filtered);
+    }, [filters, payments]);
+
+    const handleFilterNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setFilters({ ...filters, name: e.target.value });
+    };
+
+    const handleFilterCIChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setFilters({ ...filters, ciRuc: e.target.value });
+    };
+
     const indexOfLastRecord = currentPage * recordsPerPage;
     const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-    const currentRecords = payments ? payments.slice(indexOfFirstRecord, indexOfLastRecord) : [];
-
-    const totalPages = payments ? Math.ceil(payments.length / recordsPerPage) : 0;
+    const currentRecords = filteredPayments.slice(indexOfFirstRecord, indexOfLastRecord);
+    const totalPages = Math.ceil(filteredPayments.length / recordsPerPage);
 
     const handlePageChange = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
     return (
         <Box width={{ base: "90%", sm: "80%", md: "90%", lg: "90%", xl: "90%", "2xl": "90%" }} height={"70vh"} >
+            <Flex gap={2} align="center" justify="flex-start" flexWrap="wrap">
+                <FormControl id="filterName" width={{ base: "45%", sm: "40%", md: "30%", lg: "20%" }} >
+                    <FormLabel fontSize="sm">Buscar por Nombre</FormLabel>
+                    <Input type="text" value={filters.name} onChange={handleFilterNameChange} size="sm" rounded={15}
+                        background='white'
+                        color='gray.600'
+                        _hover={{ bg: "gray.100" }}/>
+                </FormControl>
+                <FormControl id="filterCI" width={{ base: "45%", sm: "40%", md: "30%", lg: "20%" }}>
+                    <FormLabel fontSize="sm">Buscar por CI/RUC</FormLabel>
+                    <Input type="text" value={filters.ciRuc} onChange={handleFilterCIChange} size="sm" rounded={15}
+                        background='white'
+                        color='gray.600'
+                        _hover={{ bg: "gray.100" }} />
+                </FormControl>
+            </Flex>
             <TableContainer height={"65vh"}>
                 <Table variant="simple" fontSize={{ base: "12px", sm: "13px", md: "14px", lg: "14px", xl: "14px", "2xl": "14px" }}>
                     <Thead>
