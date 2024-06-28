@@ -21,15 +21,15 @@ const DoughnutChart: React.FC<DataPayments> = ({ totalIps, totalSalary, totalBon
                 label: 'Income Distribution',
                 data: [totalIps, totalSalary, totalBonification, totalIncome],
                 backgroundColor: [
+                    '#E7648C',
+                    '#B2385E',
+                    '#6C132F',
                     '#ffa3c4',
-                    '#d67c9f',
-                    '#ac547b',
-                    '#832d56',
 
 
                 ],
                 borderColor: [
-                    'rgba(204,75,114, 0.8)',
+                    '#b05c7c',
                 ],
                 spacing: 10,
             },

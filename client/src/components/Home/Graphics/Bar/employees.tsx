@@ -3,27 +3,32 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
-import { Employee } from '@/types/period/employee'; // Ajusta el path según tu estructura de proyecto
+import { Employee } from '@/types/graphics'; // Ajusta el path según tu estructura de proyecto
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);
 
-interface BarChartProps {
-    data: Employee[];
+interface Employees {
+    employees: Employee[];
 }
 
-const BarChart: React.FC<BarChartProps> = ({ data }) => {
+const BarChart: React.FC<Employees> = ({ employees }) => {
+    console.log(employees);
     const chartData = {
-        labels: data.map(item => item.name),
+        labels: employees.map(item => item.name),
         datasets: [
             {
                 label: 'Salario por Empleado',
-                data: data.map(item => item.amount),
+                data: employees.map(item => item.amountTotal),
                 backgroundColor: [
-                    //pink
-                    'rgba(204,75,114, 0.6)',
+                    '#E7648C',
+                    '#B2385E',
+                    '#6C132F',
+                    '#ffa3c4',
+
+
                 ],
                 borderColor: [
-                    'rgba(204,75,114, 0.8)',
+                    '#b05c7c',
                 ],
                 borderWidth: 1, // Hacer más visible el espacio entre los segmentos
                 spacing: 10, // Hacer más visible el espacio entre los segmentos

@@ -4,3 +4,10 @@ export interface DataPayments {
     totalBonification: number;
     totalIncome: number;
 }
+
+
+
+export interface Employee {
+    name: string;
+    amountTotal: number;
+}
