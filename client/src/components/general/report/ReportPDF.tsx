@@ -121,10 +121,10 @@ const ReportPDF: React.FC<ReportPDFProps> = ({ reportData, selectedReport }) => 
     }, [reportData, isTotal]);
 
     const getTotal = useCallback(() => {
-        if (isIps) return array.length > 0 ? array.map(d => (d.ips)).reduce((a, b) => a + b, 0) : 0;
-        if (isIncome) return array.length > 0 ? array.map(d => (d.salary)).reduce((a, b) => a + b, 0) : 0;
-        if (isFamily) return array.length > 0 ? array.map(d => (d.bonification)).reduce((a, b) => a + b, 0) : 0;
-        if (isTotal) return array.length > 0 ? array.map(d => (d.salary + d.income + d.bonification - d.expense)).reduce((a, b) => a + b, 0) : 0;
+        if (isIps) return array.length > 0 ? array.map(d => Math.round(d.ips)).reduce((a, b) => a + b, 0) : 0;
+        if (isIncome) return array.length > 0 ? array.map(d => Math.round(d.salary)).reduce((a, b) => a + b, 0) : 0;
+        if (isFamily) return array.length > 0 ? array.map(d => Math.round(d.bonification)).reduce((a, b) => a + b, 0) : 0;
+        if (isTotal) return array.length > 0 ? array.map(d => Math.round(d.salary + d.income + d.bonification - d.expense)).reduce((a, b) => a + b, 0) : 0;
     }, [isIps, isIncome, isFamily, isTotal, array]);
 
     return (
@@ -155,24 +155,24 @@ const ReportPDF: React.FC<ReportPDFProps> = ({ reportData, selectedReport }) => 
                         <View style={[styles.tableRowInfor, styles.totalRowInfor]} key={index}>
                             <Text style={styles.tableColInfor1}>{d.name}</Text>
                             <Text style={styles.tableColInfor}>{d.cin}</Text>
-                            {(isIncome || isTotal) && <Text style={styles.tableColInfor}>{d.salary - d.ips - d.expense}</Text>}
-                            {(isIncome || isTotal) && <Text style={styles.tableColInfor}>{d.income}</Text>}
-                            {(isIncome || isTotal) && <Text style={styles.tableColInfor}>{d.expense}</Text>}
-                            {(isIps || isTotal) && <Text style={styles.tableColInfor}>{d.ips}</Text>}
-                            {(isFamily || isTotal) && <Text style={styles.tableColInfor}>{d.bonification}</Text>}
+                            {(isIncome || isTotal) && <Text style={styles.tableColInfor}>{Math.round(d.salary - d.ips - d.expense)}</Text>}
+                            {(isIncome || isTotal) && <Text style={styles.tableColInfor}>{Math.round(d.income)}</Text>}
+                            {(isIncome || isTotal) && <Text style={styles.tableColInfor}>{Math.round(d.expense)}</Text>}
+                            {(isIps || isTotal) && <Text style={styles.tableColInfor}>{Math.round(d.ips)}</Text>}
+                            {(isFamily || isTotal) && <Text style={styles.tableColInfor}>{Math.round(d.bonification)}</Text>}
                         </View>
                     ))}
                     <View style={[styles.tableRowInfor, styles.totalRowInfor]}>
                         <Text style={styles.tableColInfor}>Total:</Text>
                         <Text style={styles.tableColInfor}></Text>
-                        {(isIncome || isTotal) && <Text style={styles.tableColInfor}>{array.length > 0 ? array.map(d => (d.salary - d.ips - d.expense)).reduce((a, b) => a + b, 0) : 0}</Text>}
-                        {(isIncome || isTotal) && <Text style={styles.tableColInfor}>{array.length > 0 ? array.map(d => (d.income)).reduce((a, b) => a + b, 0) : 0}</Text>}
-                        {(isIncome || isTotal) && <Text style={styles.tableColInfor}>{array.length > 0 ? array.map(d => (d.expense)).reduce((a, b) => a + b, 0) : 0}</Text>}
-                        {(isIps || isTotal) && <Text style={styles.tableColInfor}>{array.length > 0 ? array.map(d => (d.ips)).reduce((a, b) => a + b, 0) : 0}</Text>}
-                        {(isFamily || isTotal) && <Text style={styles.tableColInfor}>{array.length > 0 ? array.map(d => (d.bonification)).reduce((a, b) => a + b, 0) : 0}</Text>}
+                        {(isIncome || isTotal) && <Text style={styles.tableColInfor}>{array.length > 0 ? array.map(d => Math.round(d.salary - d.ips - d.expense)).reduce((a, b) => a + b, 0) : 0}</Text>}
+                        {(isIncome || isTotal) && <Text style={styles.tableColInfor}>{array.length > 0 ? array.map(d => Math.round(d.income)).reduce((a, b) => a + b, 0) : 0}</Text>}
+                        {(isIncome || isTotal) && <Text style={styles.tableColInfor}>{array.length > 0 ? array.map(d => Math.round(d.expense)).reduce((a, b) => a + b, 0) : 0}</Text>}
+                        {(isIps || isTotal) && <Text style={styles.tableColInfor}>{array.length > 0 ? array.map(d => Math.round(d.ips)).reduce((a, b) => a + b, 0) : 0}</Text>}
+                        {(isFamily || isTotal) && <Text style={styles.tableColInfor}>{array.length > 0 ? array.map(d => Math.round(d.bonification)).reduce((a, b) => a + b, 0) : 0}</Text>}
                     </View>
                     <View style={styles.totalRowInfor2}>
-                        <Text>Total General: {getTotal()} Gs.</Text>
+                        <Text>Total General: {Math.round(getTotal() || 0)} Gs.</Text>
                     </View>
                 </View>
             </Page>
