@@ -11,6 +11,8 @@ import { AddIcon } from '@chakra-ui/icons';
 import { DownloadExcel } from '../employees/reportEmployee/report';
 import { getEmployeeByTerm } from '@/utils/employee.http';
 import { useAuth } from "../context/AuthProvider";
+import { truncate } from 'fs';
+import { TbRuler } from 'react-icons/tb';
 
 type TableEmployeeProps = {
     data: { id: string; [key: string]: any }[]; // Cada dato tiene un ID y valores dinámicos
@@ -31,33 +33,54 @@ export const TableEmployee: React.FC<TableEmployeeProps> = ({ data, columnMappin
     const [isProcessClosed, setIsProcessClosed] = useState(false);
     const headers = Object.keys(columnMapping);
     const auth = useAuth();
-    
+
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredData, setFilteredData] = useState(data);
-
+    const [isSearching, setIsSearching] = useState(false);
+    
     const handleTermFilter = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    };
-
-    useEffect(() => {
-    const delayDebounceFn = setTimeout(async () => {
-        if (searchTerm) {
-            try {
-                const { user } = auth;
-                const token = user?.token || '';
-                const result = await getEmployeeByTerm(searchTerm, token);
-                setFilteredData(Array.isArray(result) ? result : [result]);
-            } catch (error) {
-                console.error("Error al obtener empleados:", error);
-                setFilteredData([]);
-            }
+        const term = e.target.value;
+        setSearchTerm(term);
+        
+        if (term.length >= 3) {
+            setIsSearching(true);
+            // Búsqueda local inmediata
+            const localFiltered = data.filter((datum) => {
+                return Object.keys(columnMapping).some((key) => {
+                    const value = datum.person[columnMapping[key]]?.toString().toLowerCase();
+                    return value && value.includes(term.toLowerCase());
+                });
+            });
+            setFilteredData(localFiltered);
         } else {
             setFilteredData(data);
+            setIsSearching(false);
         }
-    }, 300);
+    };
+    
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(async () => {
+            if (searchTerm && searchTerm.length >= 3) {
+                try {
+                    const { user } = auth;
+                    const token = user?.token || '';
+                    const result = await getEmployeeByTerm(searchTerm, token);
+                    setFilteredData(Array.isArray(result) ? result : [result]);
+                } catch (error) {
+                    console.error("Error al obtener empleados:", error);
+                }
+            }
+        }, 300);
+    
+        return () => clearTimeout(delayDebounceFn);
+    }, [searchTerm, auth]);
+    
+    useEffect(() => {
+        if (!isSearching) {
+            setFilteredData(data);
+        }
+    }, [data, isSearching]);
 
-    return () => clearTimeout(delayDebounceFn);
-}, [searchTerm, data, auth]);
 
     const handleOperation = (operationType: string) => {
         setConfirmOperation(false);
@@ -133,7 +156,9 @@ export const TableEmployee: React.FC<TableEmployeeProps> = ({ data, columnMappin
                         </Table>
                     </TableContainer>
                 </Box>
-                <Pagination setEmployeedata={setEmployeeData} total={total} />
+                {!isSearching && (
+            <Pagination setEmployeedata={setEmployeeData} total={total} />
+        )}
             </Box >
         </Flex>
     );
