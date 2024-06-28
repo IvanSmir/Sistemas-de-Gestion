@@ -82,10 +82,13 @@ export const EditPositionInDetails: React.FC<EditPositionInDetailsProps> = ({ is
             const { user } = auth;
             const token = user?.token || '';
             const positionDetails = await getEmployeeDetailById(positionId, token);
+            const date = new Date(positionDetails.startDate)
+            date.setDate(date.getDate() - 1)
+            const adjustedDate = date.toISOString().split('T')[0];
             if (positionDetails && positionDetails.position) {
                 setValue('employeeId', positionDetails.employeeId || '');
                 setValue('positionId', positionDetails.positionId || '');
-                setValue('startDate', positionDetails.startDate ? positionDetails.startDate.split('T')[0] : '');
+                setValue('startDate', positionDetails.startDate ? adjustedDate : '');
                 setValue('salaryType', positionDetails.salaryType || '');
                 setValue('salary', positionDetails.salary || '');
                 setValue('active', positionDetails.active);
