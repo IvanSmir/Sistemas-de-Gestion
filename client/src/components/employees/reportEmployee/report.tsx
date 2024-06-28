@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { Button, Menu, MenuButton, MenuList, MenuItem } from '@chakra-ui/react';
+import { Button, Menu, MenuButton, MenuList, MenuItem, Tr } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import * as XLSX from 'xlsx';
 import { getEmployees } from '@/utils/employee.http';
@@ -21,13 +21,13 @@ const fetchAllEmployees = async (token: string) => {
   let hasMoreData = true;
 
   while (hasMoreData) {
-    const result = await getEmployees(page); 
+    const result = await getEmployees(page);
     console.log('Fetched employees:', result.data);
-    
+
     const employeesWithDetails = await Promise.all(result.data.map(async (employee: Employee) => {
-      const positionDetails = await getEmployeeDetails(employee.id, token); 
+      const positionDetails = await getEmployeeDetails(employee.id, token);
       console.log('Cargos del funcionario:', positionDetails);
-    
+
       const positions = positionDetails.map((detail: any) => detail.position?.name).filter((name: string) => name).join(', ');
       const employeeName = employee.person.name;
       const employeeCiRuc = employee.person.ciRuc;
@@ -42,10 +42,10 @@ const fetchAllEmployees = async (token: string) => {
         return !endDate || endDate > new Date();
       });
 
-      return { 
-        Funcionario: employeeName, 
-        Cedula: employeeCiRuc, 
-        Cargo: positions || 'N/A', 
+      return {
+        Funcionario: employeeName,
+        Cedula: employeeCiRuc,
+        Cargo: positions || 'N/A',
         FechaInicio: formatDate(positionDetails[0]?.startDate || 'N/A'),
         FechaFin: formatDate(positionDetails[0]?.endDate || 'N/A'),
         isActive
@@ -82,12 +82,12 @@ export const DownloadExcel: React.FC = () => {
   }, [auth]);
 
   const downloadExcel = (data: any[], fileName: string) => {
-    
+
     if (data.length === 0) {// en el caso de lo haber bajas de funcionarios
       data = [{ Funcionario: 'No hay bajas', Cedula: '', Cargo: '', FechaInicio: '', FechaFin: '' }];
     }
 
-    const cleanedData = data.map(({ isActive, ...rest }) => rest);  
+    const cleanedData = data.map(({ isActive, ...rest }) => rest);
     const ws = XLSX.utils.json_to_sheet(cleanedData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Employees");
@@ -96,9 +96,14 @@ export const DownloadExcel: React.FC = () => {
 
   const handleDownload = (isActive: boolean | null) => {
     let dataToDownload = employees;
-    if (isActive !== null) {
-      dataToDownload = employees.filter(employee => employee.isActive === isActive);
+    if (isActive === null) {
+      dataToDownload = employees;
+    } else if (isActive === true) {
+      dataToDownload = employees.filter(employee => employee.isActive === true);
+    } else if (isActive === false) {
+      dataToDownload = employees.filter(employee => employee.isActive === false);
     }
+    console.log(dataToDownload)
     const fileName = isActive === null ? "todos_los_empleados.xlsx" : isActive ? "empleados_activos.xlsx" : "empleados_no_activos.xlsx";
     downloadExcel(dataToDownload, fileName);
   };
@@ -106,15 +111,15 @@ export const DownloadExcel: React.FC = () => {
   return (
     <>
       <Menu>
-        <MenuButton 
-          as={Button}  
+        <MenuButton
+          as={Button}
           rounded={23}
-          fontSize={13} 
+          fontSize={13}
           py={3}
           px={5}
-          rightIcon={<ChevronDownIcon />} 
+          rightIcon={<ChevronDownIcon />}
           gap={2}
-          >
+        >
           Descargar Reporte
         </MenuButton>
         <MenuList>
