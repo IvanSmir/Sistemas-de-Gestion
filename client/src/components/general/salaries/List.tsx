@@ -56,14 +56,14 @@ export const TableSalaries: React.FC<PaymentsProps> = ({ payments }) => {
         <Box width={{ base: "90%", sm: "80%", md: "90%", lg: "90%", xl: "90%", "2xl": "90%" }} height={"70vh"} >
             <Flex gap={2} align="center" justify="flex-start" flexWrap="wrap">
                 <FormControl id="filterName" width={{ base: "45%", sm: "40%", md: "30%", lg: "20%" }} >
-                    <FormLabel fontSize="sm">Filtrar por Nombre</FormLabel>
+                    <FormLabel fontSize="sm">Buscar por Nombre</FormLabel>
                     <Input type="text" value={filters.name} onChange={handleFilterNameChange} size="sm" rounded={15}
                         background='white'
                         color='gray.600'
                         _hover={{ bg: "gray.100" }}/>
                 </FormControl>
                 <FormControl id="filterCI" width={{ base: "45%", sm: "40%", md: "30%", lg: "20%" }}>
-                    <FormLabel fontSize="sm">Filtrar por CI/RUC</FormLabel>
+                    <FormLabel fontSize="sm">Buscar por CI/RUC</FormLabel>
                     <Input type="text" value={filters.ciRuc} onChange={handleFilterCIChange} size="sm" rounded={15}
                         background='white'
                         color='gray.600'
