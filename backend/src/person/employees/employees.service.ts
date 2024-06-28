@@ -68,37 +68,43 @@ export class EmployeesService {
       const totalCount = await this.prismaService.employees.count({
         where: { isDeleted: false },
       });
-      const employees = await this.prismaService.employees.findMany({
-        take: limit,
-        skip: (page - 1) * limit,
-        select: this.selectOptions,
-        where: {
-          isDeleted: false,
-          OR: [
-            {
-              person: {
-                ciRuc: {
-                  contains: query,
-                  mode: 'insensitive',
-                },
+
+      const whereClause: any = { isDeleted: false };
+
+      if (query) {
+        whereClause.OR = [
+          {
+            person: {
+              ciRuc: {
+                contains: query,
+                mode: 'insensitive',
               },
             },
-            {
-              person: {
+          },
+          {
+            person: {
               name: {
                 contains: query,
                 mode: 'insensitive',
               },
-            }}
-          ],
-        },
+            },
+          },
+        ];
+      }
+
+      const employees = await this.prismaService.employees.findMany({
+        take: limit,
+        skip: (page - 1) * limit,
+        select: this.selectOptions,
+        where: whereClause,
         orderBy: {
           createdAt: 'desc',
-        }
+        },
       });
+
       return {
         data: employees,
-        currenPage: page,
+        currentPage: page,
         limit,
         totalPages: Math.ceil(totalCount / limit),
         totalCount,

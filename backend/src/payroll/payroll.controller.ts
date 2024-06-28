@@ -48,6 +48,45 @@ export class PayrollController {
     return this.payrollService.findAll();
   }
 
+  @Get('lastPaymnets')
+  @Auth()
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get last payments' })
+  @ApiResponse({
+    status: 200,
+    description: 'Payments retrieved successfully.',
+  })
+  @ApiResponse({ status: 404, description: 'Payments not found.' })
+  findLastPayments() {
+    return this.payrollService.getLastPaymnets();
+  }
+
+  @Get('lastTopEmployeesByIncome')
+  @Auth()
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get top employees by income' })
+  @ApiResponse({
+    status: 200,
+    description: 'Top employees retrieved successfully.',
+  })
+  @ApiResponse({ status: 404, description: 'Top employees not found.' })
+  findLastTopEmployeesByIncome() {
+    return this.payrollService.getLastTopEmployeesByIncome();
+  }
+
+  @Get('lastSalaryPayments')
+  @Auth()
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get last salary payments' })
+  @ApiResponse({
+    status: 200,
+    description: 'Last salary payments retrieved successfully.',
+  })
+  @ApiResponse({ status: 404, description: 'Last salary payments not found.' })
+  getLastSalaryPayments() {
+    return this.payrollService.getLastSalaryPayments();
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a payroll by ID' })
   @ApiResponse({
@@ -73,6 +112,7 @@ export class PayrollController {
     @Param('id', ParseUUIDPipe) id: string,
     @GetUser() user: Users,
   ) {
+    console.log('id', id);
     return this.payrollService.createPayments(id, user);
   }
 
@@ -211,8 +251,6 @@ export class PayrollController {
     );
   }
 
-
-  
   @Get(':id/payrollDetails/:payrollDetailId')
   @Auth()
   @ApiBearerAuth()
@@ -222,7 +260,10 @@ export class PayrollController {
     description: 'Payroll details retrieved successfully.',
   })
   @ApiResponse({ status: 404, description: 'Payroll details not found.' })
-  findPayrollDetails(@Param('id', ParseUUIDPipe) id: string, @Param('payrollDetailId', ParseUUIDPipe) payrollDetailId: string) {
+  findPayrollDetails(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('payrollDetailId', ParseUUIDPipe) payrollDetailId: string,
+  ) {
     return this.payrollService.findPayrollDetails(id, payrollDetailId);
   }
 }
