@@ -23,12 +23,12 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'space-between',
         marginBottom: 15,
-       textAlign: 'center',
+        textAlign: 'center',
     },
     headingDate: {
         fontSize: 12,
         marginBottom: 15,
-       textAlign: 'left',
+        textAlign: 'left',
     },
 
     companyName: {
@@ -274,7 +274,7 @@ const SueldoPDF: React.FC<SueldoPDFProps> = ({ sueldo, currentDate, employee, re
                         <View style={styles.separator1} />
                         {sueldo.map(item => (
                             <View style={styles.tableRow} key={item._id}>
-                                <View style={styles.tableColConcept}><Text style={styles.tableCell}>{(item.concepto).toLocaleString('es-ES')}</Text></View>
+                                <View style={styles.tableColConcept}><Text style={styles.tableCell}>{(item.concepto)}</Text></View>
                                 <View style={styles.tableColAmount}><Text style={styles.tableCell1}>{(+item.ingreso).toLocaleString('es-ES')}</Text></View>
                                 <View style={styles.tableColAmount}><Text style={styles.tableCell1}>{(+item.egreso).toLocaleString('es-ES')}</Text></View>
                             </View>

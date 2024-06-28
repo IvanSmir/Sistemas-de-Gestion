@@ -812,7 +812,7 @@ export class PayrollService {
       // Registro del gasto por sueldos y salarios
       const salaryPayment = await this.prismaService.accountingEntry.create({
         data: {
-          netAmount: payrollPeriod.totalSalary,
+          netAmount: payrollPeriod.totalAmount,
           name: 'Gastos de Sueldos y Salarios',
           type: 'DEBE',
           paymentDate: payrollPeriod.periodEnd,
@@ -822,7 +822,7 @@ export class PayrollService {
 
       const salaryExpense = await this.prismaService.accountingEntry.create({
         data: {
-          netAmount: payrollPeriod.totalSalary,
+          netAmount: payrollPeriod.totalAmount,
           name: 'Sueldos y Salarios por Pagar',
           type: 'HABER',
           paymentDate: payrollPeriod.periodEnd,
@@ -852,12 +852,9 @@ export class PayrollService {
       });
 
       // Pago de los salarios netos a los empleados
-      const netAmountToPay =
-        payrollPeriod.totalSalary +
-        payrollPeriod.totalIncome +
-        payrollPeriod.totalBonification -
-        payrollPeriod.totalExpense -
-        payrollPeriod.totalIps;
+      const netAmountToPay = payrollPeriod.totalAmount - payrollPeriod.totalIps;
+
+      console.log('netAmountToPay', netAmountToPay);
 
       const salaryPaymentBank = await this.prismaService.accountingEntry.create(
         {

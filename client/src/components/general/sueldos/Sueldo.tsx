@@ -33,6 +33,7 @@ const Sueldo = () => {
     const [sueldo, setSueldo] = useState(sueldo1);
     const [employeeId, setEmployeeId] = useState("");
     const [refresh, setRefresh] = useState(false)
+    const [receiptNumber, setReceiptNumber] = useState("");
     const [employee, setEmployee] = useState({
         ciRuc: '',
         name: ''
@@ -71,6 +72,7 @@ const Sueldo = () => {
                     ingreso: pi.isIncome ? pi.amount.toFixed(0) : "0",
                     egreso: pi.isIncome ? "0" : pi.amount.toFixed(0),
                 })))
+                setReceiptNumber(a.receiptNumber)
                 setIsVerified(a.isVerified)
                 setEmployeeId(a.employeeId)
                 toast.closeAll();
@@ -235,7 +237,7 @@ const Sueldo = () => {
             });
             verifyPayrollDetails(periodsId, detailsId, user?.token ?? '')
                 .then(a => {
-                    console.log("retorno de payroll verification" , a)
+                    console.log("retorno de payroll verification", a)
                     setIsVerified(true);
                     toast.closeAll();
                     toast({
@@ -318,11 +320,11 @@ const Sueldo = () => {
                         <div className="flex gap-2">
                             <div className="pl-2 flex flex-col">
                                 <span>Nombre:</span>
-                                <Input type='search' value={employee.name} width={200} disabled placeholder='Nombre' id='nombre' name='nombre'/>
+                                <Input type='search' value={employee.name} width={200} disabled placeholder='Nombre' id='nombre' name='nombre' />
                             </div>
                             <div className="flex flex-col">
                                 <span>CI:</span>
-                                <Input type='search' value={employee.ciRuc.replaceAll(".", "")} width={200} disabled placeholder='CI' id='ci' name='ci'/>
+                                <Input type='search' value={employee.ciRuc.replaceAll(".", "")} width={200} disabled placeholder='CI' id='ci' name='ci' />
                             </div>
                         </div>
                         <div className="border-[1px] border-[#e4b1bc] w-full h-0 my-2"></div>
@@ -343,7 +345,7 @@ const Sueldo = () => {
                                             <Tr key={sueldo._id}>
                                                 <Td padding="5" textAlign="left">{(sueldo.concepto)}</Td>
                                                 <Td padding="5" paddingRight={40} marginRight={20} textAlign="right">{(+sueldo.ingreso).toLocaleString('es-ES')}</Td>
-                                                <Td padding="5"  paddingRight={40} marginRight={20}textAlign="right">{(+sueldo.egreso).toLocaleString('es-ES')}</Td>
+                                                <Td padding="5" paddingRight={40} marginRight={20} textAlign="right">{(+sueldo.egreso).toLocaleString('es-ES')}</Td>
                                             </Tr>)
                                         )
                                     }
@@ -357,15 +359,15 @@ const Sueldo = () => {
                         <div className="flex flex-col font-semibold text-[17px] gap-2">
                             <div className="flex justify-end">
                                 <span>TOTAL INGRESOS:</span>
-                                <div className="min-w-40 text-right">{sueldo.map(s => Number(s.ingreso)).reduce((a, b) => a + b,0).toLocaleString('es-ES')} Gs</div>
+                                <div className="min-w-40 text-right">{sueldo.map(s => Number(s.ingreso)).reduce((a, b) => a + b, 0).toLocaleString('es-ES')} Gs</div>
                             </div>
                             <div className="flex justify-end">
                                 <span>TOTAL EGRESOS:</span>
-                                <div className="min-w-40 text-right">{sueldo.map(s => Number(s.egreso)).reduce((a, b) => a + b,0).toLocaleString('es-ES')} Gs</div>
+                                <div className="min-w-40 text-right">{sueldo.map(s => Number(s.egreso)).reduce((a, b) => a + b, 0).toLocaleString('es-ES')} Gs</div>
                             </div>
                             <div className="flex justify-end">
                                 <span> TOTAL A PAGAR:</span>
-                                <div className="min-w-40 text-right">{(sueldo.map(s => Number(s.ingreso)).reduce((a, b) => a + b,0) - sueldo.map(s => Number(s.egreso)).reduce((a, b) => a + b,0)).toLocaleString('es-ES')} Gs</div>
+                                <div className="min-w-40 text-right">{(sueldo.map(s => Number(s.ingreso)).reduce((a, b) => a + b, 0) - sueldo.map(s => Number(s.egreso)).reduce((a, b) => a + b, 0)).toLocaleString('es-ES')} Gs</div>
                             </div>
                         </div>
                     </div>
@@ -378,7 +380,7 @@ const Sueldo = () => {
                         )}
                         {isClosed && (
                             <PDFDownloadLink
-                                document={<SueldoPDF sueldo={sueldo} currentDate={selectedDate} employee={employee} receiptNumber={detailsId} />}
+                                document={<SueldoPDF sueldo={sueldo} currentDate={selectedDate} employee={employee} receiptNumber={receiptNumber} />}
                                 fileName="sueldo.pdf"
                             >
                                 {({ blob, url, loading, error }) =>
