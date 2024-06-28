@@ -146,9 +146,30 @@ export class PayrollService {
 
       // Creación de ítems de nómina para salarios
       const salaries = await this.prismaService.employeeDetails.findMany({
-        where: { employeeId, isActive: true, endDate: { gte: new Date() } },
-        select: { salary: true, position: { select: { name: true } } },
+        where: {
+          employeeId,
+          isActive: true,
+          OR: [
+            {
+              endDate: { gte: new Date() },
+            },
+            {
+              endDate: { equals: null },
+            },
+          ],
+          salary: { gt: 0 },
+        },
+        select: {
+          salary: true,
+          position: {
+            select: {
+              name: true,
+            },
+          },
+        },
       });
+
+      console.log('salaries', salaries);
 
       const payrollItemsSalariesPromises = salaries.map(async (salary) => {
         const payrollItem = await this.prismaService.payrollItems.create({
@@ -472,34 +493,41 @@ export class PayrollService {
 
       const employees = await this.prismaService.employees.findMany({
         where: { isDeleted: false },
-        select: { id: true, EmployeeDetails: true },
+        include: {
+          EmployeeDetails: true,
+        },
       });
+
+      console.log('employees', employees);
 
       const payrollDetailsPromises = employees.map(async (employee) => {
         if (!employee.EmployeeDetails) return;
-
+        console.log('employee.EmployeeDetails', employee.EmployeeDetails);
         let noRole = true;
         for (const role of employee.EmployeeDetails) {
           if (
             role.endDate > new Date() ||
-            role.endDate == new Date('1900-06-03T00:00:00.000Z')
+            role.endDate == new Date('1900-06-03T00:00:00.000Z') ||
+            role.endDate == null
           ) {
             noRole = false;
             break;
           }
         }
+        console.log('noRole', noRole);
         if (noRole) return;
-
+        console.log('noRole', noRole);
         const payments = await this.createPaymentforEmployee(
           periodId,
           employee.id,
           user,
         );
+        console.log('payments', payments);
         return payments;
       });
 
       const payrollDetails = await Promise.all(payrollDetailsPromises);
-
+      console.log('payrollDetails', payrollDetails);
       return payrollDetails;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Payroll', '');
@@ -946,6 +974,7 @@ export class PayrollService {
         },
         take: 1,
       });
+      return payrollPeriods;
     } catch (error) {
       this.handleDbErrorService.handleDbError(error, 'Payroll', '');
     }
@@ -1013,7 +1042,6 @@ export class PayrollService {
         orderBy: {
           paymentDate: 'desc',
         },
-        take: 3,
       });
       return payments;
     } catch (error) {
