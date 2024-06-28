@@ -253,5 +253,15 @@ export class PayrollController {
     return this.payrollService.getLastTopEmployeesByIncome();
   }
 
-  
+  @Get('lastSalaryPayments')
+  @Auth()
+  @ApiOperation({ summary: 'Get last salary payments' })
+  @ApiResponse({
+    status: 200,
+    description: 'Last salary payments retrieved successfully.',
+  })
+  @ApiResponse({ status: 404, description: 'Last salary payments not found.' })
+  getLastSalaryPayments() {
+    return this.payrollService.getLastSalaryPayments();
+  }
 }
