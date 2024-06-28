@@ -8,6 +8,7 @@ import {
 } from 'chart.js';
 import { m } from 'framer-motion';
 import { DataPayments } from "@/types/graphics";
+import { border } from '@chakra-ui/react';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 
@@ -29,8 +30,9 @@ const DoughnutChart: React.FC<DataPayments> = ({ totalIps, totalSalary, totalBon
 
                 ],
                 borderColor: [
-                    '#b05c7c',
+                    '#E7648C',
                 ],
+                borderWidth: 1,
                 spacing: 10,
             },
         ],
