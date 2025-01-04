@@ -74,7 +74,7 @@ const ReportModal = ({ isOpen, onClose, reportData }: ReportmodalProps) => {
                         document={<ReportPDF reportData={reportData} selectedReport={selectedReport} />}
                         fileName="informe_mensual.pdf"
                     >
-                        {({ loading }) => (loading ? 'Cargando documento...' : 'Descargar PDF')}
+                        {({ loading }) => (loading ? <span>Cargando documento...</span> : <span>Descargar PDF</span>)}
                     </PDFDownloadLink>
                 </ModalFooter>
             </ModalContent>
